@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>07. Power Efficiency, Thermal Governance &amp; Liquid Cooling &mdash; Storage &amp; Validation Engineering Hub</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body class="theme-dark">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <a class="brand-badge" href="../index.html">NVMe</a>
+        <div class="breadcrumbs"><a href="../../index.html">Learning Topics</a> <span>/</span> <a href="../index.html">Storage &amp; Validation</a> <span>/</span> <span class="current">07. Power Efficiency, Thermal Governance &amp; Liquid Cooling</span></div>
+      </div>
+      <div class="header-controls">
+        <select id="subject-nav" class="nav-select" data-base="../" data-current="p07" aria-label="Jump to subject"></select>
+        <a class="btn" href="../nvme_systems_tutor.html">102-Term Tutor</a>
+        <button id="theme-toggle" class="btn" type="button">Light Mode</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-eyebrow">Pillar 07 • Active/Idle Power, PCM-2 Spikes &amp; DLC Cold Plates</div>
+      <h1>07. Power Efficiency, Thermal Governance &amp; Liquid Cooling</h1>
+      <p>NVMe APST, PCIe L0p, NVMe 2.3 PLC & SDP, NVMe 2.4 Voltage Monitoring, UltraQLC DFS, OCP 2.6 PCM-1 vs PCM-2 (100 µs peak), Direct-to-Chip cold plates vs Immersion, SFF-TA-1008, and ML/TEC thermal control.</p>
+      <div class="hero-meta"><span class="badge badge-warning">OCP PCM-1 vs PCM-2 (100 µs)</span><span class="badge badge-primary">NVMe 2.3 PLC &amp; UltraQLC DFS</span><span class="badge badge-success">DTC Cold Plates (40–45°C)</span><span class="badge badge-violet">SFF-TA-1008 &amp; TEC Patents</span></div>
+    </section>
+
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Interactive OCP 2.6 Power Spike Simulator: PCM-1 (1s Avg) vs. PCM-2 (100 &mu;s Peak / &le;4 &mu;s Sample)</h2>
+          <p class="card-subtitle">See why 1-second averaging misses microsecond NAND program/erase current bursts that trip rail caps under PCM-2.</p>
+        </div>
+        <span class="badge badge-warning">High-Speed Power Capture</span>
+      </div>
+
+      <div class="grid-3 mb-2">
+        <div class="control-group">
+          <div class="control-label"><span>Baseline Active Power (W)</span><strong id="p7-base-v">19 W</strong></div>
+          <input type="range" id="p7-base" min="8" max="35" value="19" />
+        </div>
+        <div class="control-group">
+          <div class="control-label"><span>NAND Program Burst Peak (W)</span><strong id="p7-spike-v">34 W</strong></div>
+          <input type="range" id="p7-spike" min="15" max="60" value="34" />
+        </div>
+        <div class="control-group">
+          <div class="control-label"><span>OCP Power Cap (PCM-1 / PCM-2 Limit)</span><strong id="p7-cap-v">25 W / 32 W</strong></div>
+          <input type="range" id="p7-cap" min="15" max="45" value="25" />
+        </div>
+      </div>
+
+      <div class="grid-4 mb-2">
+        <div class="kpi-tile"><div class="kpi-label">PCM-1 (1s Average)</div><div class="kpi-value" id="p7-pcm1">20.8 W</div><div class="kpi-note" id="p7-pcm1-st">PASS (&le; 25W cap)</div></div>
+        <div class="kpi-tile"><div class="kpi-label">PCM-2 (100 &mu;s Peak)</div><div class="kpi-value" id="p7-pcm2" style="color:var(--error);">33.1 W</div><div class="kpi-note" id="p7-pcm2-st">BREACH (&gt; 32W peak cap)</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Sampling Interval</div><div class="kpi-value">&le; 4 &mu;s</div><div class="kpi-note">Min 250 kS/s (e.g., Quarch PAM)</div></div>
+        <div class="kpi-tile"><div class="kpi-label">DFS Perf/W Lever</div><div class="kpi-value" style="color:var(--success);">+10%</div><div class="kpi-note">UltraQLC vendor-projected at fixed W</div></div>
+      </div>
+
+      <canvas id="p7-pcm-canvas" height="190"></canvas>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Cooling Architecture &amp; Thermal Governance Matrix</h2>
+          <p class="card-subtitle">Correlate OCP <code>C0h</code> thermal-throttling counters, sensor hysteresis, and enclosure limits across air and liquid rigs.</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Cooling Tier</th><th>2026 Market / Envelope</th><th>Thermal &amp; Efficiency Metrics</th><th>Validation &amp; Hardware Examples</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Forced Air Cooling</strong></td><td>E1.S (~20W) &amp; lower-TDP E3.S (25W)</td><td>Struggles above ~35&ndash;40W in dense Gen6 AI chassis without aggressive reactive throttling.</td><td>Validate sustained throughput flatness, composite vs controller temp deltas &amp; throttling hysteresis.</td></tr>
+            <tr><td><strong>Single-Phase Direct-to-Chip (DTC) Cold Plates</strong></td><td>~55% of liquid cooling market (2026 est.); E3.S/E3.L up to 40&ndash;70W</td><td><strong>40&ndash;45&deg;C</strong> warm supply water; facility <strong>PUE 1.05&ndash;1.20</strong>; fits existing cabinets.</td><td>Shipping DLC drives: KIOXIA CM9-DLC E3.S, KIOXIA NX1 E1.S (OCP 2.6 + FDP), Micron 9650 Gen6; SNIA <strong>SFF-TA-1008</strong> hot-swap enclosures.</td></tr>
+            <tr><td><strong>Immersion Cooling</strong></td><td>&lt;10% market share (2026 est.)</td><td>Dielectric tanks reaching <strong>pPUE ~1.01</strong>; wet serviceability &amp; fluid qualification barriers.</td><td>Validate dielectric fluid material compatibility, seal/TIM longevity, and zero vapor-phase degradation.</td></tr>
+            <tr><td><strong>Predictive ML &amp; Firmware TEC Control</strong></td><td>Emerging 2026 R&amp;D / patent convergence</td><td>LSTM/ML predictive control + dual-threshold thermoelectric coolers (WD patents) prevent reactive QoS cliffs.</td><td>Compare reactive throttle cliffs vs proactive PLC/DFS/TEC actuation on p99.9 latency stability.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Curated Primary Sources &amp; Reference Library</h2>
+          <p class="card-subtitle">Authoritative specifications, textbooks, kernel docs, papers, and open-source repositories.</p>
+        </div>
+        <span class="badge badge-primary">5 Resources</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Source / Resource</th>
+              <th>Format</th>
+              <th>Link / Identifier</th>
+              <th>How to Use It</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Direct-to-Chip Liquid Cooling Developer Guide (2026)</strong></td><td><span class="badge">Technical Analysis</span></td><td><a href="https://build.inc/insights/direct-to-chip-liquid-cooling-developer-guide" target="_blank" rel="noopener noreferrer">build.inc DTC Guide</a></td><td>Grounding on DTC vs immersion trade-offs, 40–45°C warm-water loops, PUE, and chassis integration.</td></tr><tr><td><strong>OCP Cooling Environments Project</strong></td><td><span class="badge">Standards Hub</span></td><td><a href="https://www.opencompute.org/projects/cooling-environments/" target="_blank" rel="noopener noreferrer">OCP Cooling Environments</a></td><td>Track OCP guidance for cold plates, immersion fluid compatibility, and rack thermal boundaries.</td></tr><tr><td><strong>Solid-State Cooling Patent &amp; Architecture Analysis (2026)</strong></td><td><span class="badge">R&amp;D Brief</span></td><td><a href="https://eureka.patsnap.com/resources/blog/rd-blog/solid-state-cooling-technology-2026-patsnap-eureka/" target="_blank" rel="noopener noreferrer">Patsnap Solid-State Cooling 2026</a></td><td>Understand SFF-TA-1008 liquid-cooled SSD enclosures, TEC firmware actuation, and ML predictive thermal control.</td></tr><tr><td><strong>OCP 2.6 Power Measurement Thread (PCM-1 vs. PCM-2)</strong></td><td><span class="badge">OCP Storage List</span></td><td><a href="https://ocp-all.groups.io/g/OCP-Storage/topic/ocp_datacenter_nvme_ssd_v2_6/109456924" target="_blank" rel="noopener noreferrer">OCP-Storage PCM-1/2 Thread</a></td><td>Practical clarification of 100 µs / ≤4 µs peak-power validation methodology.</td></tr><tr><td><strong>Windows NVMe Power Management Guidelines</strong></td><td><span class="badge">Microsoft Docs</span></td><td><a href="https://learn.microsoft.com/en-us/windows-hardware/design/component-guidelines/power-management-for-storage-hardware-devices-nvme" target="_blank" rel="noopener noreferrer">Microsoft NVMe Power Docs</a></td><td>Reference for APST and StorNVMe idle/active state transitions on client SSDs.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
+    
+    <section class="card" data-progress-prefix="p07_" data-progress-total="5">
+      <div class="card-header">
+        <div>
+          <h2>Mastery Checklist (Saved Locally)</h2>
+          <p class="card-subtitle">Check off skills and labs as you validate them — progress rolls up automatically to the Storage Hub.</p>
+        </div>
+        <span class="badge badge-success progress-text">0 / 5 (0%)</span>
+      </div>
+      <div class="progress-track mb-2"><div class="progress-fill" style="width: 0%"></div></div>
+      <div class="checklist mt-3">
+        <label class="check-item"><input type="checkbox" data-check-id="p07_01" /><div><div class="check-title"><strong>Validate idle &amp; active power governance (APST, L0p, PLC, SDP, DFS)</strong></div><div class="small muted">Cover client 5 mW idle transitions (SN8100), NVMe 2.3 PLC &amp; SDP, NVMe 2.4 Voltage Monitoring, PCIe 6.0 L0p, and UltraQLC DFS (+10% projected perf/W).</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p07_02" /><div><div class="check-title"><strong>Distinguish OCP 2.6 PCM-1 (1s avg) from PCM-2 (100 µs peak / ≤4 µs sample)</strong></div><div class="small muted">Instrument high-speed power capture so brief NAND program/erase current spikes don&#x27;t escape 1-second averaging.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p07_03" /><div><div class="check-title"><strong>Compare Air, Direct-to-Chip (DTC) Cold Plates &amp; Immersion cooling envelopes</strong></div><div class="small muted">Understand EDSFF 20W–70W TDP, DTC warm water (40–45°C, PUE 1.05–1.20, ~55% share) vs immersion (pPUE ~1.01, &lt;10% share).</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p07_04" /><div><div class="check-title"><strong>Correlate OCP C0h thermal-throttling counters against QoS hysteresis</strong></div><div class="small muted">Plot controller/composite temps, sustained throughput flatness, and throttling recovery hysteresis on air and DLC rigs.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p07_05" /><div><div class="check-title"><strong>Track SFF-TA-1008, LSTM/ML predictive thermal control &amp; TEC firmware actuation</strong></div><div class="small muted">Follow hot-swappable DLC enclosures (CM9-DLC, NX1, Micron 9650) and dual-threshold TEC patents to preserve QoS.</div></div></label>
+      </div>
+    </section>
+    
+    
+
+    <nav class="subject-pager"><a class="btn" href="../06-validation-fault-injection-and-formal-methods/index.html">&larr; 06. Validation, Fault Injection &amp; Formal Methods</a><a class="btn" href="../index.html">Storage Hub</a><a class="btn btn-primary" href="../08-workloads-tiering-fabrics-and-security/index.html">08. Workloads, Tiering, Fabrics &amp; Security &rarr;</a></nav>
+  </main>
+
+  <script src="../assets/app.js"></script>
+  <script>
+
+    function drawPCM() {
+      const baseW = parseInt(document.getElementById('p7-base').value, 10);
+      const spikeW = Math.max(baseW + 2, parseInt(document.getElementById('p7-spike').value, 10));
+      const cap1 = parseInt(document.getElementById('p7-cap').value, 10);
+      const cap2 = Math.round(cap1 * 1.28);
+
+      document.getElementById('p7-base-v').textContent = baseW + ' W';
+      document.getElementById('p7-spike-v').textContent = spikeW + ' W';
+      document.getElementById('p7-cap-v').textContent = `${cap1} W / ${cap2} W`;
+
+      const pcm1 = baseW + (spikeW - baseW) * 0.12;
+      const pcm2 = baseW + (spikeW - baseW) * 0.94;
+      const pass1 = pcm1 <= cap1;
+      const pass2 = pcm2 <= cap2;
+
+      const e1 = document.getElementById('p7-pcm1');
+      e1.textContent = pcm1.toFixed(1) + ' W';
+      e1.style.color = pass1 ? 'var(--success)' : 'var(--error)';
+      document.getElementById('p7-pcm1-st').textContent = pass1 ? `PASS (≤ ${cap1}W avg cap)` : `BREACH (> ${cap1}W avg cap)`;
+
+      const e2 = document.getElementById('p7-pcm2');
+      e2.textContent = pcm2.toFixed(1) + ' W';
+      e2.style.color = pass2 ? 'var(--success)' : 'var(--error)';
+      document.getElementById('p7-pcm2-st').textContent = pass2 ? `PASS (≤ ${cap2}W peak cap)` : `BREACH (> ${cap2}W peak cap)`;
+
+      const { ctx, w, h, th } = StorageHub.prepCanvas(document.getElementById('p7-pcm-canvas'), 190);
+      const padL = 50, padR = 20, padT = 26, padB = 28;
+      const pw = w - padL - padR, ph = h - padT - padB;
+      const yMax = Math.max(65, spikeW + 8, cap2 + 8);
+      const toY = v => padT + (1 - v / yMax) * ph;
+
+      // 100 us burst highlight window
+      const bx1 = padL + pw * 0.36, bx2 = padL + pw * 0.48;
+      ctx.save();
+      ctx.globalAlpha = 0.15;
+      ctx.fillStyle = pass2 ? th.warning : th.error;
+      ctx.fillRect(bx1, padT, bx2 - bx1, ph);
+      ctx.restore();
+
+      // Cap lines
+      ctx.save();
+      ctx.strokeStyle = th.warning; ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(padL, toY(cap2)); ctx.lineTo(padL + pw, toY(cap2)); ctx.stroke();
+      ctx.strokeStyle = th.success;
+      ctx.beginPath(); ctx.moveTo(padL, toY(pcm1)); ctx.lineTo(padL + pw, toY(pcm1)); ctx.stroke();
+      ctx.restore();
+
+      // Instantaneous waveform (sampled <= 4 us)
+      ctx.strokeStyle = th.primary;
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      const N = 160;
+      for (let i = 0; i <= N; i++) {
+        const t = i / N;
+        const inBurst = (t >= 0.36 && t <= 0.48);
+        const ripple = Math.sin(i * 0.9) * 0.9;
+        const val = inBurst ? spikeW - Math.abs(t - 0.42) * 18 + ripple : baseW + ripple;
+        const x = padL + t * pw, y = toY(Math.max(0, val));
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = th.muted;
+      ctx.font = '600 11px ui-monospace, monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(yMax.toFixed(0) + 'W', padL - 6, padT + 10);
+      ctx.fillText('0W', padL - 6, padT + ph);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = th.fg;
+      ctx.font = '700 11.5px system-ui, sans-serif';
+      ctx.fillText(StorageHub.fitText(ctx, `Instantaneous 4 µs samples (blue) | PCM-1 1s avg = ${pcm1.toFixed(1)}W (green) | PCM-2 limit = ${cap2}W (amber)`, pw), padL, 16);
+      ctx.fillStyle = th.muted;
+      ctx.textAlign = 'center';
+      ctx.fillText('100 µs NAND Program/Erase Current Spike Window', (bx1 + bx2) / 2, h - 8);
+      ctx.textAlign = 'left';
+    }
+
+    ['p7-base', 'p7-spike', 'p7-cap'].forEach(id => document.getElementById(id).addEventListener('input', drawPCM));
+    window.addEventListener('resize', drawPCM);
+    window.addEventListener('themechange', drawPCM);
+    drawPCM();
+    
+</script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>08. Modern Workloads, Memory-Storage Tiering, Fabrics &amp; Security &mdash; Storage &amp; Validation Engineering Hub</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body class="theme-dark">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <a class="brand-badge" href="../index.html">NVMe</a>
+        <div class="breadcrumbs"><a href="../../index.html">Learning Topics</a> <span>/</span> <a href="../index.html">Storage &amp; Validation</a> <span>/</span> <span class="current">08. Modern Workloads, Memory-Storage Tiering, Fabrics &amp; Security</span></div>
+      </div>
+      <div class="header-controls">
+        <select id="subject-nav" class="nav-select" data-base="../" data-current="p08" aria-label="Jump to subject"></select>
+        <a class="btn" href="../nvme_systems_tutor.html">102-Term Tutor</a>
+        <button id="theme-toggle" class="btn" type="button">Light Mode</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-eyebrow">Pillar 08 • AI Pipelines, HBM4/HBF/CXL, FDP DBs, NVMe-oF &amp; Security</div>
+      <h1>08. Modern Workloads, Memory-Storage Tiering, Fabrics &amp; Security</h1>
+      <p>MLPerf Storage v3.0, NVIDIA GDS, LLM KV-cache offloading, 5-tier memory-storage hierarchy (HBM4, DDR5, CXL 4.0, HBF, NVMe), FDP databases, NVMe/TCP vs RoCEv2, DirectStorage, and TCG Opal 2.30 / OCP L.O.C.K. / SPDM 1.4 / FIPS 140-3 / PQC.</p>
+      <div class="hero-meta"><span class="badge badge-primary">MLPerf v3.0 &amp; LLM KV-Cache</span><span class="badge badge-violet">HBM4 vs HBF &amp; CXL 4.0</span><span class="badge badge-success">RocksDB+FDP &amp; NVMe-oF</span><span class="badge badge-warning">Opal 2.30 • L.O.C.K. • SPDM • PQC</span></div>
+    </section>
+
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Explore Pillar 08 Across Three Sub-Domains</h2>
+          <p class="card-subtitle">Switch between AI/Tiering (with live KV-Cache calculator), Enterprise DBs/Fabrics/Gaming, and Storage Security.</p>
+        </div>
+        <div class="pill-bar mb-0" data-tab-group="p08-main">
+          <button type="button" class="pill active" data-tab-target="ai">A. AI, HBM4/HBF &amp; CXL Tiering</button>
+          <button type="button" class="pill" data-tab-target="apps">B. DBs (FDP), Fabrics &amp; Gaming</button>
+          <button type="button" class="pill" data-tab-target="sec">C. Storage Security Stack</button>
+        </div>
+      </div>
+
+      <!-- SUB-TAB A: AI, KV-CACHE & 5-TIER HIERARCHY -->
+      <div class="tab-pane active" data-tab-pane-group="p08-main" data-tab-pane="ai">
+        <div class="formula-box">KV Cache Size (GB) = (2 &times; B &times; S &times; L &times; H<sub>kv</sub> &times; D &times; (Q / 8)) / 1024<sup>3</sup></div>
+
+        <div class="flex-wrap-gap mb-2">
+          <span class="small muted"><strong>Presets:</strong></span>
+          <button type="button" class="pill active" id="kv-p1">Llama 3.1 70B @ 128K (B=8)</button>
+          <button type="button" class="pill" id="kv-p2">Llama 3.1 405B @ 128K (B=8)</button>
+          <button type="button" class="pill" id="kv-p3">Single User 70B @ 128K (B=1)</button>
+        </div>
+
+        <div class="grid-3 mb-2">
+          <div class="control-group"><div class="control-label"><span>Concurrent Batch (B)</span><strong id="kv-b-v">8</strong></div><input type="range" id="kv-b" min="1" max="64" value="8" /></div>
+          <div class="control-group"><div class="control-label"><span>Sequence Context Length (S)</span><strong id="kv-s-v">131,072</strong></div><input type="range" id="kv-s" min="4096" max="262144" step="4096" value="131072" /></div>
+          <div class="control-group"><div class="control-label"><span>Precision Q (bits)</span><strong id="kv-q-v">16-bit (FP16/BF16)</strong></div>
+            <select id="kv-q"><option value="16" selected>16-bit (FP16 / BF16)</option><option value="8">8-bit (FP8 KV Cache)</option><option value="4">4-bit (INT4 Quantized)</option></select>
+          </div>
+          <div class="control-group"><div class="control-label"><span>Layers (L)</span></div><input type="number" id="kv-l" value="80" min="1" /></div>
+          <div class="control-group"><div class="control-label"><span>KV Attention Heads (H)</span></div><input type="number" id="kv-h" value="8" min="1" /></div>
+          <div class="control-group"><div class="control-label"><span>Head Dimension (D)</span></div><input type="number" id="kv-d" value="128" min="16" /></div>
+        </div>
+
+        <div class="grid-4 mb-2">
+          <div class="kpi-tile"><div class="kpi-label">Per-User KV Cache</div><div class="kpi-value" id="kv-per">40.0 GB</div><div class="kpi-note">GQA KV heads &times; 2 (K+V)</div></div>
+          <div class="kpi-tile"><div class="kpi-label">Total Batch KV Cache</div><div class="kpi-value" id="kv-tot" style="color:var(--primary);">320.0 GB</div><div class="kpi-note">Exceeds GPU HBM &rarr; triggers offload</div></div>
+          <div class="kpi-tile"><div class="kpi-label">80 GB H100 HBM Multiples</div><div class="kpi-value" id="kv-h100" style="color:var(--warning);">4.0&times; H100</div><div class="kpi-note">LMCache / Mooncake / Dynamo KVBM</div></div>
+          <div class="kpi-tile"><div class="kpi-label">MLPerf Storage v3.0</div><div class="kpi-value" style="font-size:1rem;">KV + Vector DB</div><div class="kpi-note">Sept 2026: 19 orgs, 143 results</div></div>
+        </div>
+
+        <h3>5-Tier AI Memory-Storage Hierarchy (HBM4 &rarr; DDR5 &rarr; CXL &rarr; HBF &rarr; NVMe)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tier</th><th>Spec / Standard</th><th>Bandwidth &amp; Latency Envelope</th><th>Role &amp; Architectural Caveats</th></tr></thead>
+            <tbody>
+              <tr><td><strong>1. HBM4</strong></td><td>JEDEC JESD270-4 / 4A</td><td>2,048-bit, 32 ch, up to 64 GB &amp; 2 TB/s baseline/stack (vendor silicon 2.8&ndash;3.3 TB/s)</td><td>Hot GPU compute tier; Directed Refresh Management for row-disturb RAS.</td></tr>
+              <tr><td><strong>2. Host DDR5</strong></td><td>JEDEC JESD79-5D</td><td>~80&ndash;110 ns local latency</td><td>Warm host KV-cache &amp; training staging tier.</td></tr>
+              <tr><td><strong>3. CXL 3.x / 4.0 Type 3</strong></td><td>PCIe 6.0 (64 GT/s) / CXL 4.0 (128 GT/s)</td><td>~170&ndash;250 ns (~70 ns above local DDR5); often E3.S 2T bays</td><td>CPU-less NUMA memory expansion; Linux <code>memory_tierN</code> + DAMON (<code>DAMOS_MIGRATE_COLD</code>) + coherent multi-host sharing.</td></tr>
+              <tr><td><strong>4. High Bandwidth Flash (HBF)</strong></td><td>SanDisk / SK hynix OCP v0.7.0 (Aug 2026)</td><td>8L (256 GB) / 16L (512 GB) NAND stacks; 3 UCIe tiers: 384 GB/s &ndash; 3.072 TB/s</td><td>SanDisk sim: Llama 3.1 405B weight reads within 2.2% of unlimited HBM. <strong>Hot Chips 2026 (OXMIQ):</strong> NAND latency &amp; write endurance limit general workloads &mdash; best for read-dominant MoE weights &amp; cold KV caches behind HBM4.</td></tr>
+              <tr><td><strong>5. Enterprise NVMe SSD</strong></td><td>Gen5/Gen6, FDP, UltraQLC 256TB</td><td>Up to 28 GB/s &amp; 5.5&ndash;6.8M IOPS (vendor-reported); ~10&ndash;100 &mu;s</td><td>Ingest data lakes, bursty 15&ndash;30 min checkpoints, NVIDIA GDS (<code>cuFile</code>/<code>cuObject</code>), CacheLib + FDP, dual-mode pSLC/QLC (Phison Mixed Media / DapuStor J5060).</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SUB-TAB B: ENTERPRISE DBs, FABRICS, CS & GAMING -->
+      <div class="tab-pane" data-tab-pane-group="p08-main" data-tab-pane="apps">
+        <div class="grid-2">
+          <div class="sub-panel">
+            <h3>Databases + NVMe FDP &amp; Distributed Storage</h3>
+            <ul class="clean-list small">
+              <li><strong>RocksDB / MySQL + FDP:</strong> Isolate LSM compaction / redo logs / doublewrite buffers onto dedicated RUHs via XFS hints, KIOXIA <strong>UFROP</strong>, or Samsung <strong>TorFS</strong>.</li>
+              <li><strong>Measured Impact:</strong> Academic characterization hit near-<strong>1.0 WAF</strong> at 90% fill; Samsung reported <strong>&minus;30% WAF, +10% OPS, &minus;55% p99.9</strong> on XFS; DapuStor reported <strong>+22.4% frontend write throughput</strong> on R6101.</li>
+              <li><strong>Cluster Scale:</strong> <strong>Ceph Crimson / PoseidonStore</strong> (sharded <code>io_uring</code> backend removing RocksDB overhead) and AI parallel filesystems (<strong>Lustre, WEKA, DDN EXAScaler</strong>).</li>
+            </ul>
+          </div>
+          <div class="sub-panel">
+            <h3>NVMe-oF Fabrics: TCP vs. RoCEv2</h3>
+            <ul class="clean-list small">
+              <li><strong>NVMe/TCP:</strong> ~100&ndash;400 &mu;s over standard Ethernet; tune I/O queue count <code>-i</code> (Lightbits saw <strong>&gt;42% latency drop</strong> raising <code>-i</code> from 8 to 96); pair with Linux <strong>kTLS 1.3</strong> &amp; zero-copy/DDP.</li>
+              <li><strong>NVMe/RoCEv2:</strong> ~20&ndash;100 &mu;s over UDP port 4791 zero-copy RDMA; requires lossless Ethernet switch tuning (<strong>PFC + ECN / DCQCN</strong>).</li>
+            </ul>
+          </div>
+          <div class="sub-panel">
+            <h3>Gaming &amp; Microsoft DirectStorage 1.2+</h3>
+            <ul class="clean-list small">
+              <li>Client validation (SN8100 / Optimus): <strong>QD1&ndash;QD4 4K random read latency</strong> &amp; dynamic SLC cache (nCache 4.0) folding recovery.</li>
+              <li><strong>DirectStorage:</strong> Replaces sync Win32 with lock-free batched queues + <strong>BypassIO</strong> + GPU <strong>GDeflate</strong> (and experimental ZSTD). Console/GDK targets: <strong>50,000 IOPS</strong> at &le;10% of 1 CPU core &amp; <strong>2.0 GB/s</strong> min over 250 ms windows.</li>
+            </ul>
+          </div>
+          <div class="sub-panel">
+            <h3>Computational Storage (Pragmatic View)</h3>
+            <ul class="clean-list small">
+              <li>Track <strong>SNIA CS-APM v1.2</strong> and <strong>NVMe Computational Programs (1.2/1.3, TP4091)</strong> + <strong>Subsystem Local Memory (SLM)</strong> (often paired with eBPF offload).</li>
+              <li><strong>Reality Check:</strong> Despite 2026 NPU-equipped SSD prototypes, broad adoption remains gated by standardized host discovery &amp; programming models.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB C: STORAGE SECURITY VALIDATION -->
+      <div class="tab-pane" data-tab-pane-group="p08-main" data-tab-pane="sec">
+        <div class="grid-3">
+          <div class="sub-panel">
+            <span class="badge badge-primary">Data-at-Rest (Baseline)</span>
+            <h3>TCG Core 2.01 &amp; Opal 2.30</h3>
+            <ul class="clean-list small">
+              <li>Level 0 Discovery, multiple LBA Locking Ranges, Admin/User authorities, Shadow MBR pre-boot auth.</li>
+              <li>Mandatory <strong>Block SID</strong>, <strong>PSID Revert</strong>, and fast cryptographic erase.</li>
+              <li>Plus <strong>TCG Ruby 1.00</strong> (streamlined DC profile) &amp; Aug 2026 <strong>Epoch Key Purge (EKP)</strong>.</li>
+            </ul>
+          </div>
+          <div class="sub-panel">
+            <span class="badge badge-warning">Hyperscale Attestation</span>
+            <h3>OCP S.A.F.E. &amp; L.O.C.K. v1.1</h3>
+            <ul class="clean-list small">
+              <li><strong>OCP S.A.F.E. (SEC-15):</strong> Mandatory firmware security audits spanning 20 areas backed by X.509 PKI.</li>
+              <li><strong>OCP L.O.C.K. v1.1 (Caliptra):</strong> Hardware Key Management Block (KMB) keeps plaintext MEKs out of firmware, wraps transit keys via <strong>RFC 9180 HPKE KEM</strong> rotated on reset, and adds fuse-based Epoch Key crypto-erasure.</li>
+            </ul>
+          </div>
+          <div class="sub-panel">
+            <span class="badge badge-violet">Link, Fabric &amp; PQC</span>
+            <h3>SPDM 1.4, FIPS 140-3 &amp; PQC</h3>
+            <ul class="clean-list small">
+              <li><strong>DMTF SPDM 1.4 (DSP0274):</strong> Device auth &amp; FW measurements over MCTP (DSP0275) &amp; PCIe DOE/CMA (keying <strong>PCIe IDE</strong>).</li>
+              <li><strong>FIPS 140-3:</strong> ISO/IEC 19790/24759, CMVP zeroization across NAND media types &amp; non-invasive side-channel tests.</li>
+              <li><strong>In-Transit &amp; Future:</strong> NVMe/TCP <strong>kTLS 1.3</strong> (DH-HMAC-CHAP / KX-HMAC-CHAP) &amp; <strong>NIST PQC</strong> (FIPS 203/204/205 in NVMe 2.4).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Curated Primary Sources &amp; Reference Library</h2>
+          <p class="card-subtitle">Authoritative specifications, textbooks, kernel docs, papers, and open-source repositories.</p>
+        </div>
+        <span class="badge badge-primary">9 Resources</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Source / Resource</th>
+              <th>Format</th>
+              <th>Link / Identifier</th>
+              <th>How to Use It</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>MLPerf Storage Suite (mlpstorage) &amp; NVIDIA GDS Docs</strong></td><td><span class="badge">Benchmark &amp; Official Docs</span></td><td><a href="https://github.com/mlcommons/storage" target="_blank" rel="noopener noreferrer">mlcommons/storage</a> &bull; <a href="https://docs.nvidia.com/gpudirect-storage/" target="_blank" rel="noopener noreferrer">NVIDIA GDS Docs</a></td><td>Execute mlpstorage (training, checkpointing, KV cache, Vector DB) and gdsio for AI storage validation.</td></tr><tr><td><strong>KV-Cache Offloading Stack (LMCache, Dynamo, Mooncake, Modular Handbook)</strong></td><td><span class="badge">Code &amp; Architecture Guides</span></td><td><a href="https://github.com/lmcache/lmcache" target="_blank" rel="noopener noreferrer">LMCache</a> &bull; <a href="https://docs.nvidia.com/dynamo/knowledge-base/modular-components/backends/v-llm/kv-cache-offloading" target="_blank" rel="noopener noreferrer">NVIDIA Dynamo KVBM</a> &bull; <a href="https://docs.lmcache.ai/kv_cache/mooncake.html" target="_blank" rel="noopener noreferrer">Mooncake</a> &bull; <a href="https://handbook.modular.com/inference-optimization/kv-cache-offloading/" target="_blank" rel="noopener noreferrer">Modular Handbook</a></td><td>Reference stacks for modeling and benchmarking HBM -&gt; DRAM -&gt; NVMe KV-cache spillover.</td></tr><tr><td><strong>SanDisk HBF Blog, Hot Chips 2026 Analysis &amp; JEDEC HBM4/DDR5 Comparison</strong></td><td><span class="badge">Industry &amp; Technical Briefs</span></td><td><a href="https://www.sandisk.com/company/newsroom/blogs/2025/scaling-beyond-the-wall-inside-sandisks-high-bandwidth-flash-for-ai" target="_blank" rel="noopener noreferrer">SanDisk HBF Blog</a> &bull; <a href="https://www.tomshardware.com/pc-components/ssds/hot-chips-2026-high-bandwidth-flash-promises-massive-bandwidth-and-capacity-but-its-usability-is-extremely-limited-new-memory-format-strikes-a-balance-between-hbm-and-nand-flash" target="_blank" rel="noopener noreferrer">Hot Chips 2026 HBF Analysis</a> &bull; <a href="https://intuitionlabs.ai/articles/hbm-vs-ddr-memory-comparison" target="_blank" rel="noopener noreferrer">HBM vs DDR Comparison</a></td><td>Balance SanDisk&#x27;s HBF thesis with OXMIQ&#x27;s workload constraints and JEDEC HBM4/DDR5 specifications.</td></tr><tr><td><strong>CXL 4.0 Spec, Linux CXL Memory Tiering &amp; CacheLib FDP</strong></td><td><span class="badge">Spec &amp; Kernel Docs</span></td><td><a href="https://computeexpresslink.org/cxl-specification/" target="_blank" rel="noopener noreferrer">CXL Specs</a> &bull; <a href="https://kernel-internals.org/mm/cxl-memory-tiering/" target="_blank" rel="noopener noreferrer">Linux CXL Tiering</a> &bull; <a href="https://cachelib.org/docs/Cache_Library_User_Guides/FDP_enabled_Cache/" target="_blank" rel="noopener noreferrer">CacheLib FDP Guide</a></td><td>Master CXL Type 3 NUMA tiering, DAMON migration schemes, and FDP-enabled flash caching.</td></tr><tr><td><strong>Database Internals (Petrov), RocksDB, UFROP (FDP) &amp; Ceph PoseidonStore</strong></td><td><span class="badge">Book &amp; OSS Repos</span></td><td><a href="https://www.databass.dev/" target="_blank" rel="noopener noreferrer">databass.dev</a> &bull; <a href="https://github.com/facebook/RocksDB" target="_blank" rel="noopener noreferrer">RocksDB</a> &bull; <a href="https://github.com/kioxia-jp/ufrop" target="_blank" rel="noopener noreferrer">KIOXIA UFROP</a> &bull; <a href="https://docs.ceph.com/en/reef/dev/crimson/poseidonstore/" target="_blank" rel="noopener noreferrer">Ceph PoseidonStore</a></td><td>Master B-Tree vs LSM WAF and run real FDP plugins via /dev/ng0n1. Pair with Designing Data-Intensive Applications (Kleppmann).</td></tr><tr><td><strong>NVMe/TCP, RoCEv2 &amp; kTLS Engineering Guides</strong></td><td><span class="badge">Technical Guides</span></td><td><a href="https://www.lightbitslabs.com/blog/scaling-4k-random-read-on-nvme-tcp-why-outstanding-i-o-and-i-matter-more-than-you-think-part-1/" target="_blank" rel="noopener noreferrer">Lightbits NVMe/TCP -i</a> &bull; <a href="https://simplyblock.io/blog/nvme-tcp-vs-nvme-roce-kubernetes/" target="_blank" rel="noopener noreferrer">NVMe/TCP vs RoCEv2</a> &bull; <a href="https://blogs.oracle.com/linux/tls-and-nvmetcp" target="_blank" rel="noopener noreferrer">Oracle kTLS NVMe/TCP</a></td><td>Practical tuning of NVMe/TCP -i queues, kTLS 1.3 keyrings, and RoCEv2 lossless fabrics.</td></tr><tr><td><strong>Microsoft DirectStorage SDK &amp; Docs + SNIA Computational Storage</strong></td><td><span class="badge">SDK &amp; Standards</span></td><td><a href="https://github.com/microsoft/DirectStorage" target="_blank" rel="noopener noreferrer">DirectStorage GitHub</a> &bull; <a href="https://learn.microsoft.com/en-us/gaming/gdk/docs/features/console/storage/directstorage/directstorage-overview?view=gdk-2610" target="_blank" rel="noopener noreferrer">DirectStorage GDK Docs</a> &bull; <a href="https://www.snia.org/computational" target="_blank" rel="noopener noreferrer">SNIA Computational Storage</a></td><td>Build DirectStorage GpuDecompressionBenchmark gaming tests and follow NVMe CP / SNIA CS-APM.</td></tr><tr><td><strong>TCG Storage Security, OCP L.O.C.K., SPDM 1.4 &amp; FIPS 140-3</strong></td><td><span class="badge">Primary Specs &amp; Tools</span></td><td><a href="https://www.trustedcomputinggroup.org/resources/documents/storage-work-group-storage-security-subsystem-class-opal" target="_blank" rel="noopener noreferrer">TCG Opal</a> &bull; <a href="https://www.opencompute.org/documents/ocp-lock-specification-v1-1-final-pdf/" target="_blank" rel="noopener noreferrer">OCP L.O.C.K. v1.1 PDF</a> &bull; <a href="https://www.dmtf.org/standards/spdm" target="_blank" rel="noopener noreferrer">DMTF SPDM</a> &bull; <a href="https://csrc.nist.gov/pubs/fips/140-3/final" target="_blank" rel="noopener noreferrer">NIST FIPS 140-3</a> &bull; <a href="https://github.com/Drive-Trust-Alliance/sedutil" target="_blank" rel="noopener noreferrer">sedutil</a></td><td>Authoritative specs for Opal 2.30, OCP S.A.F.E./L.O.C.K., SPDM flows (see OakGate SPDM paper), and FIPS 140-3 CMVP.</td></tr><tr><td><strong>Core Research &amp; Industry Conferences</strong></td><td><span class="badge">Ongoing Learning</span></td><td><a href="https://www.usenix.org/conference/fast26" target="_blank" rel="noopener noreferrer">USENIX FAST &#x27;26</a> &bull; <a href="https://storagedeveloper.org/" target="_blank" rel="noopener noreferrer">SNIA SDC</a> &bull; <a href="https://FutureMemoryStorage.com" target="_blank" rel="noopener noreferrer">FMS</a></td><td>Follow annual papers and keynotes (plus OCP Global Summit) on FDP, KV-cache tiering, CXL, HBF, and SSD reliability.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
+    
+    <section class="card" data-progress-prefix="p08_" data-progress-total="6">
+      <div class="card-header">
+        <div>
+          <h2>Mastery Checklist (Saved Locally)</h2>
+          <p class="card-subtitle">Check off skills and labs as you validate them — progress rolls up automatically to the Storage Hub.</p>
+        </div>
+        <span class="badge badge-success progress-text">0 / 6 (0%)</span>
+      </div>
+      <div class="progress-track mb-2"><div class="progress-fill" style="width: 0%"></div></div>
+      <div class="checklist mt-3">
+        <label class="check-item"><input type="checkbox" data-check-id="p08_01" /><div><div class="check-title"><strong>Run &amp; interpret MLPerf Storage v3.0 (training, checkpointing, KV cache, Vector DB)</strong></div><div class="small muted">Correlate drive WAF &amp; p99 latency against &gt;90% accelerator utilization and NVIDIA GDS cuFile/cuObject bypass.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p08_02" /><div><div class="check-title"><strong>Calculate LLM KV-Cache spillover &amp; compare all 5 memory-storage tiers</strong></div><div class="small muted">Balance HBM4, DDR5, CXL 3.x/4.0 Type 3, SanDisk/SK hynix HBF (OCP v0.7.0 + Hot Chips 2026 OXMIQ caveats), and NVMe SSDs.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p08_03" /><div><div class="check-title"><strong>Configure Linux CXL memory_tierN / DAMON &amp; CacheLib + FDP</strong></div><div class="small muted">Understand CPU-less NUMA node demotion (DAMOS_MIGRATE_COLD), NUMA balancing promotion, and mixed-media pSLC/QLC namespaces.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p08_04" /><div><div class="check-title"><strong>Benchmark FDP on LSM/B-Tree databases &amp; NVMe-oF fabrics</strong></div><div class="small muted">Compare RocksDB WAF with UFROP/TorFS, Ceph Crimson, NVMe/TCP (-i queue scaling + kTLS 1.3) vs RoCEv2 (PFC+ECN/DCQCN).</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p08_05" /><div><div class="check-title"><strong>Validate client DirectStorage GDeflate &amp; track Computational Storage</strong></div><div class="small muted">Test QD1–QD4 reads, nCache 4.0 recovery, DirectStorage 1.2+ BypassIO/GDeflate, and NVMe CP (TP4091) / SLM.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p08_06" /><div><div class="check-title"><strong>Verify end-to-end storage security (Opal 2.30, L.O.C.K., SPDM 1.4, FIPS, PQC)</strong></div><div class="small muted">Cover Level 0 Discovery, Locking Ranges, Block SID/PSID Revert, EKP, OCP S.A.F.E./L.O.C.K. v1.1 HPKE KMB, SPDM/IDE, FIPS 140-3, and NVMe 2.4 PQC.</div></div></label>
+      </div>
+    </section>
+    
+    
+
+    <nav class="subject-pager"><a class="btn" href="../07-power-thermals-and-liquid-cooling/index.html">&larr; 07. Power, Thermals &amp; Liquid Cooling</a><a class="btn" href="../index.html">Storage Hub</a><a class="btn btn-primary" href="../09-24-week-mastery-syllabus/index.html">09. 24-Week Mastery Syllabus &rarr;</a></nav>
+  </main>
+
+  <script src="../assets/app.js"></script>
+  <script>
+
+    function calcKV() {
+      const B = parseInt(document.getElementById('kv-b').value, 10);
+      const S = parseInt(document.getElementById('kv-s').value, 10);
+      const Q = parseInt(document.getElementById('kv-q').value, 10);
+      const L = Math.max(1, parseInt(document.getElementById('kv-l').value, 10) || 80);
+      const H = Math.max(1, parseInt(document.getElementById('kv-h').value, 10) || 8);
+      const D = Math.max(16, parseInt(document.getElementById('kv-d').value, 10) || 128);
+
+      document.getElementById('kv-b-v').textContent = B;
+      document.getElementById('kv-s-v').textContent = S.toLocaleString();
+      document.getElementById('kv-q-v').textContent = Q + '-bit';
+
+      const perUserGB = (2 * 1 * S * L * H * D * (Q / 8)) / (1024 ** 3);
+      const totalGB = perUserGB * B;
+      const h100Mult = totalGB / 80;
+
+      document.getElementById('kv-per').textContent = perUserGB.toFixed(1) + ' GB';
+      document.getElementById('kv-tot').textContent = totalGB.toFixed(1) + ' GB';
+      document.getElementById('kv-h100').textContent = h100Mult.toFixed(2) + '× H100';
+    }
+
+    function setKV(b, s, l, h, d, q, activeId) {
+      document.getElementById('kv-b').value = b;
+      document.getElementById('kv-s').value = s;
+      document.getElementById('kv-l').value = l;
+      document.getElementById('kv-h').value = h;
+      document.getElementById('kv-d').value = d;
+      document.getElementById('kv-q').value = q;
+      ['kv-p1', 'kv-p2', 'kv-p3'].forEach(id => document.getElementById(id).classList.toggle('active', id === activeId));
+      calcKV();
+    }
+    document.getElementById('kv-p1').addEventListener('click', () => setKV(8, 131072, 80, 8, 128, 16, 'kv-p1'));
+    document.getElementById('kv-p2').addEventListener('click', () => setKV(8, 131072, 126, 8, 128, 16, 'kv-p2'));
+    document.getElementById('kv-p3').addEventListener('click', () => setKV(1, 131072, 80, 8, 128, 16, 'kv-p3'));
+    ['kv-b', 'kv-s', 'kv-q', 'kv-l', 'kv-h', 'kv-d'].forEach(id => document.getElementById(id).addEventListener('input', calcKV));
+    calcKV();
+    
+</script>
+</body>
+</html>

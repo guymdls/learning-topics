@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>02. PCIe, Interconnects, Form Factors &amp; Signal Integrity &mdash; Storage &amp; Validation Engineering Hub</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body class="theme-dark">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <a class="brand-badge" href="../index.html">NVMe</a>
+        <div class="breadcrumbs"><a href="../../index.html">Learning Topics</a> <span>/</span> <a href="../index.html">Storage &amp; Validation</a> <span>/</span> <span class="current">02. PCIe, Interconnects, Form Factors &amp; Signal Integrity</span></div>
+      </div>
+      <div class="header-controls">
+        <select id="subject-nav" class="nav-select" data-base="../" data-current="p02" aria-label="Jump to subject"></select>
+        <a class="btn" href="../nvme_systems_tutor.html">102-Term Tutor</a>
+        <button id="theme-toggle" class="btn" type="button">Light Mode</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-eyebrow">Pillar 02 • High-Speed Bus, FLIT Mode &amp; Fixture Diagnostics</div>
+      <h1>02. PCIe, Interconnects, Form Factors &amp; Signal Integrity</h1>
+      <p>PCIe 5.0 NRZ vs PCIe 6.0 PAM4 / 256B FLIT / FEC / L0p vs PCIe 7.0, LTSSM equalization, AER/DPC recovery, SR-IOV, P2P DMA, EDSFF form factors, and riser signal-integrity diagnostics.</p>
+      <div class="hero-meta"><span class="badge badge-primary">PCIe 6.0 Rev 6.4 • 64 GT/s PAM4</span><span class="badge badge-success">256B FLIT • FEC + CRC + Replay</span><span class="badge badge-warning">AER / DPC / SR-IOV / P2P</span><span class="badge badge-violet">EDSFF SFF-TA-1002</span></div>
+    </section>
+
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Interactive PCIe Generation &amp; 256-Byte FLIT Bandwidth Visualizer</h2>
+          <p class="card-subtitle">Compare Gen4/Gen5 NRZ vs Gen6/Gen7 PAM4 FLIT efficiency, FEC burst correction, and L0p partial-width lane scaling.</p>
+        </div>
+        <span class="badge badge-primary">Live Wire Math</span>
+      </div>
+
+      <div class="grid-3 mb-2">
+        <div class="control-group">
+          <div class="control-label"><span>PCIe Generation</span><strong id="pcie-gen-lbl">PCIe 6.0 (PAM4)</strong></div>
+          <select id="p2-gen">
+            <option value="4">PCIe 4.0 &mdash; 16 GT/s NRZ (128b/130b)</option>
+            <option value="5">PCIe 5.0 &mdash; 32 GT/s NRZ (128b/130b)</option>
+            <option value="6" selected>PCIe 6.0 &mdash; 64 GT/s PAM4 (256B FLIT)</option>
+            <option value="7">PCIe 7.0 &mdash; 128 GT/s PAM4 (256B FLIT)</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <div class="control-label"><span>Active Lanes (L0 / L0p)</span><strong id="p2-lanes-lbl">x4</strong></div>
+          <select id="p2-lanes">
+            <option value="1">x1 (L0p low-power)</option>
+            <option value="2">x2 (L0p half-width)</option>
+            <option value="4" selected>x4 (Enterprise NVMe SSD)</option>
+            <option value="8">x8 (High-BW Accelerator / AIC)</option>
+            <option value="16">x16 (GPU / Switch Uplink)</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <div class="control-label"><span>Nyquist / Symbol Rate</span><strong id="p2-nyq-lbl">16 GHz (32 GBd)</strong></div>
+          <div class="sub-panel small" id="p2-mode-note" style="padding:7px 10px;">FBER target 1e-6; 3-byte burst FEC + 8B CRC in &lt;2 ns.</div>
+        </div>
+      </div>
+
+      <div class="grid-4 mb-2">
+        <div class="kpi-tile"><div class="kpi-label">Raw Line Rate (1-Way)</div><div class="kpi-value" id="k-raw">32.0 GB/s</div><div class="kpi-note" id="k-gt">64 GT/s &times; 4 lanes</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Usable TLP Ceiling (1-Way)</div><div class="kpi-value" id="k-usable" style="color:var(--primary);">~30.3 GB/s</div><div class="kpi-note">Protocol-framed bidirectional each way</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Framing Efficiency</div><div class="kpi-value" id="k-eff">92.2%</div><div class="kpi-note" id="k-eff-note">236B TLP / 256B FLIT</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Power Scaling</div><div class="kpi-value" id="k-l0p" style="font-size:1.05rem;">L0p Supported</div><div class="kpi-note">Drop lanes without full LTSSM retrain</div></div>
+      </div>
+
+      <canvas id="p2-flit-canvas" height="175"></canvas>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Bench Diagnostics &amp; EDSFF Form-Factor Envelopes</h2>
+          <p class="card-subtitle">Separate riser-card SI loss and PCIe link downgrades from SSD controller firmware bugs.</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="sub-panel">
+          <h3>Linux Bench Inspection Workflow</h3>
+          <ul class="clean-list small">
+            <li><code>lspci -vv -s &lt;BDF&gt;</code> &mdash; verify negotiated Speed/Width (<code>LnkSta</code> vs <code>LnkCap</code>), FLIT mode, <code>MaxPayloadSize</code>, and Completion Timeout.</li>
+            <li><strong>AER / DPC:</strong> Monitor sysfs AER counters &amp; test recovery via <code>/dev/aer_inject</code>; correlate against OCP SMART <em>PCIe Link Retraining Count</em> &amp; <em>Correctable Error Count</em>.</li>
+            <li><strong>Virtualization &amp; Direct Transfers:</strong> Validate SR-IOV PFs/VFs + ARI, P2P DMA hierarchy distance (for CMB &amp; GPUDirect Storage), and PCIe IDE / CMA / DOE link security.</li>
+            <li><strong>Signal Integrity:</strong> Use <code>nvmeadm sandisk/pci-eye</code> and check retimer/redriver margin on Gen5/Gen6 risers.</li>
+          </ul>
+        </div>
+        <div class="table-wrap" style="margin:0;">
+          <table>
+            <thead><tr><th>Form Factor</th><th>Connector</th><th>Typical Power Envelope</th><th>Primary Use / Thermal Note</th></tr></thead>
+            <tbody>
+              <tr><td><strong>EDSFF E1.S</strong></td><td>SFF-TA-1002</td><td>~20W (up to 25W)</td><td>1U dense hyperscale (multiple heatsink thicknesses; DLC-capable)</td></tr>
+              <tr><td><strong>EDSFF E1.L</strong></td><td>SFF-TA-1002</td><td>25W&ndash;40W</td><td>1U ultra-high capacity QLC data lakes (ruler form factor)</td></tr>
+              <tr><td><strong>EDSFF E3.S</strong></td><td>SFF-TA-1002</td><td>25W&ndash;40W</td><td>2U Gen5/Gen6 enterprise mainstream &amp; CXL Type 3 (2T)</td></tr>
+              <tr><td><strong>EDSFF E3.L</strong></td><td>SFF-TA-1002</td><td>40W&ndash;70W</td><td>Thick high-TDP Gen6 / liquid-cooled / ultra-dense AI racks</td></tr>
+              <tr><td><strong>U.2 / U.3</strong></td><td>SFF-8639</td><td>15W&ndash;25W</td><td>Legacy 2.5&Prime; bays; signal-integrity constrained at Gen5/Gen6</td></tr>
+              <tr><td><strong>M.2 2280</strong></td><td>M-Key</td><td>5 mW idle &ndash; ~8W active</td><td>Client Gen5 (e.g., SN8100 6.5&ndash;7.0W) &amp; boot drives</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Curated Primary Sources &amp; Reference Library</h2>
+          <p class="card-subtitle">Authoritative specifications, textbooks, kernel docs, papers, and open-source repositories.</p>
+        </div>
+        <span class="badge badge-primary">5 Resources</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Source / Resource</th>
+              <th>Format</th>
+              <th>Link / Identifier</th>
+              <th>How to Use It</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>PCI Express Technology 3.0 — Mike Jackson, Ravi Budruk et al. (MindShare Press)</strong></td><td><span class="badge">Book</span></td><td><span class="mono small">ISBN 978-0-9770878-6-0</span></td><td>Best foundational text for PCIe TLP/DLLP layers, credit-based flow control, transaction ordering, config space, and LTSSM.</td></tr><tr><td><strong>PCI-SIG Official Specifications &amp; Intel PCIe DevNet Resources</strong></td><td><span class="badge">Primary Spec / White Papers</span></td><td><a href="https://pcisig.com/specifications" target="_blank" rel="noopener noreferrer">PCI-SIG Specs</a> &bull; <a href="https://www.intel.com/content/www/us/en/io/pci-express/pci-express-architecture-devnet-resources.html" target="_blank" rel="noopener noreferrer">Intel PCIe DevNet</a></td><td>Consult Base Spec 6.4 / 7.0 (via corporate membership) alongside public retimer and CMA/DOE/IDE references.</td></tr><tr><td><strong>PCIe 6.0 Explained: FLIT Mode, PAM4, FEC, IDE (Safeguard) &amp; SI/PI Deep Dive (sipi.work)</strong></td><td><span class="badge">Technical Guides</span></td><td><a href="https://safeguard.sh/resources/blog/pcie-6-explained-flit-mode-pam4-fec-and-integrity-and-data-encryption" target="_blank" rel="noopener noreferrer">Safeguard PCIe 6.0 Guide</a> &bull; <a href="https://sipi.work/topics/interfaces/pcie-gen6.html" target="_blank" rel="noopener noreferrer">sipi.work PCIe Gen6</a></td><td>Engineer-grade breakdowns of 256B FLIT math, DFE error-burst precoding, RLM/SNDR linearity, and Linux inspection workflows.</td></tr><tr><td><strong>Linux Kernel PCIe AER, P2P DMA &amp; SR-IOV Docs</strong></td><td><span class="badge">Official OS Docs</span></td><td><a href="https://docs.kernel.org/PCI/pcieaer-howto.html" target="_blank" rel="noopener noreferrer">PCIe AER HOWTO</a> &bull; <a href="https://docs.kernel.org/driver-api/pci/p2pdma.html" target="_blank" rel="noopener noreferrer">P2P DMA</a> &bull; <a href="https://docs.kernel.org/PCI/pci-iov-howto.html" target="_blank" rel="noopener noreferrer">SR-IOV HOWTO</a></td><td>Reference for /dev/aer_inject, sysfs AER stats, P2P hierarchy distance checks, and SR-IOV VF provisioning.</td></tr><tr><td><strong>EDSFF Form Factors Explained (E1.S/E1.L/E3.S/E3.L)</strong></td><td><span class="badge">Technical Primer</span></td><td><a href="https://www.serversdirect.com/insights/nvme-form-factors-explained-m2-u2-e1s-e3s" target="_blank" rel="noopener noreferrer">Servers Direct Guide</a> &bull; <a href="https://www.supermicro.com/en/glossary/edsff" target="_blank" rel="noopener noreferrer">Supermicro EDSFF Glossary</a></td><td>Quick mapping of dimensions, thermal envelopes (20W–70W), and chassis airflow profiles.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
+    
+    <section class="card" data-progress-prefix="p02_" data-progress-total="5">
+      <div class="card-header">
+        <div>
+          <h2>Mastery Checklist (Saved Locally)</h2>
+          <p class="card-subtitle">Check off skills and labs as you validate them — progress rolls up automatically to the Storage Hub.</p>
+        </div>
+        <span class="badge badge-success progress-text">0 / 5 (0%)</span>
+      </div>
+      <div class="progress-track mb-2"><div class="progress-fill" style="width: 0%"></div></div>
+      <div class="checklist mt-3">
+        <label class="check-item"><input type="checkbox" data-check-id="p02_01" /><div><div class="check-title"><strong>Calculate PCIe 5.0 vs 6.0 vs 7.0 usable bandwidth and 256B FLIT overhead</strong></div><div class="small muted">Verify PAM4 32 GBd / 16 GHz Nyquist, 236B TLP + 6B DLP + 8B CRC + 6B FEC, ~30.3 GB/s Gen6 x4 &amp; 121 GB/s x16, and L0p lane scaling.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_02" /><div><div class="check-title"><strong>Inspect link health and configuration space with lspci -vv</strong></div><div class="small muted">Verify negotiated speed, width, FLIT status, MaxPayloadSize (MPS), MaxReadRequestSize (MRRS), and completion timeouts.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_03" /><div><div class="check-title"><strong>Decode AER TLP headers and test DPC / error injection</strong></div><div class="small muted">Use sysfs AER counters and /dev/aer_inject to distinguish riser-card signal degradation from SSD firmware crashes.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_04" /><div><div class="check-title"><strong>Validate SR-IOV, ARI, and Peer-to-Peer (P2P) DMA topologies</strong></div><div class="small muted">Provision Physical/Virtual Functions and verify P2P distance checks for Controller Memory Buffers (CMB) and GPUDirect Storage.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_05" /><div><div class="check-title"><strong>Correlate EDSFF mechanical/thermal envelopes with PCIe eye diagnostics</strong></div><div class="small muted">Compare E1.S/E1.L/E3.S/E3.L (SFF-TA-1002) vs U.2/U.3/M.2 and use OCP Link Retraining / Correctable Error counters &amp; pci-eye.</div></div></label>
+      </div>
+    </section>
+    
+    
+
+    <nav class="subject-pager"><a class="btn" href="../01-standards-and-protocols/index.html">&larr; 01. Standards &amp; Protocols</a><a class="btn" href="../index.html">Storage Hub</a><a class="btn btn-primary" href="../03-flash-physics-and-sandisk-platforms/index.html">03. Flash Physics &amp; SanDisk Platforms &rarr;</a></nav>
+  </main>
+
+  <script src="../assets/app.js"></script>
+  <script>
+
+    const GEN_SPEC = {
+      4: { label: 'PCIe 4.0 (NRZ)', gts: 16, nyq: '8 GHz (16 GBd)', note: 'NRZ 128b/130b variable-length TLP framing; no FEC/FLIT.', eff: 128 / 130, usablePer4: 7.877, flit: false, l0p: 'Not Supported' },
+      5: { label: 'PCIe 5.0 (NRZ)', gts: 32, nyq: '16 GHz (32 GBd)', note: 'NRZ 128b/130b; strict channel loss & retimer budgets.', eff: 128 / 130, usablePer4: 15.754, flit: false, l0p: 'Not Supported' },
+      6: { label: 'PCIe 6.0 (PAM4)', gts: 64, nyq: '16 GHz (32 GBd)', note: 'PAM4 FBER 1e-6; 256B FLIT: 236B TLP + 6B DLP + 8B CRC + 6B FEC (<2 ns).', eff: 236 / 256, usablePer4: 30.3, flit: true, l0p: 'L0p Supported' },
+      7: { label: 'PCIe 7.0 (PAM4)', gts: 128, nyq: '32 GHz (64 GBd)', note: 'PAM4 256B FLIT at 64 GBd (released to PCI-SIG members June 2025).', eff: 236 / 256, usablePer4: 60.6, flit: true, l0p: 'L0p Supported' }
+    };
+
+    function drawFlit() {
+      const gen = document.getElementById('p2-gen').value;
+      const lanes = parseInt(document.getElementById('p2-lanes').value, 10);
+      const s = GEN_SPEC[gen];
+      const rawGBs = (s.gts * lanes) / 8;
+      const usableGBs = (s.usablePer4 / 4) * lanes;
+
+      document.getElementById('pcie-gen-lbl').textContent = s.label;
+      document.getElementById('p2-lanes-lbl').textContent = 'x' + lanes;
+      document.getElementById('p2-nyq-lbl').textContent = s.nyq;
+      document.getElementById('p2-mode-note').textContent = s.note;
+      document.getElementById('k-raw').textContent = rawGBs.toFixed(1) + ' GB/s';
+      document.getElementById('k-gt').textContent = `${s.gts} GT/s × ${lanes} lane${lanes > 1 ? 's' : ''}`;
+      document.getElementById('k-usable').textContent = '~' + usableGBs.toFixed(1) + ' GB/s';
+      document.getElementById('k-eff').textContent = (s.eff * 100).toFixed(1) + '%';
+      document.getElementById('k-eff-note').textContent = s.flit ? '236B TLP + 6B DLP + 8B CRC + 6B FEC' : '128b/130b line coding (before TLP hdrs)';
+      document.getElementById('k-l0p').textContent = s.l0p;
+
+      const { ctx, w, h, th } = StorageHub.prepCanvas(document.getElementById('p2-flit-canvas'), 175);
+      const padX = 18;
+      const barW = w - padX * 2;
+      const barY = 52;
+      const barH = 44;
+
+      ctx.fillStyle = th.fg;
+      ctx.font = '700 13px system-ui, sans-serif';
+      ctx.fillText(
+        StorageHub.fitText(ctx, s.flit ? `PCIe ${gen}.0 Mandatory 256-Byte FLIT Anatomy (x${lanes} • ~${usableGBs.toFixed(1)} GB/s 1-way)` : `PCIe ${gen}.0 Variable TLP + 128b/130b Block Framing (x${lanes} • ~${usableGBs.toFixed(1)} GB/s 1-way)`, barW),
+        padX, 28
+      );
+
+      const segs = s.flit
+        ? [
+            { name: 'TLP Area (236 B)', frac: 236 / 256, color: th.primary },
+            { name: 'DLP (6 B)', frac: 6 / 256, color: th.violet },
+            { name: 'CRC (8 B)', frac: 8 / 256, color: th.warning },
+            { name: 'FEC (6 B)', frac: 6 / 256, color: th.success }
+          ]
+        : [
+            { name: 'TLP Payload & Header (~86%)', frac: 0.86, color: th.primary },
+            { name: 'LCRC + Seq + Framing (~12.5%)', frac: 0.125, color: th.warning },
+            { name: 'Sync 2b (1.5%)', frac: 0.015, color: th.violet }
+          ];
+
+      // Normalize widths with readable minimum while summing to exact barW
+      const minW = Math.min(44, barW * 0.09);
+      const rawW = segs.map(x => Math.max(minW, x.frac * barW));
+      const sumW = rawW.reduce((a, b) => a + b, 0);
+      const widths = rawW.map(v => (v / sumW) * barW);
+
+      let curX = padX;
+      segs.forEach((seg, i) => {
+        const sw = widths[i];
+        ctx.fillStyle = seg.color;
+        StorageHub.roundRect(ctx, curX + 1, barY, Math.max(2, sw - 2), barH, 6);
+        ctx.fill();
+        ctx.fillStyle = StorageHub.contrastText(seg.color);
+        ctx.font = '700 11px ui-monospace, monospace';
+        const txt = StorageHub.fitText(ctx, seg.name, sw - 10);
+        if (txt) {
+          ctx.textAlign = 'center';
+          ctx.fillText(txt, curX + sw / 2, barY + barH / 2 + 4);
+        }
+        curX += sw;
+      });
+      ctx.textAlign = 'left';
+
+      // Legend row underneath (guaranteed no overlap)
+      let lx = padX;
+      let ly = barY + barH + 28;
+      ctx.font = '600 11.5px system-ui, sans-serif';
+      segs.forEach(seg => {
+        const tw = ctx.measureText(seg.name).width + 26;
+        if (lx + tw > w - padX) { lx = padX; ly += 20; }
+        ctx.fillStyle = seg.color;
+        ctx.fillRect(lx, ly - 10, 11, 11);
+        ctx.fillStyle = th.muted;
+        ctx.fillText(seg.name, lx + 16, ly);
+        lx += tw + 10;
+      });
+    }
+
+    document.getElementById('p2-gen').addEventListener('change', drawFlit);
+    document.getElementById('p2-lanes').addEventListener('change', drawFlit);
+    window.addEventListener('resize', drawFlit);
+    window.addEventListener('themechange', drawFlit);
+    drawFlit();
+    
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learning Topics Portal &mdash; Storage &amp; Validation Engineering Hub</title>
+  <link rel="stylesheet" href="storage-learning-topics/assets/style.css" />
+</head>
+<body class="theme-dark">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <a class="brand-badge" href="storage-learning-topics/index.html">NVMe</a>
+        <div class="breadcrumbs"><span class="current">Learning Topics Portal</span></div>
+      </div>
+      <div class="header-controls">
+        <select id="subject-nav" class="nav-select" data-base="storage-learning-topics/" data-current="portal" aria-label="Jump to subject"></select>
+        <a class="btn" href="storage-learning-topics/nvme_systems_tutor.html">102-Term Tutor</a>
+        <button id="theme-toggle" class="btn" type="button">Light Mode</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-eyebrow">Personal Engineering Knowledge Repository</div>
+      <h1>Learning Topics Portal</h1>
+      <p>Structured per-subject study notes and interactive HTML learning tools hosted on GitHub Pages.</p>
+      <div class="hero-meta"><span class="badge badge-success">Storage &amp; Validation Track Active</span><span class="badge badge-primary">10 Interactive HTML Modules</span><span class="badge ">Offline &amp; GitHub Pages Ready</span></div>
+    </section>
+
+    
+    <section class="grid-2">
+      <a class="subject-card" href="storage-learning-topics/index.html">
+        <div>
+          <span class="badge badge-primary">Active Curriculum &bull; 9 Subject Modules</span>
+          <h3 class="mt-2">Storage &amp; Validation Engineering Knowledge Hub</h3>
+          <p>SanDisk Validation Tools &amp; Performance Optimization package: 5-layer stack taxonomy, 8 Engineering Pillars with interactive calculators/visualizers, curated primary specs, and a 24-week lab syllabus.</p>
+        </div>
+        <div class="flex-wrap-gap mt-2">
+          <span class="badge badge-success">NVMe 2.3 / 2.4</span>
+          <span class="badge">OCP 2.6 / 2.7</span>
+          <span class="badge">PCIe 6.0</span>
+          <span class="badge">BiCS10 / HBF</span>
+        </div>
+      </a>
+
+      <a class="subject-card" href="storage-learning-topics/nvme_systems_tutor.html">
+        <div>
+          <span class="badge badge-violet">Interactive Visual Simulator &bull; 102 Concepts</span>
+          <h3 class="mt-2">Full-Stack NVMe &amp; Storage Systems Visual Tutor</h3>
+          <p>All-in-one interactive HTML5 &lt;canvas&gt; tutor with 3 illustrated hardware plates, 8 live simulators (SQ/CQ rings, PCIe FLIT, NUMA topology, M/D/1, USL, Roofline), 5 clickable CLI decoders, and 12 Socratic scenarios.</p>
+        </div>
+        <div class="flex-wrap-gap mt-2">
+          <span class="badge badge-primary">8 Canvas Simulators</span>
+          <span class="badge">5 CLI Decoders</span>
+          <span class="badge">102-Term Mastery Deck</span>
+        </div>
+      </a>
+    </section>
+
+    <section class="card mt-3">
+      <div class="card-header">
+        <div>
+          <h2>Quick Jump by Storage Subject</h2>
+          <p class="card-subtitle">Each folder contains both structured Markdown notes (<code>README.md</code>) and an interactive HTML module (<code>index.html</code>).</p>
+        </div>
+      </div>
+      <div class="grid-3">
+        <a class="subject-card" href="storage-learning-topics/01-standards-and-protocols/index.html">
+          <div><span class="badge badge-primary">Pillar 01</span><h3>Standards &amp; Protocols</h3><p>NVMe 2.3/2.4, NVM CS 1.2, FDP, OCP 2.6/2.7, TCG Opal 2.30, NVMe-MI/MCTP.</p></div>
+        </a>
+        <a class="subject-card" href="storage-learning-topics/02-pcie-interconnects-and-si/index.html">
+          <div><span class="badge badge-primary">Pillar 02</span><h3>PCIe, Interconnects &amp; SI</h3><p>PCIe 5.0/6.0/7.0, PAM4, 256B FLIT/FEC/L0p, AER/DPC, SR-IOV, EDSFF envelopes.</p></div>
+        </a>
+        <a class="subject-card" href="storage-learning-topics/03-flash-physics-and-sandisk-platforms/index.html">
+          <div><span class="badge badge-primary">Pillar 03</span><h3>Flash Physics &amp; SanDisk</h3><p>3D NAND error physics, LDPC read-retry, FTL/WAF, BiCS8/9/10, SN861, UltraQLC 256TB, SN8100.</p></div>
+        </a>
+        <a class="subject-card" href="storage-learning-topics/04-architecture-os-and-concurrency/index.html">
+          <div><span class="badge badge-primary">Pillar 04</span><h3>Arch, OS &amp; Concurrency</h3><p>Caches/MESI/NUMA, blk-mq, io_uring_cmd, SPDK, StorNVMe, x86 vs ARM64 atomics, ISA-L.</p></div>
+        </a>
+        <a class="subject-card" href="storage-learning-topics/05-performance-telemetry-and-observability/index.html">
+          <div><span class="badge badge-primary">Pillar 05</span><h3>Performance &amp; Telemetry</h3><p>USE/TSA/TMAM, perf/eBPF, SNIA PTS steady-state math, Coordinated Omission, Otava, OCP C0h&ndash;C9h.</p></div>
+        </a>
+        <a class="subject-card" href="storage-learning-topics/06-validation-fault-injection-and-formal-methods/index.html">
+          <div><span class="badge badge-primary">Pillar 06</span><h3>Validation, Faults &amp; TLA+</h3><p>UNH-IOL, OakGate, SANBlaze, Quarch PLP, OCP C0h 21 error modes, QEMU/FEMU fuzzing, TLA+.</p></div>
+        </a>
+        <a class="subject-card" href="storage-learning-topics/07-power-thermals-and-liquid-cooling/index.html">
+          <div><span class="badge badge-primary">Pillar 07</span><h3>Power &amp; Liquid Cooling</h3><p>APST, PLC/SDP, L0p, DFS, OCP PCM-1 vs PCM-2 (100 &mu;s peak), DTC cold plates vs immersion, TEC.</p></div>
+        </a>
+        <a class="subject-card" href="storage-learning-topics/08-workloads-tiering-fabrics-and-security/index.html">
+          <div><span class="badge badge-primary">Pillar 08</span><h3>Workloads, Tiering &amp; Security</h3><p>MLPerf v3.0, GDS, KV-Cache, HBM4 vs HBF, CXL 4.0, RocksDB+FDP, NVMe-oF, DirectStorage, Opal/LOCK/SPDM/PQC.</p></div>
+        </a>
+        <a class="subject-card" href="storage-learning-topics/09-24-week-mastery-syllabus/index.html">
+          <div><span class="badge badge-success">Syllabus &bull; 24 Weeks</span><h3>24-Week Mastery Roadmap</h3><p>4 structured 6-week phases, weekly hands-on labs, 4 capstones, progress tracker &amp; rules of thumb.</p></div>
+        </a>
+      </div>
+    </section>
+    
+
+    
+  </main>
+
+  <script src="storage-learning-topics/assets/app.js"></script>
+  
+</body>
+</html>

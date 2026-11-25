@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>05. Performance Engineering, Telemetry &amp; Observability &mdash; Storage &amp; Validation Engineering Hub</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body class="theme-dark">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <a class="brand-badge" href="../index.html">NVMe</a>
+        <div class="breadcrumbs"><a href="../../index.html">Learning Topics</a> <span>/</span> <a href="../index.html">Storage &amp; Validation</a> <span>/</span> <span class="current">05. Performance Engineering, Telemetry &amp; Observability</span></div>
+      </div>
+      <div class="header-controls">
+        <select id="subject-nav" class="nav-select" data-base="../" data-current="p05" aria-label="Jump to subject"></select>
+        <a class="btn" href="../nvme_systems_tutor.html">102-Term Tutor</a>
+        <button id="theme-toggle" class="btn" type="button">Light Mode</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-eyebrow">Pillar 05 • Profiling, SNIA PTS Math, Otava CI &amp; Binary Telemetry</div>
+      <h1>05. Performance Engineering, Telemetry &amp; Observability</h1>
+      <p>Structured host/device profiling (USE, TSA, TMAM, perf/eBPF Flame Graphs), SNIA SSS PTS steady-state convergence, Coordinated Omission prevention, Apache Otava change-point CI, and NVMe/OCP C0h–C9h/SanDisk telemetry decoding.</p>
+      <div class="hero-meta"><span class="badge badge-primary">USE • TSA • TMAM • eBPF</span><span class="badge badge-success">SNIA SSS PTS v2.0.2</span><span class="badge badge-violet">Apache Otava Change-Point CI</span><span class="badge badge-warning">OCP C0h–C9h &amp; nvme sndk</span></div>
+    </section>
+
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Interactive SNIA SSS PTS v2.0.2 Steady-State Convergence Checker</h2>
+          <p class="card-subtitle">Test 5 consecutive measurement rounds against SNIA steady-state criteria: <code>Range(y) &lt; 0.2 &times; Ave(y)</code> and linear-fit excursion <code>Slope(y) &lt; 0.1 &times; Ave(y)</code>.</p>
+        </div>
+        <div class="pill-bar mb-0">
+          <button type="button" class="pill" id="pts-fob">Preset: FOB Collapse (FAIL)</button>
+          <button type="button" class="pill active" id="pts-ss">Preset: Converged Steady State (PASS)</button>
+          <button type="button" class="pill" id="pts-gc">Preset: Noisy GC Oscillation (FAIL)</button>
+        </div>
+      </div>
+
+      <div class="grid-5 mb-2">
+        <div class="control-group"><div class="control-label"><span>Round 1 (kIOPS)</span></div><input type="number" id="r1" value="412" /></div>
+        <div class="control-group"><div class="control-label"><span>Round 2 (kIOPS)</span></div><input type="number" id="r2" value="405" /></div>
+        <div class="control-group"><div class="control-label"><span>Round 3 (kIOPS)</span></div><input type="number" id="r3" value="409" /></div>
+        <div class="control-group"><div class="control-label"><span>Round 4 (kIOPS)</span></div><input type="number" id="r4" value="403" /></div>
+        <div class="control-group"><div class="control-label"><span>Round 5 (kIOPS)</span></div><input type="number" id="r5" value="407" /></div>
+      </div>
+
+      <div class="grid-4 mb-2">
+        <div class="kpi-tile"><div class="kpi-label">Window Mean Ave(y)</div><div class="kpi-value" id="pts-mean">407.2</div><div class="kpi-note">kIOPS across 5 rounds</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Data Range / Mean</div><div class="kpi-value" id="pts-range">2.2%</div><div class="kpi-note">Must be &lt; 20.0%</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Linear Fit Excursion / Mean</div><div class="kpi-value" id="pts-slope">1.2%</div><div class="kpi-note">Must be &lt; 10.0%</div></div>
+        <div class="kpi-tile"><div class="kpi-label">SNIA PTS Verdict</div><div class="kpi-value" id="pts-verdict" style="color:var(--success);">STEADY STATE</div><div class="kpi-note" id="pts-note">Safe to report benchmark</div></div>
+      </div>
+
+      <canvas id="p5-pts-canvas" height="190"></canvas>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>NVMe, OCP 2.6 / 2.7 &amp; SanDisk Vendor Telemetry Log Decoder Reference</h2>
+          <p class="card-subtitle">Filter by standard or search for specific log IDs, UUIDs, GUIDs, and <code>nvme sndk/wdc</code> commands.</p>
+        </div>
+        <input type="text" id="p5-log-search" placeholder="Filter logs (e.g. C0h, UUID, DA1, sndk, C9h)..." style="min-width:240px;" />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Log Page / Feature</th><th>Standard</th><th>Key Validation Signals &amp; Engineering Gotchas</th></tr></thead>
+          <tbody id="p5-log-body">
+            <tr><td><strong><code>02h</code> SMART / Health &amp; <code>0Dh</code> Persistent Event Log (PEL)</strong></td><td>NVMe Base 2.3</td><td>Composite/sensor temps, media errors, percentage used; PEL persists non-command subsystem events across power cycles and resets.</td></tr>
+            <tr><td><strong><code>07h</code> Host-Initiated &amp; <code>08h</code> Controller-Initiated Telemetry</strong></td><td>NVMe 2.3 + OCP 2.6</td><td>Data Areas 1&ndash;4; <code>08h</code> must persist across resets. Under OCP 2.6, DA1 defaults to 32 KiB with <strong>&lt;1 ms typical (&lt;5 ms max)</strong> I/O latency impact and Virtual FIFOs (&gt;16 FIFOs across DA1/DA2).</td></tr>
+            <tr><td><strong><code>C0h</code> OCP Extended SMART</strong></td><td>OCP 2.6 / 2.7</td><td>512B little-endian; gate reads on OCP UUID <code>C194D55B-E094-4794-A21D-29998F56BE6F</code> in Identify <code>CNS 17h</code>, verify GUID <code>AFD514C97C6F4F9CA4F2BFEA2810AFC5h</code> and Version (<code>0005h</code> = 2.6, <code>0006h</code> = 2.7). Tracks physical writes/reads, XOR/soft ECC, capacitor health (<code>FFFFh</code> = no PLP), PCIe retraining, dies offline, lifetime/peak power.</td></tr>
+            <tr><td><strong><code>C1h</code> Error Recovery, <code>C2h</code> FW Activation &amp; Latency Monitor</strong></td><td>OCP 2.6</td><td><code>C1h</code> exposes panic count and recommended reset sequence (<code>EREC-2</code>); Latency Monitor (<code>nvme ocp latency-monitor-log</code>; Set Feature <code>C5h</code>) logs hardware latency-bucket counts &amp; threshold-breach timestamps.</td></tr>
+            <tr><td><strong><code>C4h</code> Device Capabilities, <code>C6h</code> HW Component, <code>C9h</code> Telemetry String Log</strong></td><td>OCP 2.6 / 2.7</td><td><code>C9h</code> enables vendor-neutral decoding of <code>07h/08h</code> via <code>nvme ocp internal-log</code> without proprietary parsers; <code>C4h</code> v2 adds FIPS 140 status in OCP 2.7; watch OCP 2.6 <code>C6h</code> byte-vs-Dword size fixes.</td></tr>
+            <tr><td><strong>SanDisk Vendor Plugins (<code>nvme sndk</code> &amp; legacy <code>nvme wdc</code>)</strong></td><td>SanDisk / WDC</td><td><code>vs-smart-add-log</code>, <code>vs-device-waf</code>, <code>get-latency-monitor-log</code>, <code>vs-temperature-stats</code>, <code>get-crash-dump</code>, <code>get-pfail-dump</code>, <code>vs-internal-log</code>, and <code>pci-eye</code> (via <code>nvmeadm</code>). <code>nvme-cli</code> v3.x merges <code>libnvme</code> with sandboxed decoders &amp; <code>nvme-discoverd</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="grid-3">
+      <div class="card"><h3 style="margin-top:0;">USE, TSA &amp; TMAM Profiling</h3><p class="small muted mb-0">Combine Gregg&rsquo;s <strong>USE</strong> (Utilization, Saturation, Errors) and <strong>TSA</strong> (Thread State Analysis) with Intel <strong>TMAM</strong> (Front-End, Back-End, Bad Speculation, Retiring) using <code>perf</code> (PEBS/LBR), CPU/Off-CPU Flame Graphs, and <code>bpftrace</code>.</p></div>
+      <div class="card"><h3 style="margin-top:0;">Coordinated Omission Hygiene</h3><p class="small muted mb-0">Closed-loop generators pause new submissions when a drive stalls, hiding multi-second GC/read-retry hiccups from <code>p99.99</code>. Use open-loop paced traffic, never average percentiles across runs, and never drop <code>max</code> latency.</p></div>
+      <div class="card"><h3 style="margin-top:0;">Apache Otava (Hunter) CI</h3><p class="small muted mb-0">Eliminates brittle static % regression thresholds on noisy test racks via a modified E-divisive means algorithm (Student&rsquo;s t-test + overlapping fixed windows) to flag statistically significant firmware/harness regressions.</p></div>
+    </section>
+
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Curated Primary Sources &amp; Reference Library</h2>
+          <p class="card-subtitle">Authoritative specifications, textbooks, kernel docs, papers, and open-source repositories.</p>
+        </div>
+        <span class="badge badge-primary">6 Resources</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Source / Resource</th>
+              <th>Format</th>
+              <th>Link / Identifier</th>
+              <th>How to Use It</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Systems Performance: Enterprise and the Cloud, 2nd Ed. &amp; BPF Performance Tools — Brendan Gregg</strong></td><td><span class="badge">Books</span></td><td><a href="https://www.brendangregg.com/systems-performance-2nd-edition-book.html" target="_blank" rel="noopener noreferrer">Systems Performance 2e</a> &bull; <a href="https://www.brendangregg.com/bpf-performance-tools-book.html" target="_blank" rel="noopener noreferrer">BPF Performance Tools</a> &bull; <a href="https://github.com/bpftrace/bpftrace" target="_blank" rel="noopener noreferrer">bpftrace</a> &bull; <a href="https://github.com/brendangregg/flamegraph" target="_blank" rel="noopener noreferrer">FlameGraph</a></td><td>Read Ch. 1–4, 6–9, and 12–15 for USE/TSA/Disks/Benchmarking; capture CPU &amp; Off-CPU Flame Graphs with perf and bpftrace.</td></tr><tr><td><strong>Performance Analysis and Tuning on Modern CPUs, 2nd Ed. — Denis Bakhvalov</strong></td><td><span class="badge">Free Book &amp; Course</span></td><td><a href="https://easyperf.net/" target="_blank" rel="noopener noreferrer">easyperf.net</a></td><td>Best practical reference on TMAM, PMU counters, PEBS, LBR, Data Address Profiling for false sharing, and C++ tuning.</td></tr><tr><td><strong>MIT 6.172 Performance Engineering of Software Systems — Leiserson &amp; Shun</strong></td><td><span class="badge">Free OCW Course</span></td><td><a href="https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/" target="_blank" rel="noopener noreferrer">MIT OCW 6.172</a></td><td>Watch lectures on Bentley optimization rules, bit hacks, cache blocking, accurate timing, and memory allocators.</td></tr><tr><td><strong>The Art of Computer Systems Performance Analysis — Raj Jain</strong></td><td><span class="badge">Book</span></td><td><span class="mono small">Wiley Classic (1991)</span></td><td>Foundational reference for experimental design, confidence intervals, and avoiding statistical fallacies.</td></tr><tr><td><strong>Everything You Know About Latency Is Wrong (Gil Tene Summary) &amp; Apache Otava (Hunter)</strong></td><td><span class="badge">Article &amp; OSS Tool</span></td><td><a href="https://bravenewgeek.com/everything-you-know-about-latency-is-wrong/" target="_blank" rel="noopener noreferrer">Latency Is Wrong</a> &bull; <a href="https://otava.apache.org/docs/download/" target="_blank" rel="noopener noreferrer">Apache Otava</a></td><td>Essential reading before implementing latency histograms or automated CI performance gates.</td></tr><tr><td><strong>nvme-cli Repo &amp; OCP/SanDisk Plugin Source</strong></td><td><span class="badge">Open-Source Code</span></td><td><a href="https://github.com/linux-nvme/nvme-cli" target="_blank" rel="noopener noreferrer">nvme-cli</a> &bull; <a href="https://github.com/linux-nvme/nvme-cli/blob/master/plugins/ocp/ocp-nvme.c" target="_blank" rel="noopener noreferrer">ocp-nvme.c</a> &bull; <a href="https://github.com/linux-nvme/nvme-cli/blob/master/plugins/wdc/wdc-nvme.c" target="_blank" rel="noopener noreferrer">wdc-nvme.c</a></td><td>Inspect exact struct definitions and mock test coverage (see issue #4312 for sndk plugin commands).</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
+    
+    <section class="card" data-progress-prefix="p05_" data-progress-total="5">
+      <div class="card-header">
+        <div>
+          <h2>Mastery Checklist (Saved Locally)</h2>
+          <p class="card-subtitle">Check off skills and labs as you validate them — progress rolls up automatically to the Storage Hub.</p>
+        </div>
+        <span class="badge badge-success progress-text">0 / 5 (0%)</span>
+      </div>
+      <div class="progress-track mb-2"><div class="progress-fill" style="width: 0%"></div></div>
+      <div class="checklist mt-3">
+        <label class="check-item"><input type="checkbox" data-check-id="p05_01" /><div><div class="check-title"><strong>Profile high-IOPS hosts with USE, TSA, TMAM, Flame Graphs &amp; eBPF</strong></div><div class="small muted">Separate host execution time from device service time using perf (PEBS/LBR), Off-CPU Flame Graphs, and bpftrace latency histograms.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_02" /><div><div class="check-title"><strong>Enforce SNIA SSS PTS v2.0.2 preconditioning &amp; steady-state math</strong></div><div class="small muted">Purge (nvme format), run 2x sequential 128 KiB WIPC, and verify 5-round Range(y) &lt; 0.2*Ave(y) and Slope(y) &lt; 0.1.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_03" /><div><div class="check-title"><strong>Eliminate Coordinated Omission &amp; percentile aggregation fallacies</strong></div><div class="small muted">Use open-loop rate-controlled generators, preserve full HDR/bucket histograms (p99/p99.99/max), and never average percentiles.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_04" /><div><div class="check-title"><strong>Deploy statistical change-point CI via Apache Otava (Hunter)</strong></div><div class="small muted">Replace noisy static % thresholds with modified E-divisive means + Student&#x27;s t-test windows to catch true regressions.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_05" /><div><div class="check-title"><strong>Validate &amp; decode NVMe (02h/07h/08h/0Dh), OCP (C0h–C9h) &amp; nvme sndk logs</strong></div><div class="small muted">Gate C0h reads on Identify CNS 17h OCP UUID, check GUID + version (0005h/0006h), verify &lt;5 ms max DA1 latency impact, and decode via C9h.</div></div></label>
+      </div>
+    </section>
+    
+    
+
+    <nav class="subject-pager"><a class="btn" href="../04-architecture-os-and-concurrency/index.html">&larr; 04. Architecture, OS &amp; Concurrency</a><a class="btn" href="../index.html">Storage Hub</a><a class="btn btn-primary" href="../06-validation-fault-injection-and-formal-methods/index.html">06. Validation, Fault Injection &amp; Formal Methods &rarr;</a></nav>
+  </main>
+
+  <script src="../assets/app.js"></script>
+  <script>
+
+    function evalPTS() {
+      const vals = [1, 2, 3, 4, 5].map(i => Math.max(1, parseFloat(document.getElementById('r' + i).value) || 0));
+      const n = vals.length;
+      const mean = vals.reduce((a, b) => a + b, 0) / n;
+      const minV = Math.min(...vals), maxV = Math.max(...vals);
+      const rangePct = ((maxV - minV) / mean) * 100;
+
+      // Linear regression over x = 0..4
+      const mx = 2;
+      let num = 0, den = 0;
+      vals.forEach((y, x) => { num += (x - mx) * (y - mean); den += (x - mx) * (x - mx); });
+      const slope = num / den;
+      const fitExcursion = Math.abs(slope * (n - 1));
+      const slopePct = (fitExcursion / mean) * 100;
+      const pass = rangePct < 20 && slopePct < 10;
+
+      document.getElementById('pts-mean').textContent = mean.toFixed(1);
+      document.getElementById('pts-range').textContent = rangePct.toFixed(1) + '%';
+      document.getElementById('pts-slope').textContent = slopePct.toFixed(1) + '%';
+      const vEl = document.getElementById('pts-verdict');
+      vEl.textContent = pass ? 'STEADY STATE' : 'NOT CONVERGED';
+      vEl.style.color = pass ? 'var(--success)' : 'var(--error)';
+      document.getElementById('pts-note').textContent = pass ? 'Meets Range < 20% & Slope < 10%' : 'Continue preconditioning rounds';
+
+      const { ctx, w, h, th } = StorageHub.prepCanvas(document.getElementById('p5-pts-canvas'), 190);
+      const padL = 58, padR = 24, padT = 26, padB = 30;
+      const pw = w - padL - padR, ph = h - padT - padB;
+      const yLo = Math.max(0, Math.min(minV, mean * 0.78) * 0.92);
+      const yHi = Math.max(maxV, mean * 1.22) * 1.06;
+      const toX = i => padL + (i / 4) * pw;
+      const toY = v => padT + (1 - (v - yLo) / Math.max(1, yHi - yLo)) * ph;
+
+      // +/- 10% band around mean
+      ctx.save();
+      ctx.globalAlpha = 0.14;
+      ctx.fillStyle = th.success;
+      const yBandTop = toY(mean * 1.1), yBandBot = toY(mean * 0.9);
+      ctx.fillRect(padL, yBandTop, pw, yBandBot - yBandTop);
+      ctx.restore();
+
+      // Mean line
+      ctx.save();
+      ctx.strokeStyle = th.muted;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(padL, toY(mean)); ctx.lineTo(padL + pw, toY(mean)); ctx.stroke();
+      ctx.restore();
+
+      // Regression fit line
+      const y0 = mean + slope * (0 - mx), y4 = mean + slope * (4 - mx);
+      ctx.strokeStyle = pass ? th.success : th.error;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(toX(0), toY(y0)); ctx.lineTo(toX(4), toY(y4)); ctx.stroke();
+
+      // Measured polyline + points
+      ctx.strokeStyle = th.primary;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      vals.forEach((v, i) => { if (i === 0) ctx.moveTo(toX(i), toY(v)); else ctx.lineTo(toX(i), toY(v)); });
+      ctx.stroke();
+      vals.forEach((v, i) => {
+        ctx.fillStyle = th.primary;
+        ctx.beginPath(); ctx.arc(toX(i), toY(v), 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = th.fg;
+        ctx.font = '700 11px ui-monospace, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(v.toFixed(0), toX(i), toY(v) - 10);
+        ctx.fillStyle = th.muted;
+        ctx.fillText('R' + (i + 1), toX(i), h - 10);
+      });
+      ctx.textAlign = 'right';
+      ctx.fillText(yHi.toFixed(0), padL - 8, padT + 10);
+      ctx.fillText(yLo.toFixed(0), padL - 8, padT + ph);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = th.fg;
+      ctx.font = '700 11.5px system-ui, sans-serif';
+      ctx.fillText('Shaded band = ±10% around Ave(y) | Solid trend = linear fit', padL, 16);
+    }
+
+    function setPreset(arr, activeId) {
+      arr.forEach((v, i) => { document.getElementById('r' + (i + 1)).value = v; });
+      ['pts-fob', 'pts-ss', 'pts-gc'].forEach(id => document.getElementById(id).classList.toggle('active', id === activeId));
+      evalPTS();
+    }
+    document.getElementById('pts-fob').addEventListener('click', () => setPreset([1150, 920, 680, 510, 440], 'pts-fob'));
+    document.getElementById('pts-ss').addEventListener('click', () => setPreset([412, 405, 409, 403, 407], 'pts-ss'));
+    document.getElementById('pts-gc').addEventListener('click', () => setPreset([460, 320, 455, 310, 450], 'pts-gc'));
+    [1, 2, 3, 4, 5].forEach(i => document.getElementById('r' + i).addEventListener('input', evalPTS));
+    window.addEventListener('resize', evalPTS);
+    window.addEventListener('themechange', evalPTS);
+    evalPTS();
+
+    document.getElementById('p5-log-search').addEventListener('input', e => {
+      const q = e.target.value.toLowerCase().trim();
+      document.querySelectorAll('#p5-log-body tr').forEach(tr => {
+        tr.style.display = (!q || tr.textContent.toLowerCase().includes(q)) ? '' : 'none';
+      });
+    });
+    
+</script>
+</body>
+</html>
