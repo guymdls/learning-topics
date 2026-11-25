@@ -3,165 +3,228 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>02. PCIe, Interconnects, Form Factors &amp; Signal Integrity &mdash; Storage &amp; Validation Engineering Hub</title>
+  <title>02. PCIe 6.0 &amp; Signal Integrity &mdash; Storage Mastery Hub</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body class="theme-dark">
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand-group">
-        <a class="brand-badge" href="../index.html">NVMe</a>
-        <div class="breadcrumbs"><a href="../../index.html">Learning Topics</a> <span>/</span> <a href="../index.html">Storage &amp; Validation</a> <span>/</span> <span class="current">02. PCIe, Interconnects, Form Factors &amp; Signal Integrity</span></div>
-      </div>
-      <div class="header-controls">
-        <select id="subject-nav" class="nav-select" data-base="../" data-current="p02" aria-label="Jump to subject"></select>
-        <a class="btn" href="../nvme_systems_tutor.html">102-Term Tutor</a>
-        <button id="theme-toggle" class="btn" type="button">Light Mode</button>
-      </div>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside class="course-sidebar" id="course-sidebar" data-base="../" data-current="p02" aria-label="Course navigation"></aside>
+
+    <div class="main-column">
+      <header class="site-header">
+        <div class="header-inner">
+          <div class="flex-wrap-gap">
+            <button id="mobile-menu-btn" class="btn mobile-menu-btn" type="button" aria-label="Open course menu">&#9776; Menu</button>
+            <div class="breadcrumbs"><a href="../../index.html">Portal</a> <span>/</span> <a href="../index.html">Storage Hub</a> <span>/</span> <span class="current">02. PCIe 6.0 &amp; Signal Integrity</span></div>
+          </div>
+          <div class="header-controls">
+            <div class="depth-switch" title="Switch between plain-English learning view and full specification depth">
+              <button type="button" class="depth-btn active" data-depth="simple">Simple View</button>
+              <button type="button" class="depth-btn" data-depth="deep">Full Spec</button>
+            </div>
+            <a class="btn" href="../nvme_systems_tutor.html">102-Term Lab</a>
+            <button id="theme-toggle" class="btn" type="button">Light</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="container">
+        <section class="hero">
+          <div class="hero-eyebrow">Phase 1 • Foundations (⏱ 7 min read)</div>
+          <h1>02. PCIe 6.0 &amp; Signal Integrity</h1>
+          <p>Understand how PAM4, 256-byte FLITs, and EDSFF connectors work — and how to catch noisy riser cables pretending to be SSD bugs.</p>
+          <div class="hero-meta"><span class="badge badge-success">Guided FLIT Calculator</span><span class="badge badge-primary">PCIe 5.0 / 6.0 / 7.0</span><span class="badge badge-warning">EDSFF &amp; AER Triage</span></div>
+        </section>
+
+        
+    
+    <div class="step-banner">
+      <span class="step-num">1</span>
+      <h2>The 30-Second Mental Model</h2>
+      <span class="muted">&mdash; Why PCIe 6.0 changed the highway rules</span>
     </div>
-  </header>
-
-  <main class="container">
-    <section class="hero">
-      <div class="hero-eyebrow">Pillar 02 • High-Speed Bus, FLIT Mode &amp; Fixture Diagnostics</div>
-      <h1>02. PCIe, Interconnects, Form Factors &amp; Signal Integrity</h1>
-      <p>PCIe 5.0 NRZ vs PCIe 6.0 PAM4 / 256B FLIT / FEC / L0p vs PCIe 7.0, LTSSM equalization, AER/DPC recovery, SR-IOV, P2P DMA, EDSFF form factors, and riser signal-integrity diagnostics.</p>
-      <div class="hero-meta"><span class="badge badge-primary">PCIe 6.0 Rev 6.4 • 64 GT/s PAM4</span><span class="badge badge-success">256B FLIT • FEC + CRC + Replay</span><span class="badge badge-warning">AER / DPC / SR-IOV / P2P</span><span class="badge badge-violet">EDSFF SFF-TA-1002</span></div>
+    
+    
+    <section class="tldr-grid">
+      <div class="tldr-card">
+        <div class="tldr-label">The Core Problem</div>
+        <p>At PCIe 5.0 (32 GT/s), copper motherboard traces already turn high-frequency signals into mush. Doubling clock frequency again for PCIe 6.0 would require expensive cables everywhere.</p>
+      </div>
+      <div class="tldr-card analogy">
+        <div class="tldr-label">Plain-English Analogy</div>
+        <p>Instead of driving twice as fast, <strong>PCIe 6.0 builds a double-decker bus (PAM4)</strong>: 4 voltage levels send <strong>2 bits at once</strong> at the same 16 GHz wire frequency! Because tighter levels are noisier, data rides in fixed <strong>256-byte shipping crates (FLITs)</strong> with built-in spellcheck (<strong>FEC</strong>).</p>
+      </div>
+      <div class="tldr-card role">
+        <div class="tldr-label">Why You Care at SanDisk</div>
+        <p>On a validation bench, <strong>bad riser cards and dusty connectors masquerade as firmware bugs</strong>. Checking PCIe link width, AER errors, and eye diagrams saves days of wasted debugging.</p>
+      </div>
     </section>
+    
 
+    <div class="flow-diagram"><div class="flow-node"><strong>PCIe 5.0 (NRZ)</strong><span>2 voltage levels = 1 bit/symbol • 32 GT/s • Variable packets</span></div><div class="flow-arrow">&rarr;</div><div class="flow-node"><strong>PCIe 6.0 (PAM4)</strong><span>4 voltage levels = 2 bits/symbol • 64 GT/s • Fixed 256B FLIT + FEC</span></div><div class="flow-arrow">&rarr;</div><div class="flow-node"><strong>PCIe 7.0 (June 2025)</strong><span>PAM4 at 2× symbol rate • 128 GT/s (~60.6 GB/s on x4)</span></div></div>
+
+    
+    <div class="step-banner">
+      <span class="step-num">2</span>
+      <h2>Interactive Lab: PCIe Bandwidth &amp; 256B FLIT Explorer</h2>
+      <span class="muted">&mdash; Click the preset buttons to compare SSD generations</span>
+    </div>
     
     <section class="card">
       <div class="card-header">
         <div>
-          <h2>Interactive PCIe Generation &amp; 256-Byte FLIT Bandwidth Visualizer</h2>
-          <p class="card-subtitle">Compare Gen4/Gen5 NRZ vs Gen6/Gen7 PAM4 FLIT efficiency, FEC burst correction, and L0p partial-width lane scaling.</p>
+          <h2>Compare Usable SSD Speed &amp; Packet Overhead</h2>
+          <p class="card-subtitle">Try the quick scenarios or change generation &amp; lane count to see why a Gen6 x4 SSD tops out near <strong>30.3 GB/s</strong>.</p>
         </div>
-        <span class="badge badge-primary">Live Wire Math</span>
+        <div class="pill-bar mb-0">
+          <button type="button" class="pill" id="p2-try-g5">Client/Ent Gen5 x4</button>
+          <button type="button" class="pill active" id="p2-try-g6">Enterprise Gen6 x4</button>
+          <button type="button" class="pill" id="p2-try-l0p">Gen6 L0p Power-Save (x1)</button>
+        </div>
       </div>
 
-      <div class="grid-3 mb-2">
+      <div class="grid-2 mb-2">
         <div class="control-group">
           <div class="control-label"><span>PCIe Generation</span><strong id="pcie-gen-lbl">PCIe 6.0 (PAM4)</strong></div>
           <select id="p2-gen">
-            <option value="4">PCIe 4.0 &mdash; 16 GT/s NRZ (128b/130b)</option>
-            <option value="5">PCIe 5.0 &mdash; 32 GT/s NRZ (128b/130b)</option>
+            <option value="4">PCIe 4.0 &mdash; 16 GT/s NRZ</option>
+            <option value="5">PCIe 5.0 &mdash; 32 GT/s NRZ</option>
             <option value="6" selected>PCIe 6.0 &mdash; 64 GT/s PAM4 (256B FLIT)</option>
             <option value="7">PCIe 7.0 &mdash; 128 GT/s PAM4 (256B FLIT)</option>
           </select>
         </div>
         <div class="control-group">
-          <div class="control-label"><span>Active Lanes (L0 / L0p)</span><strong id="p2-lanes-lbl">x4</strong></div>
+          <div class="control-label"><span>Active Lanes</span><strong id="p2-lanes-lbl">x4</strong></div>
           <select id="p2-lanes">
-            <option value="1">x1 (L0p low-power)</option>
+            <option value="1">x1 (L0p power-save)</option>
             <option value="2">x2 (L0p half-width)</option>
-            <option value="4" selected>x4 (Enterprise NVMe SSD)</option>
-            <option value="8">x8 (High-BW Accelerator / AIC)</option>
-            <option value="16">x16 (GPU / Switch Uplink)</option>
+            <option value="4" selected>x4 (Standard NVMe SSD)</option>
+            <option value="8">x8</option>
+            <option value="16">x16 (GPU slot &bull; ~121 GB/s on Gen6)</option>
           </select>
-        </div>
-        <div class="control-group">
-          <div class="control-label"><span>Nyquist / Symbol Rate</span><strong id="p2-nyq-lbl">16 GHz (32 GBd)</strong></div>
-          <div class="sub-panel small" id="p2-mode-note" style="padding:7px 10px;">FBER target 1e-6; 3-byte burst FEC + 8B CRC in &lt;2 ns.</div>
         </div>
       </div>
 
       <div class="grid-4 mb-2">
-        <div class="kpi-tile"><div class="kpi-label">Raw Line Rate (1-Way)</div><div class="kpi-value" id="k-raw">32.0 GB/s</div><div class="kpi-note" id="k-gt">64 GT/s &times; 4 lanes</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Usable TLP Ceiling (1-Way)</div><div class="kpi-value" id="k-usable" style="color:var(--primary);">~30.3 GB/s</div><div class="kpi-note">Protocol-framed bidirectional each way</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Framing Efficiency</div><div class="kpi-value" id="k-eff">92.2%</div><div class="kpi-note" id="k-eff-note">236B TLP / 256B FLIT</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Power Scaling</div><div class="kpi-value" id="k-l0p" style="font-size:1.05rem;">L0p Supported</div><div class="kpi-note">Drop lanes without full LTSSM retrain</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Raw Wire Speed</div><div class="kpi-value" id="k-raw">32.0 GB/s</div><div class="kpi-note" id="k-gt">64 GT/s &times; 4 lanes</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Real Usable Ceiling</div><div class="kpi-value" id="k-usable" style="color:var(--primary);">~30.3 GB/s</div><div class="kpi-note">Each direction simultaneously</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Payload Efficiency</div><div class="kpi-value" id="k-eff">92.2%</div><div class="kpi-note" id="k-eff-note">236B data per 256B FLIT</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Lane Scaling (L0p)</div><div class="kpi-value" id="k-l0p" style="font-size:1.05rem;">Supported</div><div class="kpi-note">Shrinks lanes without link pause</div></div>
       </div>
 
       <canvas id="p2-flit-canvas" height="175"></canvas>
+      <div class="callout mt-3 mb-0" id="p2-takeaway"></div>
     </section>
 
+    
+    <div class="step-banner">
+      <span class="step-num">3</span>
+      <h2>Core Lessons: Shapes, Risers &amp; Virtualization</h2>
+      <span class="muted">&mdash; What you actually touch in the lab</span>
+    </div>
+    
     <section class="card">
-      <div class="card-header">
-        <div>
-          <h2>Bench Diagnostics &amp; EDSFF Form-Factor Envelopes</h2>
-          <p class="card-subtitle">Separate riser-card SI loss and PCIe link downgrades from SSD controller firmware bugs.</p>
-        </div>
-      </div>
       <div class="grid-2">
         <div class="sub-panel">
-          <h3>Linux Bench Inspection Workflow</h3>
-          <ul class="clean-list small">
-            <li><code>lspci -vv -s &lt;BDF&gt;</code> &mdash; verify negotiated Speed/Width (<code>LnkSta</code> vs <code>LnkCap</code>), FLIT mode, <code>MaxPayloadSize</code>, and Completion Timeout.</li>
-            <li><strong>AER / DPC:</strong> Monitor sysfs AER counters &amp; test recovery via <code>/dev/aer_inject</code>; correlate against OCP SMART <em>PCIe Link Retraining Count</em> &amp; <em>Correctable Error Count</em>.</li>
-            <li><strong>Virtualization &amp; Direct Transfers:</strong> Validate SR-IOV PFs/VFs + ARI, P2P DMA hierarchy distance (for CMB &amp; GPUDirect Storage), and PCIe IDE / CMA / DOE link security.</li>
-            <li><strong>Signal Integrity:</strong> Use <code>nvmeadm sandisk/pci-eye</code> and check retimer/redriver margin on Gen5/Gen6 risers.</li>
-          </ul>
+          <span class="badge badge-warning mb-2">Lab Survival Skill</span>
+          <h3>Is It Firmware or a Bad Cable?</h3>
+          <p class="small muted mb-0">Before filing a bug on slow throughput, run <code>lspci -vv</code>. Did an <code>x4</code> drive silently downgrade to <code>x2</code> or Gen4? Check Linux <strong>AER Correctable Errors</strong> and OCP SMART <em>PCIe Link Retraining Count</em>. If errors climb on a Gen6 riser adapter, add a retimer or swap the fixture &mdash; the SSD firmware is innocent!</p>
         </div>
-        <div class="table-wrap" style="margin:0;">
-          <table>
-            <thead><tr><th>Form Factor</th><th>Connector</th><th>Typical Power Envelope</th><th>Primary Use / Thermal Note</th></tr></thead>
-            <tbody>
-              <tr><td><strong>EDSFF E1.S</strong></td><td>SFF-TA-1002</td><td>~20W (up to 25W)</td><td>1U dense hyperscale (multiple heatsink thicknesses; DLC-capable)</td></tr>
-              <tr><td><strong>EDSFF E1.L</strong></td><td>SFF-TA-1002</td><td>25W&ndash;40W</td><td>1U ultra-high capacity QLC data lakes (ruler form factor)</td></tr>
-              <tr><td><strong>EDSFF E3.S</strong></td><td>SFF-TA-1002</td><td>25W&ndash;40W</td><td>2U Gen5/Gen6 enterprise mainstream &amp; CXL Type 3 (2T)</td></tr>
-              <tr><td><strong>EDSFF E3.L</strong></td><td>SFF-TA-1002</td><td>40W&ndash;70W</td><td>Thick high-TDP Gen6 / liquid-cooled / ultra-dense AI racks</td></tr>
-              <tr><td><strong>U.2 / U.3</strong></td><td>SFF-8639</td><td>15W&ndash;25W</td><td>Legacy 2.5&Prime; bays; signal-integrity constrained at Gen5/Gen6</td></tr>
-              <tr><td><strong>M.2 2280</strong></td><td>M-Key</td><td>5 mW idle &ndash; ~8W active</td><td>Client Gen5 (e.g., SN8100 6.5&ndash;7.0W) &amp; boot drives</td></tr>
-            </tbody>
-          </table>
+        <div class="sub-panel">
+          <span class="badge badge-primary mb-2">Physical Shapes</span>
+          <h3>Why Data Centers Moved to EDSFF</h3>
+          <p class="small muted mb-0">Tiny client <strong>M.2</strong> sticks overheat above ~8W, and old 2.5&Prime; <strong>U.2</strong> connectors struggle with Gen6 signal clarity. Modern servers use <strong>EDSFF (SFF-TA-1002)</strong>: <strong>E1.S</strong> (~20W for dense 1U servers), <strong>E3.S</strong> (25&ndash;40W mainstream 2U), and thick <strong>E3.L</strong> (40&ndash;70W for ultra-dense AI &amp; liquid cooling).</p>
         </div>
       </div>
+
+      <h3 class="mt-3">Key Acronyms Decoded</h3>
+      <div class="term-grid"><div class="term-box"><strong>PAM4 vs. NRZ</strong><p>NRZ uses 2 voltage levels (0 or 1). PAM4 uses 4 voltage levels (00, 01, 10, 11) to send 2 bits per clock symbol.</p></div><div class="term-box"><strong>FLIT &amp; FEC</strong><p>256-byte fixed Flow Control Unit in PCIe 6.0: 236B TLP payload + 6B link control + 8B CRC + 6B Forward Error Correction (fixes 3-byte bursts in &lt;2 ns).</p></div><div class="term-box"><strong>AER &amp; DPC</strong><p>Advanced Error Reporting logs bit/packet errors; Downstream Port Containment isolates a crashed PCIe slot so the whole server doesn&#x27;t kernel-panic.</p></div><div class="term-box"><strong>SR-IOV &amp; P2P DMA</strong><p>SR-IOV slices one physical SSD into multiple Virtual Functions for cloud VMs; P2P DMA lets a GPU read an SSD directly across PCIe without touching host CPU RAM.</p></div></div>
+
+      <details class="deep-dive">
+        <summary>Deep Spec Reference: Nyquist Math, FBER, IDE Link Encryption &amp; PCIe 7.0/8.0</summary>
+        <div class="deep-dive-body">
+          <ul class="clean-list">
+            <li><strong>PCIe 6.0 (Base Spec Rev 6.4, June 11, 2025):</strong> 64 GT/s PAM4 at 32 GBd keeps Nyquist at <strong>16 GHz</strong> (same as Gen5 NRZ). Raw First Bit Error Rate (FBER) target relaxes to <code>1e-6</code> because 6B FEC + 8B CRC + Link Replay drops effective error rate far below <code>1e-12</code> in under 2 ns.</li>
+            <li><strong>PCIe 7.0 &amp; 8.0 Roadmap:</strong> PCIe 7.0 (128 GT/s, released to PCI-SIG members June 2025) doubles PAM4 symbol rate to 64 GBd (32 GHz Nyquist). PCIe 8.0 (256 GT/s) targets member release by 2028.</li>
+            <li><strong>Link Security (IDE / CMA / DOE):</strong> Data Object Exchange (DOE) mailboxes carry Component Measurement &amp; Authentication (CMA/SPDM) to key hardware <strong>Integrity and Data Encryption (IDE)</strong> directly across PCIe TLP wires.</li>
+          </ul>
+        </div>
+      </details>
     </section>
 
+    
+    <div class="step-banner">
+      <span class="step-num">4</span>
+      <h2>Quick Check, Starter Reads &amp; Lab Checklist</h2>
+      
+    </div>
+    
     
     <section class="card">
       <div class="card-header">
         <div>
-          <h2>Curated Primary Sources &amp; Reference Library</h2>
-          <p class="card-subtitle">Authoritative specifications, textbooks, kernel docs, papers, and open-source repositories.</p>
+          <h2>Quick 3-Question Self-Check</h2>
+          <p class="card-subtitle">Click an answer to test your intuition right away &mdash; every option explains <em>why</em>.</p>
         </div>
-        <span class="badge badge-primary">5 Resources</span>
+        <span class="badge badge-violet">Instant Feedback</span>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Source / Resource</th>
-              <th>Format</th>
-              <th>Link / Identifier</th>
-              <th>How to Use It</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>PCI Express Technology 3.0 — Mike Jackson, Ravi Budruk et al. (MindShare Press)</strong></td><td><span class="badge">Book</span></td><td><span class="mono small">ISBN 978-0-9770878-6-0</span></td><td>Best foundational text for PCIe TLP/DLLP layers, credit-based flow control, transaction ordering, config space, and LTSSM.</td></tr><tr><td><strong>PCI-SIG Official Specifications &amp; Intel PCIe DevNet Resources</strong></td><td><span class="badge">Primary Spec / White Papers</span></td><td><a href="https://pcisig.com/specifications" target="_blank" rel="noopener noreferrer">PCI-SIG Specs</a> &bull; <a href="https://www.intel.com/content/www/us/en/io/pci-express/pci-express-architecture-devnet-resources.html" target="_blank" rel="noopener noreferrer">Intel PCIe DevNet</a></td><td>Consult Base Spec 6.4 / 7.0 (via corporate membership) alongside public retimer and CMA/DOE/IDE references.</td></tr><tr><td><strong>PCIe 6.0 Explained: FLIT Mode, PAM4, FEC, IDE (Safeguard) &amp; SI/PI Deep Dive (sipi.work)</strong></td><td><span class="badge">Technical Guides</span></td><td><a href="https://safeguard.sh/resources/blog/pcie-6-explained-flit-mode-pam4-fec-and-integrity-and-data-encryption" target="_blank" rel="noopener noreferrer">Safeguard PCIe 6.0 Guide</a> &bull; <a href="https://sipi.work/topics/interfaces/pcie-gen6.html" target="_blank" rel="noopener noreferrer">sipi.work PCIe Gen6</a></td><td>Engineer-grade breakdowns of 256B FLIT math, DFE error-burst precoding, RLM/SNDR linearity, and Linux inspection workflows.</td></tr><tr><td><strong>Linux Kernel PCIe AER, P2P DMA &amp; SR-IOV Docs</strong></td><td><span class="badge">Official OS Docs</span></td><td><a href="https://docs.kernel.org/PCI/pcieaer-howto.html" target="_blank" rel="noopener noreferrer">PCIe AER HOWTO</a> &bull; <a href="https://docs.kernel.org/driver-api/pci/p2pdma.html" target="_blank" rel="noopener noreferrer">P2P DMA</a> &bull; <a href="https://docs.kernel.org/PCI/pci-iov-howto.html" target="_blank" rel="noopener noreferrer">SR-IOV HOWTO</a></td><td>Reference for /dev/aer_inject, sysfs AER stats, P2P hierarchy distance checks, and SR-IOV VF provisioning.</td></tr><tr><td><strong>EDSFF Form Factors Explained (E1.S/E1.L/E3.S/E3.L)</strong></td><td><span class="badge">Technical Primer</span></td><td><a href="https://www.serversdirect.com/insights/nvme-form-factors-explained-m2-u2-e1s-e3s" target="_blank" rel="noopener noreferrer">Servers Direct Guide</a> &bull; <a href="https://www.supermicro.com/en/glossary/edsff" target="_blank" rel="noopener noreferrer">Supermicro EDSFF Glossary</a></td><td>Quick mapping of dimensions, thermal envelopes (20W–70W), and chassis airflow profiles.</td></tr>
-          </tbody>
-        </table>
+      <div id="p02-quiz"></div>
+    </section>
+    
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Best Places to Start &amp; Reference Library</h2>
+          <p class="card-subtitle">Begin with the 2 recommended starter resources below; expand the full table whenever you need exact spec clauses or repositories.</p>
+        </div>
+        <span class="badge badge-primary">5 Curated Sources</span>
       </div>
+      <div class="grid-2"><div class="sub-panel"><div class="flex-wrap-gap" style="justify-content:space-between;margin-bottom:6px;"><span class="badge badge-success">Start Here First</span><span class="badge">Visual Web Guides</span></div><strong>PCIe 6.0 Explained: FLIT Mode, PAM4, FEC, IDE (Safeguard) &amp; SI/PI Deep Dive (sipi.work)</strong><p class="small muted" style="margin:6px 0 8px;">Start here! Clear visual diagrams of PAM4 eyes, 256-byte FLIT boxes, and why FEC is mandatory.</p><div class="small"><a href="https://safeguard.sh/resources/blog/pcie-6-explained-flit-mode-pam4-fec-and-integrity-and-data-encryption" target="_blank" rel="noopener noreferrer">Safeguard PCIe 6.0 Guide</a> &bull; <a href="https://sipi.work/topics/interfaces/pcie-gen6.html" target="_blank" rel="noopener noreferrer">sipi.work PCIe Gen6</a></div></div><div class="sub-panel"><div class="flex-wrap-gap" style="justify-content:space-between;margin-bottom:6px;"><span class="badge badge-success">Start Here First</span><span class="badge">Quick Visual Primer</span></div><strong>EDSFF Form Factors Explained (E1.S/E1.L/E3.S/E3.L)</strong><p class="small muted" style="margin:6px 0 8px;">5-minute visual guide to server SSD shapes, connectors, and wattage limits.</p><div class="small"><a href="https://www.serversdirect.com/insights/nvme-form-factors-explained-m2-u2-e1s-e3s" target="_blank" rel="noopener noreferrer">Servers Direct Guide</a> &bull; <a href="https://www.supermicro.com/en/glossary/edsff" target="_blank" rel="noopener noreferrer">Supermicro EDSFF Glossary</a></div></div></div>
+      <details class="deep-dive">
+        <summary>Full Specification, Book &amp; Open-Source Reference Table (5 items)</summary>
+        <div class="deep-dive-body">
+          <div class="table-wrap" style="margin:0;">
+            <table>
+              <thead>
+                <tr><th>Source / Resource</th><th>Format</th><th>Link / Identifier</th><th>How to Use It</th></tr>
+              </thead>
+              <tbody><tr><td><strong>PCIe 6.0 Explained: FLIT Mode, PAM4, FEC, IDE (Safeguard) &amp; SI/PI Deep Dive (sipi.work)</strong></td><td><span class="badge">Visual Web Guides</span></td><td><a href="https://safeguard.sh/resources/blog/pcie-6-explained-flit-mode-pam4-fec-and-integrity-and-data-encryption" target="_blank" rel="noopener noreferrer">Safeguard PCIe 6.0 Guide</a> &bull; <a href="https://sipi.work/topics/interfaces/pcie-gen6.html" target="_blank" rel="noopener noreferrer">sipi.work PCIe Gen6</a></td><td>Start here! Clear visual diagrams of PAM4 eyes, 256-byte FLIT boxes, and why FEC is mandatory.</td></tr><tr><td><strong>EDSFF Form Factors Explained (E1.S/E1.L/E3.S/E3.L)</strong></td><td><span class="badge">Quick Visual Primer</span></td><td><a href="https://www.serversdirect.com/insights/nvme-form-factors-explained-m2-u2-e1s-e3s" target="_blank" rel="noopener noreferrer">Servers Direct Guide</a> &bull; <a href="https://www.supermicro.com/en/glossary/edsff" target="_blank" rel="noopener noreferrer">Supermicro EDSFF Glossary</a></td><td>5-minute visual guide to server SSD shapes, connectors, and wattage limits.</td></tr><tr><td><strong>PCI Express Technology 3.0 — Mike Jackson, Ravi Budruk et al. (MindShare Press)</strong></td><td><span class="badge">Foundational Book</span></td><td><span class="mono small">ISBN 978-0-9770878-6-0</span></td><td>The gold-standard textbook for understanding TLPs, credits, ordering rules, and link training (LTSSM).</td></tr><tr><td><strong>Linux Kernel PCIe AER, P2P DMA &amp; SR-IOV Docs</strong></td><td><span class="badge">Official OS Docs</span></td><td><a href="https://docs.kernel.org/PCI/pcieaer-howto.html" target="_blank" rel="noopener noreferrer">PCIe AER HOWTO</a> &bull; <a href="https://docs.kernel.org/driver-api/pci/p2pdma.html" target="_blank" rel="noopener noreferrer">P2P DMA</a> &bull; <a href="https://docs.kernel.org/PCI/pci-iov-howto.html" target="_blank" rel="noopener noreferrer">SR-IOV HOWTO</a></td><td>Practical Linux commands to inject PCIe errors (/dev/aer_inject), check P2P GPU paths, and create Virtual Functions.</td></tr><tr><td><strong>PCI-SIG Official Specifications &amp; Intel PCIe DevNet Resources</strong></td><td><span class="badge">Primary Spec</span></td><td><a href="https://pcisig.com/specifications" target="_blank" rel="noopener noreferrer">PCI-SIG Specs</a> &bull; <a href="https://www.intel.com/content/www/us/en/io/pci-express/pci-express-architecture-devnet-resources.html" target="_blank" rel="noopener noreferrer">Intel PCIe DevNet</a></td><td>Corporate spec lookup for Base Spec 6.4 / 7.0, retimers, and IDE/CMA/DOE link security.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </section>
     
     
     <section class="card" data-progress-prefix="p02_" data-progress-total="5">
       <div class="card-header">
         <div>
-          <h2>Mastery Checklist (Saved Locally)</h2>
-          <p class="card-subtitle">Check off skills and labs as you validate them — progress rolls up automatically to the Storage Hub.</p>
+          <h2>Hands-On Lab &amp; Mastery Checklist</h2>
+          <p class="card-subtitle">Tick items as you learn them &mdash; your progress saves in your browser and updates the sidebar automatically.</p>
         </div>
         <span class="badge badge-success progress-text">0 / 5 (0%)</span>
       </div>
       <div class="progress-track mb-2"><div class="progress-fill" style="width: 0%"></div></div>
-      <div class="checklist mt-3">
-        <label class="check-item"><input type="checkbox" data-check-id="p02_01" /><div><div class="check-title"><strong>Calculate PCIe 5.0 vs 6.0 vs 7.0 usable bandwidth and 256B FLIT overhead</strong></div><div class="small muted">Verify PAM4 32 GBd / 16 GHz Nyquist, 236B TLP + 6B DLP + 8B CRC + 6B FEC, ~30.3 GB/s Gen6 x4 &amp; 121 GB/s x16, and L0p lane scaling.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_02" /><div><div class="check-title"><strong>Inspect link health and configuration space with lspci -vv</strong></div><div class="small muted">Verify negotiated speed, width, FLIT status, MaxPayloadSize (MPS), MaxReadRequestSize (MRRS), and completion timeouts.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_03" /><div><div class="check-title"><strong>Decode AER TLP headers and test DPC / error injection</strong></div><div class="small muted">Use sysfs AER counters and /dev/aer_inject to distinguish riser-card signal degradation from SSD firmware crashes.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_04" /><div><div class="check-title"><strong>Validate SR-IOV, ARI, and Peer-to-Peer (P2P) DMA topologies</strong></div><div class="small muted">Provision Physical/Virtual Functions and verify P2P distance checks for Controller Memory Buffers (CMB) and GPUDirect Storage.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_05" /><div><div class="check-title"><strong>Correlate EDSFF mechanical/thermal envelopes with PCIe eye diagnostics</strong></div><div class="small muted">Compare E1.S/E1.L/E3.S/E3.L (SFF-TA-1002) vs U.2/U.3/M.2 and use OCP Link Retraining / Correctable Error counters &amp; pci-eye.</div></div></label>
-      </div>
+      <div class="checklist mt-3"><label class="check-item"><input type="checkbox" data-check-id="p02_01" /><div><div class="check-title"><strong>Explain why PCIe 6.0 switched to PAM4 + 256-byte FLITs</strong></div><div class="small muted">PAM4 packs 2 bits per symbol (4 voltage levels) to double speed without doubling wire frequency, using fast FEC+CRC inside fixed 256B boxes.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_02" /><div><div class="check-title"><strong>Check if an SSD trained at full speed and width in Linux</strong></div><div class="small muted">Run lspci -vv to verify LnkSta matches LnkCap (e.g., 64 GT/s, x4), FLIT status, and MaxPayloadSize.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_03" /><div><div class="check-title"><strong>Spot a bad riser cable before blaming SSD firmware</strong></div><div class="small muted">Check Linux PCIe AER counters, OCP SMART Link Retraining Count, and PCIe eye margin (nvmeadm sandisk/pci-eye).</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_04" /><div><div class="check-title"><strong>Know your data-center SSD shapes (EDSFF)</strong></div><div class="small muted">Distinguish E1.S (~20W 1U), E1.L (dense QLC ruler), E3.S (25–40W 2U mainstream), and E3.L (40–70W high-power) vs legacy U.2 &amp; client M.2.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p02_05" /><div><div class="check-title"><strong>Understand SR-IOV, P2P DMA, and L0p power saving</strong></div><div class="small muted">SR-IOV splits 1 SSD into Virtual Functions for VMs; P2P lets GPUs read SSDs directly; L0p idles unused lanes without retraining.</div></div></label></div>
     </section>
     
     
 
-    <nav class="subject-pager"><a class="btn" href="../01-standards-and-protocols/index.html">&larr; 01. Standards &amp; Protocols</a><a class="btn" href="../index.html">Storage Hub</a><a class="btn btn-primary" href="../03-flash-physics-and-sandisk-platforms/index.html">03. Flash Physics &amp; SanDisk Platforms &rarr;</a></nav>
-  </main>
+        <nav class="subject-pager"><a class="btn" href="../01-standards-and-protocols/index.html">&larr; 01. NVMe &amp; OCP Protocols</a><a class="btn" href="../index.html">Course Hub</a><a class="btn btn-primary" href="../03-flash-physics-and-sandisk-platforms/index.html">03. 3D NAND &amp; SanDisk SSDs &rarr;</a></nav>
+      </main>
+    </div>
+  </div>
 
   <script src="../assets/app.js"></script>
   <script>
 
     const GEN_SPEC = {
-      4: { label: 'PCIe 4.0 (NRZ)', gts: 16, nyq: '8 GHz (16 GBd)', note: 'NRZ 128b/130b variable-length TLP framing; no FEC/FLIT.', eff: 128 / 130, usablePer4: 7.877, flit: false, l0p: 'Not Supported' },
-      5: { label: 'PCIe 5.0 (NRZ)', gts: 32, nyq: '16 GHz (32 GBd)', note: 'NRZ 128b/130b; strict channel loss & retimer budgets.', eff: 128 / 130, usablePer4: 15.754, flit: false, l0p: 'Not Supported' },
-      6: { label: 'PCIe 6.0 (PAM4)', gts: 64, nyq: '16 GHz (32 GBd)', note: 'PAM4 FBER 1e-6; 256B FLIT: 236B TLP + 6B DLP + 8B CRC + 6B FEC (<2 ns).', eff: 236 / 256, usablePer4: 30.3, flit: true, l0p: 'L0p Supported' },
-      7: { label: 'PCIe 7.0 (PAM4)', gts: 128, nyq: '32 GHz (64 GBd)', note: 'PAM4 256B FLIT at 64 GBd (released to PCI-SIG members June 2025).', eff: 236 / 256, usablePer4: 60.6, flit: true, l0p: 'L0p Supported' }
+      4: { label: 'PCIe 4.0 (NRZ)', gts: 16, eff: 128 / 130, usablePer4: 7.88, flit: false, l0p: 'No L0p', msg: 'Gen4 x4 tops out around ~7.0–7.5 GB/s in real SSDs after TLP header overhead.' },
+      5: { label: 'PCIe 5.0 (NRZ)', gts: 32, eff: 128 / 130, usablePer4: 15.75, flit: false, l0p: 'No L0p', msg: 'Gen5 x4 gives ~15.75 GB/s theoretical TLP ceiling — why flagship Gen5 SSDs (like SanDisk SN8100) peak right around 14.9 GB/s!' },
+      6: { label: 'PCIe 6.0 (PAM4)', gts: 64, eff: 236 / 256, usablePer4: 30.3, flit: true, l0p: 'Supported', msg: 'Gen6 x4 packs 236B of TLP space into each 256B FLIT (~30.3 GB/s ceiling) — why Gen6 enterprise SSDs reach ~28 GB/s!' },
+      7: { label: 'PCIe 7.0 (PAM4)', gts: 128, eff: 236 / 256, usablePer4: 60.6, flit: true, l0p: 'Supported', msg: 'Gen7 doubles PAM4 symbol rate to 64 GBd, pushing an x4 SSD link past 60 GB/s.' }
     };
 
     function drawFlit() {
@@ -173,43 +236,34 @@
 
       document.getElementById('pcie-gen-lbl').textContent = s.label;
       document.getElementById('p2-lanes-lbl').textContent = 'x' + lanes;
-      document.getElementById('p2-nyq-lbl').textContent = s.nyq;
-      document.getElementById('p2-mode-note').textContent = s.note;
       document.getElementById('k-raw').textContent = rawGBs.toFixed(1) + ' GB/s';
       document.getElementById('k-gt').textContent = `${s.gts} GT/s × ${lanes} lane${lanes > 1 ? 's' : ''}`;
       document.getElementById('k-usable').textContent = '~' + usableGBs.toFixed(1) + ' GB/s';
       document.getElementById('k-eff').textContent = (s.eff * 100).toFixed(1) + '%';
-      document.getElementById('k-eff-note').textContent = s.flit ? '236B TLP + 6B DLP + 8B CRC + 6B FEC' : '128b/130b line coding (before TLP hdrs)';
+      document.getElementById('k-eff-note').textContent = s.flit ? '236B TLP / 256B FLIT' : '128b/130b line coding';
       document.getElementById('k-l0p').textContent = s.l0p;
+      document.getElementById('p2-takeaway').innerHTML = `<strong>What You're Seeing:</strong> ${s.msg} (At x${lanes}, usable 1-way ceiling is <strong>~${usableGBs.toFixed(1)} GB/s</strong>.)`;
 
       const { ctx, w, h, th } = StorageHub.prepCanvas(document.getElementById('p2-flit-canvas'), 175);
-      const padX = 18;
-      const barW = w - padX * 2;
-      const barY = 52;
-      const barH = 44;
-
+      const padX = 18, barW = w - padX * 2, barY = 50, barH = 44;
       ctx.fillStyle = th.fg;
       ctx.font = '700 13px system-ui, sans-serif';
-      ctx.fillText(
-        StorageHub.fitText(ctx, s.flit ? `PCIe ${gen}.0 Mandatory 256-Byte FLIT Anatomy (x${lanes} • ~${usableGBs.toFixed(1)} GB/s 1-way)` : `PCIe ${gen}.0 Variable TLP + 128b/130b Block Framing (x${lanes} • ~${usableGBs.toFixed(1)} GB/s 1-way)`, barW),
-        padX, 28
-      );
+      ctx.fillText(StorageHub.fitText(ctx, s.flit ? `Inside One 256-Byte PCIe ${gen}.0 FLIT Crate` : `PCIe ${gen}.0 Variable Packet Framing (128b/130b)`, barW), padX, 28);
 
       const segs = s.flit
         ? [
-            { name: 'TLP Area (236 B)', frac: 236 / 256, color: th.primary },
-            { name: 'DLP (6 B)', frac: 6 / 256, color: th.violet },
+            { name: 'TLP Data & Header (236 B)', frac: 236 / 256, color: th.primary },
+            { name: 'Link Ctrl (6 B)', frac: 6 / 256, color: th.violet },
             { name: 'CRC (8 B)', frac: 8 / 256, color: th.warning },
             { name: 'FEC (6 B)', frac: 6 / 256, color: th.success }
           ]
         : [
             { name: 'TLP Payload & Header (~86%)', frac: 0.86, color: th.primary },
-            { name: 'LCRC + Seq + Framing (~12.5%)', frac: 0.125, color: th.warning },
-            { name: 'Sync 2b (1.5%)', frac: 0.015, color: th.violet }
+            { name: 'LCRC + Framing (~12.5%)', frac: 0.125, color: th.warning },
+            { name: '2b Sync (1.5%)', frac: 0.015, color: th.violet }
           ];
 
-      // Normalize widths with readable minimum while summing to exact barW
-      const minW = Math.min(44, barW * 0.09);
+      const minW = Math.min(46, barW * 0.09);
       const rawW = segs.map(x => Math.max(minW, x.frac * barW));
       const sumW = rawW.reduce((a, b) => a + b, 0);
       const widths = rawW.map(v => (v / sumW) * barW);
@@ -218,39 +272,64 @@
       segs.forEach((seg, i) => {
         const sw = widths[i];
         ctx.fillStyle = seg.color;
-        StorageHub.roundRect(ctx, curX + 1, barY, Math.max(2, sw - 2), barH, 6);
+        StorageHub.roundRect(ctx, curX + 1, barY, Math.max(2, sw - 2), barH, 7);
         ctx.fill();
         ctx.fillStyle = StorageHub.contrastText(seg.color);
         ctx.font = '700 11px ui-monospace, monospace';
         const txt = StorageHub.fitText(ctx, seg.name, sw - 10);
-        if (txt) {
-          ctx.textAlign = 'center';
-          ctx.fillText(txt, curX + sw / 2, barY + barH / 2 + 4);
-        }
+        if (txt) { ctx.textAlign = 'center'; ctx.fillText(txt, curX + sw / 2, barY + barH / 2 + 4); }
         curX += sw;
       });
       ctx.textAlign = 'left';
 
-      // Legend row underneath (guaranteed no overlap)
-      let lx = padX;
-      let ly = barY + barH + 28;
+      let lx = padX, ly = barY + barH + 28;
       ctx.font = '600 11.5px system-ui, sans-serif';
       segs.forEach(seg => {
         const tw = ctx.measureText(seg.name).width + 26;
         if (lx + tw > w - padX) { lx = padX; ly += 20; }
-        ctx.fillStyle = seg.color;
-        ctx.fillRect(lx, ly - 10, 11, 11);
-        ctx.fillStyle = th.muted;
-        ctx.fillText(seg.name, lx + 16, ly);
+        ctx.fillStyle = seg.color; ctx.fillRect(lx, ly - 10, 11, 11);
+        ctx.fillStyle = th.muted; ctx.fillText(seg.name, lx + 16, ly);
         lx += tw + 10;
       });
     }
 
+    function setP2(g, l, btnId) {
+      document.getElementById('p2-gen').value = g;
+      document.getElementById('p2-lanes').value = l;
+      ['p2-try-g5', 'p2-try-g6', 'p2-try-l0p'].forEach(id => document.getElementById(id).classList.toggle('active', id === btnId));
+      drawFlit();
+    }
+    document.getElementById('p2-try-g5').addEventListener('click', () => setP2('5', '4', 'p2-try-g5'));
+    document.getElementById('p2-try-g6').addEventListener('click', () => setP2('6', '4', 'p2-try-g6'));
+    document.getElementById('p2-try-l0p').addEventListener('click', () => setP2('6', '1', 'p2-try-l0p'));
     document.getElementById('p2-gen').addEventListener('change', drawFlit);
     document.getElementById('p2-lanes').addEventListener('change', drawFlit);
     window.addEventListener('resize', drawFlit);
     window.addEventListener('themechange', drawFlit);
     drawFlit();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      StorageHub.renderQuiz('p02-quiz', [
+        {
+          q: 'How does PCIe 6.0 double per-lane speed from 32 GT/s to 64 GT/s without doubling the 16 GHz Nyquist wire frequency?',
+          options: ['It uses 8 copper wires per lane', 'It switches from 2-level NRZ to 4-level PAM4 (2 bits per symbol) plus 256B FLITs with FEC', 'It removes CRC error checking'],
+          answer: 1,
+          explain: 'PAM4 encodes 2 bits per symbol across 4 voltage levels at 32 GBd, keeping Nyquist at 16 GHz while using lightweight FEC + 8B CRC inside 256B FLITs to tame the smaller eye openings.'
+        },
+        {
+          q: 'A Gen6 SSD suddenly drops throughput by 50% on a test riser card, and OCP SMART shows rising PCIe Link Retraining Count. What should you suspect first?',
+          options: ['Physical signal-integrity loss / riser downgrade (check lspci -vv LnkSta and AER counters)', 'NAND flash wear-out', 'Linux filesystem fragmentation'],
+          answer: 0,
+          explain: 'Gen5/Gen6 risers and worn connectors easily lose eye margin and trigger link width/speed downgrades or replay storms — always check lspci -vv and AER first!'
+        },
+        {
+          q: 'What does PCIe 6.0 L0p allow an enterprise SSD to do during light workloads?',
+          options: ['Overclock voltage past 12V', 'Scale down active lanes (e.g. x4 → x1) to save power without pausing traffic for full link retraining', 'Disable NVMe queues'],
+          answer: 1,
+          explain: 'L0p dynamically idles unused lanes losslessy without dropping the link into full LTSSM recovery/retraining.'
+        }
+      ]);
+    });
     
 </script>
 </body>

@@ -3,140 +3,249 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>06. Validation Methodologies, Fault Injection &amp; Formal Methods &mdash; Storage &amp; Validation Engineering Hub</title>
+  <title>06. Fault Injection, PLP &amp; TLA+ &mdash; Storage Mastery Hub</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body class="theme-dark">
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand-group">
-        <a class="brand-badge" href="../index.html">NVMe</a>
-        <div class="breadcrumbs"><a href="../../index.html">Learning Topics</a> <span>/</span> <a href="../index.html">Storage &amp; Validation</a> <span>/</span> <span class="current">06. Validation Methodologies, Fault Injection &amp; Formal Methods</span></div>
-      </div>
-      <div class="header-controls">
-        <select id="subject-nav" class="nav-select" data-base="../" data-current="p06" aria-label="Jump to subject"></select>
-        <a class="btn" href="../nvme_systems_tutor.html">102-Term Tutor</a>
-        <button id="theme-toggle" class="btn" type="button">Light Mode</button>
-      </div>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside class="course-sidebar" id="course-sidebar" data-base="../" data-current="p06" aria-label="Course navigation"></aside>
+
+    <div class="main-column">
+      <header class="site-header">
+        <div class="header-inner">
+          <div class="flex-wrap-gap">
+            <button id="mobile-menu-btn" class="btn mobile-menu-btn" type="button" aria-label="Open course menu">&#9776; Menu</button>
+            <div class="breadcrumbs"><a href="../../index.html">Portal</a> <span>/</span> <a href="../index.html">Storage Hub</a> <span>/</span> <span class="current">06. Fault Injection, PLP &amp; TLA+</span></div>
+          </div>
+          <div class="header-controls">
+            <div class="depth-switch" title="Switch between plain-English learning view and full specification depth">
+              <button type="button" class="depth-btn active" data-depth="simple">Simple View</button>
+              <button type="button" class="depth-btn" data-depth="deep">Full Spec</button>
+            </div>
+            <a class="btn" href="../nvme_systems_tutor.html">102-Term Lab</a>
+            <button id="theme-toggle" class="btn" type="button">Light</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="container">
+        <section class="hero">
+          <div class="hero-eyebrow">Phase 3 • Breaking Drives Safely (⏱ 7 min read)</div>
+          <h1>06. Fault Injection, PLP &amp; TLA+</h1>
+          <p>Go beyond happy-path benchmarks: pull power mid-write, trigger OCP error modes, fuzz firmware on QEMU, and prove state machines with TLA+.</p>
+          <div class="hero-meta"><span class="badge badge-success">Interactive Fault Explorer</span><span class="badge badge-error">Quarch PLP &amp; OCP C0h</span><span class="badge badge-violet">QEMU Fuzzing &amp; TLA+</span></div>
+        </section>
+
+        
+    
+    <div class="step-banner">
+      <span class="step-num">1</span>
+      <h2>The 30-Second Mental Model</h2>
+      <span class="muted">&mdash; How validation engineers think differently from app developers</span>
     </div>
-  </header>
+    
+    
+    <section class="tldr-grid">
+      <div class="tldr-card">
+        <div class="tldr-label">The Core Problem</div>
+        <p>Any drive looks great when reading sequential files at room temperature. Customer disasters happen when power flickers mid-write, a controller core hangs during reset, or a malformed command overflows a parser.</p>
+      </div>
+      <div class="tldr-card analogy">
+        <div class="tldr-label">Plain-English Analogy</div>
+        <p>Think of yourself as a <strong>crash-test engineer for data</strong>: you yank the power cord in microseconds (<strong>Quarch</strong>), trigger fake engine fires (<strong>OCP C0h</strong>), and check every single byte's fingerprint (<strong>T10 CRC</strong>) afterward.</p>
+      </div>
+      <div class="tldr-card role">
+        <div class="tldr-label">Why You Care at SanDisk</div>
+        <p>SanDisk combines big lab iron (<strong>OakGate, SANBlaze, Quarch</strong>) with modern software superpowers: <strong>QEMU shift-left emulation</strong>, <strong>smart fuzzing</strong>, and <strong>TLA+ mathematical proofs</strong>.</p>
+      </div>
+    </section>
+    
 
-  <main class="container">
-    <section class="hero">
-      <div class="hero-eyebrow">Pillar 06 • Compliance, PLP, Fuzzing &amp; TLA+ Formal Specs</div>
-      <h1>06. Validation Methodologies, Fault Injection &amp; Formal Methods</h1>
-      <p>Commercial HIL conformance (UNH-IOL, OakGate, SANBlaze, HLK), T10 PI/CRC integrity, Quarch PLP fault injection, OCP C0h 21 error modes (CRASH-5/EREC-2), QEMU/FEMU state-aware fuzzing, and TLA+/PlusCal formal verification.</p>
-      <div class="hero-meta"><span class="badge badge-primary">OakGate • SANBlaze • UNH-IOL</span><span class="badge badge-error">Quarch PLP &amp; OCP C0h</span><span class="badge badge-warning">QEMU/FEMU &amp; AFL++ Fuzzing</span><span class="badge badge-violet">TLA+ / PlusCal Invariants</span></div>
+    
+    <div class="step-banner">
+      <span class="step-num">2</span>
+      <h2>Interactive Fault Lab: Pick How You Want to Stress the SSD</h2>
+      <span class="muted">&mdash; Click each weapon in your validation toolkit</span>
+    </div>
+    
+    <section class="card">
+      <div class="pill-bar" id="p6-tabs">
+        <button type="button" class="pill active" data-k="plp">1. Pull the Power (Quarch PLP)</button>
+        <button type="button" class="pill" data-k="c0h">2. Inject FW Faults (OCP C0h)</button>
+        <button type="button" class="pill" data-k="dif">3. Catch Silent Corruption (T10 PI)</button>
+        <button type="button" class="pill" data-k="fuzz">4. Smart Fuzzing (QEMU/FEMU)</button>
+        <button type="button" class="pill" data-k="tla">5. Prove Races (TLA+)</button>
+      </div>
+      <div class="sub-panel" id="p6-box"></div>
     </section>
 
+    
+    <div class="step-banner">
+      <span class="step-num">3</span>
+      <h2>Know the Lab Hardware + Shift-Left Workflow</h2>
+      <span class="muted">&mdash; Plain-English guide to commercial rigs &amp; governance</span>
+    </div>
+    
+    <section class="card">
+      <div class="grid-2">
+        <div class="sub-panel">
+          <span class="badge badge-primary mb-2">Hardware-in-the-Loop (HIL) Racks</span>
+          <h3>Who Does What in the Lab?</h3>
+          <ul class="clean-list small">
+            <li><strong>OakGate (Teledyne LeCroy) &amp; SANBlaze:</strong> Turnkey SSD test appliances running 450+ automated OCP 2.6, NVMe, and SPDM compliance tests (including Gen6 <code>R300-G6-PRO</code>).</li>
+            <li><strong>Teledyne LeCroy Summit:</strong> Wire-level PCIe protocol analyzer (&ldquo;Wireshark for physical PCIe lanes&rdquo;).</li>
+            <li><strong>Quarch PPM / PAM:</strong> Programmable power switches that inject microsecond brownouts, glitches &amp; hot-plugs.</li>
+            <li><strong>UNH-IOL &amp; Windows HLK:</strong> Industry NVMe conformance &amp; Microsoft WHQL certification suites.</li>
+          </ul>
+        </div>
+
+        <div class="sub-panel">
+          <span class="badge badge-success mb-2">Fast Iteration</span>
+          <h3>Shift Left on QEMU + Safe AI Usage</h3>
+          <p class="small muted">Don&rsquo;t wait in line for a Gen6 rack to test your Python log parser! Boot a local <strong>QEMU VM</strong> with virtual NVMe (<code>ocp=on, fdp=on</code>) and mock tests first:</p>
+          <pre style="margin:8px 0;">-device nvme-subsys,id=sub0,fdp=on,fdp.nruh=4 -device nvme,id=nvme0,subsys=sub0,ocp=on</pre>
+          <p class="small muted mb-0"><strong>AI Governance:</strong> Approved AI coding/log assistants are encouraged &mdash; just verify every generated test against specs/mocks and never paste confidential FW dumps into unapproved external tools.</p>
+        </div>
+      </div>
+    </section>
+
+    
+    <div class="step-banner">
+      <span class="step-num">4</span>
+      <h2>Quick Check, Starter Tutorials &amp; Checklist</h2>
+      
+    </div>
+    
     
     <section class="card">
       <div class="card-header">
         <div>
-          <h2>Interactive Fault-Injection &amp; Resiliency Verification Matrix</h2>
-          <p class="card-subtitle">Filter across OCP 2.6 Set Features <code>C0h</code> error injection classes, Quarch PLP electrical profiles, and shift-left fuzzing/formal methods.</p>
+          <h2>Quick 3-Question Self-Check</h2>
+          <p class="card-subtitle">Click an answer to test your intuition right away &mdash; every option explains <em>why</em>.</p>
         </div>
-        <div class="pill-bar mb-0" id="p6-filters">
-          <button type="button" class="pill active" data-cat="all">All Fault Classes</button>
-          <button type="button" class="pill" data-cat="ocp">OCP C0h (21 Modes)</button>
-          <button type="button" class="pill" data-cat="plp">Quarch PLP / Power</button>
-          <button type="button" class="pill" data-cat="formal">Fuzzing &amp; TLA+</button>
-        </div>
+        <span class="badge badge-violet">Instant Feedback</span>
       </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Fault / Verification Class</th><th>Mechanism / Trigger</th><th>Expected Drive / Spec Assertion</th></tr></thead>
-          <tbody id="p6-body">
-            <tr data-cat="ocp"><td><strong>FW Assert / CPU Hang (<code>0001h</code>&ndash;Panic family)</strong></td><td>OCP 2.6 Set Features <code>C0h</code> Error Injection (part of 21 modes)</td><td><code>CRASH-5</code>: &lt;2s FW watchdog triggers; <code>EREC-2</code>: autonomous panic recovery prefers NVMe Controller Reset; Log <code>C1h</code> increments panic count &amp; exports crash dump.</td></tr>
-            <tr data-cat="ocp"><td><strong>Media / ECC / Read-Only / Critical Temp (<code>0015h</code>)</strong></td><td>OCP 2.6 Set Features <code>C0h</code> injected media/thermal fault</td><td>Drive transitions cleanly per OCP rules (e.g., thermal throttling / read-only protection), logs Async Event + <code>02h</code>/<code>C0h</code>/<code>0Dh</code> PEL counters without silent data corruption.</td></tr>
-            <tr data-cat="plp"><td><strong>Quarch PPM / PAM Power Loss &amp; Glitch</strong></td><td>Voltage margining, brownouts, micro-glitches, ramps, crowbars, hot-plug</td><td>Tantalum/supercapacitor hold-up flushes inflight metadata/data (including first-pass Direct Write QLC on UltraQLC); zero torn writes or LBA/CRC mismatch on remount.</td></tr>
-            <tr data-cat="plp"><td><strong>End-to-End Data Integrity (T10 PI / CRC)</strong></td><td>LBA-seeded PRNG, configurable entropy, 520B DIF / DIX metadata, 32/64-bit CRC</td><td>Guard CRC, Application Tag, and Reference Tag verified end-to-end across host DMA, controller SRAM/DRAM, and NAND pages under power cycling.</td></tr>
-            <tr data-cat="formal"><td><strong>State-Data-Aware Fuzzing (QEMU / FEMU / SPDK)</strong></td><td>AFL++, <code>spdk/test/app/fuzz/nvme_fuzz</code>, QEMU libfuzzer, Syzkaller</td><td>FEMU academic study: state-data-aware fuzzing matched AFL++ coverage with <strong>~67% fewer commands</strong>; catches parser overflows &amp; queue state hangs early.</td></tr>
-            <tr data-cat="formal"><td><strong>TLA+ / PlusCal Formal Modeling (TLC)</strong></td><td>Mathematical state-machine invariants &amp; safety/liveness properties</td><td>Proves queue head/tail ordering, async controller reset races, namespace attach/detach lifecycles, and PLP flush invariants before silicon sign-off.</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div id="p06-quiz"></div>
     </section>
-
-    <section class="grid-2">
-      <div class="card">
-        <h2 style="margin-top:0;">Commercial HIL &amp; Compliance Ecosystem</h2>
-        <ul class="clean-list small">
-          <li><strong>UNH-IOL INTERACT:</strong> NVMe Base, NVM Command Set, and PCIe/TCP/RDMA Conformance test suites.</li>
-          <li><strong>Teledyne LeCroy OakGate:</strong> PCIe 6.0 <code>R300-G6-PRO</code> / <code>DE200-G6-PRO</code> appliances, SVF/Enduro software, Python API, 450+ OCP compliance tests, SPDM flows.</li>
-          <li><strong>SANBlaze:</strong> SBExpress systems &amp; SBCert CDL-approved OCP 2.6 suite.</li>
-          <li><strong>Teledyne LeCroy Summit:</strong> Hardware PCIe protocol analyzers &amp; exercisers.</li>
-          <li><strong>Windows HLK (WHQL):</strong> Certifies NVMe drives as both <em>Storage Controller</em> and <em>Hard Drive</em>; VHLK automation playlists.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h2 style="margin-top:0;">Shift-Left QEMU NVMe &amp; AI Verification Governance</h2>
-        <pre># Launch local virtual NVMe with OCP 2.6 &amp; FDP enabled
-qemu-system-x86_64 ...   -device nvme-subsys,id=sub0,fdp=on,fdp.runs=96M,fdp.nrg=1,fdp.nruh=4   -device nvme,id=nvme0,subsys=sub0,serial=SNDKEMU1,ocp=on</pre>
-        <div class="callout warning mb-0">
-          <strong>AI-Assisted Engineering Governance:</strong> Use approved AI tools to accelerate test scripting and binary log parsing, but enforce strict verification (unit/mock tests against QEMU &amp; <code>nvme-cli</code> mock suites) and corporate IP/security boundaries.
-        </div>
-      </div>
-    </section>
-
+    
     
     <section class="card">
       <div class="card-header">
         <div>
-          <h2>Curated Primary Sources &amp; Reference Library</h2>
-          <p class="card-subtitle">Authoritative specifications, textbooks, kernel docs, papers, and open-source repositories.</p>
+          <h2>Best Places to Start &amp; Reference Library</h2>
+          <p class="card-subtitle">Begin with the 2 recommended starter resources below; expand the full table whenever you need exact spec clauses or repositories.</p>
         </div>
-        <span class="badge badge-primary">6 Resources</span>
+        <span class="badge badge-primary">4 Curated Sources</span>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Source / Resource</th>
-              <th>Format</th>
-              <th>Link / Identifier</th>
-              <th>How to Use It</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>UNH-IOL NVMe Test Tools &amp; Conformance Test Plans</strong></td><td><span class="badge">Test Specs &amp; Lab Docs</span></td><td><a href="https://www.iol.unh.edu/testing/storage/nvme/tools" target="_blank" rel="noopener noreferrer">UNH-IOL NVMe Tools</a> &bull; <a href="https://www.iol.unh.edu/sites/default/files/testsuites/nvme/v26/UNH-IOL_NVM_Command_Set_Conformance_v26.0_2026.08.12.pdf" target="_blank" rel="noopener noreferrer">NVM CS Conformance v26.0 PDF</a></td><td>Study how industry pass/fail conformance checks map to NVMe specification clauses.</td></tr><tr><td><strong>OakGate, SANBlaze &amp; Quarch Technical Documentation</strong></td><td><span class="badge">Vendor Validation Guides</span></td><td><a href="https://www.teledynelecroy.com/ssdtesting/oakgate-ssd-test-solutions.aspx" target="_blank" rel="noopener noreferrer">Teledyne LeCroy OakGate</a> &bull; <a href="https://www.sanblaze.com/ocp" target="_blank" rel="noopener noreferrer">SANBlaze OCP</a> &bull; <a href="https://quarch.com/solutions/ssd-power-analysis/" target="_blank" rel="noopener noreferrer">Quarch SSD Power Analysis</a></td><td>Learn commercial HIL automation APIs, OCP compliance matrices, and high-speed power/glitch capture.</td></tr><tr><td><strong>QEMU NVMe Emulation &amp; Device Fuzzing Docs</strong></td><td><span class="badge">Official Docs</span></td><td><a href="https://qemu-project.gitlab.io/qemu/system/devices/nvme.html" target="_blank" rel="noopener noreferrer">QEMU NVMe Emulation</a> &bull; <a href="https://www.qemu.org/docs/master/devel/testing/fuzzing.html" target="_blank" rel="noopener noreferrer">QEMU Fuzzing</a></td><td>Spin up local virtual NVMe subsystems with FDP, OCP, and SR-IOV enabled to develop tooling offline.</td></tr><tr><td><strong>State-Data-Aware SSD Firmware Fuzzing (2025) &amp; NVMe Fuzzing Report (SPDK + AFL++)</strong></td><td><span class="badge">Paper &amp; Repo</span></td><td><a href="https://arxiv.org/html/2505.03062v1" target="_blank" rel="noopener noreferrer">arXiv 2505.03062</a> &bull; <a href="https://github.com/benlimpa/nvme-fuzzing-report" target="_blank" rel="noopener noreferrer">nvme-fuzzing-report</a></td><td>Practical blueprints for fuzzing NVMe Admin/I/O queues and decoding crashing inputs.</td></tr><tr><td><strong>Windows HLK NVMe SSD Testing Overview</strong></td><td><span class="badge">Microsoft Docs</span></td><td><a href="https://learn.microsoft.com/en-us/windows-hardware/test/hlk/testref/nvme-ssd-testing-overview" target="_blank" rel="noopener noreferrer">Microsoft HLK NVMe Docs</a></td><td>Reference for WHQL playlist setup, Storage Controller vs Disk submissions, and VHLK automation.</td></tr><tr><td><strong>Learn TLA+ — Hillel Wayne</strong></td><td><span class="badge">Online Tutorial</span></td><td><a href="https://learntla.com/" target="_blank" rel="noopener noreferrer">learntla.com</a></td><td>Fast, practical onboarding to TLA+/PlusCal invariants and TLC model checking aligned with SanDisk&#x27;s formal-methods track.</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="grid-2"><div class="sub-panel"><div class="flex-wrap-gap" style="justify-content:space-between;margin-bottom:6px;"><span class="badge badge-success">Start Here First</span><span class="badge">Interactive Tutorial + Emulator</span></div><strong>Learn TLA+ (Hillel Wayne) &amp; QEMU NVMe Emulation Docs</strong><p class="small muted" style="margin:6px 0 8px;">Start here! Spin up a virtual OCP+FDP SSD on your laptop in 5 minutes and learn TLA+ state modeling step-by-step.</p><div class="small"><a href="https://learntla.com/" target="_blank" rel="noopener noreferrer">learntla.com</a> &bull; <a href="https://qemu-project.gitlab.io/qemu/system/devices/nvme.html" target="_blank" rel="noopener noreferrer">QEMU NVMe Docs</a></div></div><div class="sub-panel"><div class="flex-wrap-gap" style="justify-content:space-between;margin-bottom:6px;"><span class="badge badge-success">Start Here First</span><span class="badge">Paper &amp; Practical Repo</span></div><strong>State-Data-Aware SSD Firmware Fuzzing (2025) &amp; SPDK + AFL++ Fuzzing Report</strong><p class="small muted" style="margin:6px 0 8px;">Shows how smart state-aware fuzzing finds firmware crashes in 67% fewer commands than blind fuzzing.</p><div class="small"><a href="https://arxiv.org/html/2505.03062v1" target="_blank" rel="noopener noreferrer">arXiv 2505.03062</a> &bull; <a href="https://github.com/benlimpa/nvme-fuzzing-report" target="_blank" rel="noopener noreferrer">nvme-fuzzing-report</a> &bull; <a href="https://www.qemu.org/docs/master/devel/testing/fuzzing.html" target="_blank" rel="noopener noreferrer">QEMU Fuzzing</a></div></div></div>
+      <details class="deep-dive">
+        <summary>Full Specification, Book &amp; Open-Source Reference Table (4 items)</summary>
+        <div class="deep-dive-body">
+          <div class="table-wrap" style="margin:0;">
+            <table>
+              <thead>
+                <tr><th>Source / Resource</th><th>Format</th><th>Link / Identifier</th><th>How to Use It</th></tr>
+              </thead>
+              <tbody><tr><td><strong>Learn TLA+ (Hillel Wayne) &amp; QEMU NVMe Emulation Docs</strong></td><td><span class="badge">Interactive Tutorial + Emulator</span></td><td><a href="https://learntla.com/" target="_blank" rel="noopener noreferrer">learntla.com</a> &bull; <a href="https://qemu-project.gitlab.io/qemu/system/devices/nvme.html" target="_blank" rel="noopener noreferrer">QEMU NVMe Docs</a></td><td>Start here! Spin up a virtual OCP+FDP SSD on your laptop in 5 minutes and learn TLA+ state modeling step-by-step.</td></tr><tr><td><strong>State-Data-Aware SSD Firmware Fuzzing (2025) &amp; SPDK + AFL++ Fuzzing Report</strong></td><td><span class="badge">Paper &amp; Practical Repo</span></td><td><a href="https://arxiv.org/html/2505.03062v1" target="_blank" rel="noopener noreferrer">arXiv 2505.03062</a> &bull; <a href="https://github.com/benlimpa/nvme-fuzzing-report" target="_blank" rel="noopener noreferrer">nvme-fuzzing-report</a> &bull; <a href="https://www.qemu.org/docs/master/devel/testing/fuzzing.html" target="_blank" rel="noopener noreferrer">QEMU Fuzzing</a></td><td>Shows how smart state-aware fuzzing finds firmware crashes in 67% fewer commands than blind fuzzing.</td></tr><tr><td><strong>UNH-IOL Conformance Plans &amp; Windows HLK NVMe Testing Docs</strong></td><td><span class="badge">Official Cert Guides</span></td><td><a href="https://www.iol.unh.edu/testing/storage/nvme/tools" target="_blank" rel="noopener noreferrer">UNH-IOL NVMe Tools</a> &bull; <a href="https://www.iol.unh.edu/sites/default/files/testsuites/nvme/v26/UNH-IOL_NVM_Command_Set_Conformance_v26.0_2026.08.12.pdf" target="_blank" rel="noopener noreferrer">NVM CS Conformance v26 PDF</a> &bull; <a href="https://learn.microsoft.com/en-us/windows-hardware/test/hlk/testref/nvme-ssd-testing-overview" target="_blank" rel="noopener noreferrer">Microsoft HLK NVMe Docs</a></td><td>Industry certification checklists for NVMe compliance and Microsoft WHQL sign-off.</td></tr><tr><td><strong>OakGate, SANBlaze &amp; Quarch Lab Hardware Guides</strong></td><td><span class="badge">HIL Equipment Docs</span></td><td><a href="https://www.teledynelecroy.com/ssdtesting/oakgate-ssd-test-solutions.aspx" target="_blank" rel="noopener noreferrer">Teledyne LeCroy OakGate</a> &bull; <a href="https://www.sanblaze.com/ocp" target="_blank" rel="noopener noreferrer">SANBlaze OCP</a> &bull; <a href="https://quarch.com/solutions/ssd-power-analysis/" target="_blank" rel="noopener noreferrer">Quarch Power Analysis</a></td><td>Reference for the commercial test appliances and programmable power glitchers in SanDisk labs.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </section>
     
     
     <section class="card" data-progress-prefix="p06_" data-progress-total="5">
       <div class="card-header">
         <div>
-          <h2>Mastery Checklist (Saved Locally)</h2>
-          <p class="card-subtitle">Check off skills and labs as you validate them — progress rolls up automatically to the Storage Hub.</p>
+          <h2>Hands-On Lab &amp; Mastery Checklist</h2>
+          <p class="card-subtitle">Tick items as you learn them &mdash; your progress saves in your browser and updates the sidebar automatically.</p>
         </div>
         <span class="badge badge-success progress-text">0 / 5 (0%)</span>
       </div>
       <div class="progress-track mb-2"><div class="progress-fill" style="width: 0%"></div></div>
-      <div class="checklist mt-3">
-        <label class="check-item"><input type="checkbox" data-check-id="p06_01" /><div><div class="check-title"><strong>Navigate commercial HIL &amp; compliance ecosystems</strong></div><div class="small muted">Map UNH-IOL INTERACT, OakGate (R300-G6-PRO, SVF/Enduro, 450+ OCP tests, SPDM), SANBlaze (SBExpress/SBCert), Summit analyzers, and Windows HLK.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p06_02" /><div><div class="check-title"><strong>Validate end-to-end data integrity at line rate</strong></div><div class="small muted">Test LBA-seeded PRNG buffers, configurable entropy, T10 PI DIF (520B extended) / DIX (separate metadata), and NVMe 2.0 32/64-bit CRCs.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p06_03" /><div><div class="check-title"><strong>Automate Quarch PLP &amp; OCP C0h Error Injection fault tests</strong></div><div class="small muted">Verify brownouts/glitches/crowbars across hold-up caps, &lt;2s watchdog (CRASH-5), autonomous reset (EREC-2), and zero torn writes.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p06_04" /><div><div class="check-title"><strong>Shift left using QEMU NVMe (ocp=on, fdp=on) &amp; state-aware fuzzers</strong></div><div class="small muted">Build parsers against QEMU/FEMU and run AFL++ / spdk nvme_fuzz / Syzkaller to catch firmware hangs and decoder bugs.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p06_05" /><div><div class="check-title"><strong>Write TLA+ / PlusCal specs &amp; enforce AI verification governance</strong></div><div class="small muted">Model concurrent NVMe queue/reset/PLP invariants with TLC and rigorously review AI-assisted scripts within IP/security boundaries.</div></div></label>
-      </div>
+      <div class="checklist mt-3"><label class="check-item"><input type="checkbox" data-check-id="p06_01" /><div><div class="check-title"><strong>Test offline first (&#x27;Shift Left&#x27;) with QEMU NVMe (ocp=on, fdp=on)</strong></div><div class="small muted">Develop and unit-test your Python/C++ validators on a virtual SSD before booking scarce Gen6 lab racks.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p06_02" /><div><div class="check-title"><strong>Verify zero silent data corruption with T10 PI (DIF/DIX) &amp; CRCs</strong></div><div class="small muted">Stamp LBA-seeded patterns + 16/32/64-bit Guard CRCs and Reference Tags so torn or misdirected writes get caught instantly.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p06_03" /><div><div class="check-title"><strong>Automate Quarch power-loss (PLP) &amp; OCP C0h error-injection tests</strong></div><div class="small muted">Pull power during heavy writes, inject brownouts/glitches, and trigger OCP C0h faults verifying &lt;2s recovery.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p06_04" /><div><div class="check-title"><strong>Know the commercial lab racks (OakGate, SANBlaze, UNH-IOL, Summit, HLK)</strong></div><div class="small muted">Understand what each lab appliance tests — from 450+ OCP checks on OakGate/SANBlaze to wire traces on LeCroy Summit.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p06_05" /><div><div class="check-title"><strong>Use state-aware fuzzing &amp; TLA+ formal models to find race conditions</strong></div><div class="small muted">Fuzz Admin/I/O queues (nvme_fuzz / AFL++) and model reset/PLP concurrency invariants with TLA+/PlusCal.</div></div></label></div>
     </section>
     
     
 
-    <nav class="subject-pager"><a class="btn" href="../05-performance-telemetry-and-observability/index.html">&larr; 05. Performance, Telemetry &amp; Observability</a><a class="btn" href="../index.html">Storage Hub</a><a class="btn btn-primary" href="../07-power-thermals-and-liquid-cooling/index.html">07. Power, Thermals &amp; Liquid Cooling &rarr;</a></nav>
-  </main>
+        <nav class="subject-pager"><a class="btn" href="../05-performance-telemetry-and-observability/index.html">&larr; 05. Benchmarking &amp; Telemetry</a><a class="btn" href="../index.html">Course Hub</a><a class="btn btn-primary" href="../07-power-thermals-and-liquid-cooling/index.html">07. Power &amp; Liquid Cooling &rarr;</a></nav>
+      </main>
+    </div>
+  </div>
 
   <script src="../assets/app.js"></script>
   <script>
 
-    document.querySelectorAll('#p6-filters .pill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#p6-filters .pill').forEach(b => b.classList.toggle('active', b === btn));
-        const cat = btn.dataset.cat;
-        document.querySelectorAll('#p6-body tr').forEach(tr => {
-          tr.style.display = (cat === 'all' || tr.dataset.cat === cat) ? '' : 'none';
-        });
-      });
+    const P6_DATA = {
+      plp: {
+        title: 'Power Loss Protection (PLP) & Quarch Glitching',
+        body: 'Enterprise SSDs carry onboard tantalum/supercapacitors. When main 12V/3.3V power dies, those capacitors power the drive for a few milliseconds so in-flight DRAM metadata and Direct-Write QLC buffers flush safely to flash.',
+        check: 'What You Test: Use a Quarch PPM/PAM to inject sudden crowbar drops, brownouts, and rapid power glitches mid-write — then verify 0 lost acknowledged writes and check C0h capacitor health.'
+      },
+      c0h: {
+        title: 'OCP 2.6 Set Features C0h (21 Built-In Error Modes)',
+        body: 'Instead of waiting months for a rare bug, OCP 2.6 mandates 21 software-triggerable fault modes (from 0001h CPU Hang to 0015h Critical Temperature Event).',
+        check: 'What You Test: Inject a controller hang -> assert <2s hardware watchdog detection (CRASH-5), autonomous NVMe Controller Reset recovery (EREC-2), and incremented panic counter in Log C1h.'
+      },
+      dif: {
+        title: 'End-to-End Data Integrity (T10 PI DIF/DIX & 32/64b CRC)',
+        body: 'What if the SSD writes valid data to the WRONG sector (misdirected write) or returns stale old data? Simple read-without-check benchmarks never notice!',
+        check: 'What You Test: Stamp every block with an LBA-seeded pattern + T10 Protection Information (Guard CRC + Application Tag + Reference LBA Tag across 520B sectors or separate DIX buffers).'
+      },
+      fuzz: {
+        title: 'State-Data-Aware Fuzzing (AFL++, nvme_fuzz, Syzkaller)',
+        body: 'Blind random fuzzers get rejected immediately by basic NVMe sanity checks. State-aware fuzzers track valid queue/namespace states and mutate deep protocol sequences.',
+        check: 'Research Result: On the QEMU-based FEMU emulator, state-data-aware fuzzing matched AFL++ firmware code coverage using ~67% fewer commands!'
+      },
+      tla: {
+        title: 'Formal State-Machine Proofs (TLA+ & PlusCal)',
+        body: 'Concurrency bugs (e.g., an async Controller Reset arriving at the exact microsecond a Namespace Detach and PLP flush overlap) have too many interleavings for human brains.',
+        check: 'Why SanDisk Uses It: Writing a short TLA+/PlusCal model lets the TLC model checker exhaustively test millions of interleavings and print the exact counterexample trace if an invariant breaks.'
+      }
+    };
+
+    function showP6(k) {
+      document.querySelectorAll('#p6-tabs .pill').forEach(b => b.classList.toggle('active', b.dataset.k === k));
+      const d = P6_DATA[k];
+      document.getElementById('p6-box').innerHTML = `<h3>${d.title}</h3><p class="small muted">${d.body}</p><div class="callout success mb-0"><strong>${d.check}</strong></div>`;
+    }
+    document.querySelectorAll('#p6-tabs .pill').forEach(b => b.addEventListener('click', () => showP6(b.dataset.k)));
+    showP6('plp');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      StorageHub.renderQuiz('p06-quiz', [
+        {
+          q: 'Why do enterprise validation harnesses use LBA-seeded patterns + T10 PI Reference Tags instead of writing all zeros (0x00)?',
+          options: [
+            'Zeros weigh more in flash',
+            'If an SSD silently drops a write or reads the wrong LBA, all-zeros still looks "valid" — LBA-seeded CRCs & Reference Tags catch stale or misdirected data immediately',
+            'Zeros break PCIe PAM4'
+          ],
+          answer: 1,
+          explain: 'Embedding the target LBA and write-generation seed + Guard CRC inside every block catches torn writes, stale reads, and misdirected writes instantly.'
+        },
+        {
+          q: 'What is the main benefit of "shifting left" with QEMU NVMe (ocp=on, fdp=on) during tool development?',
+          options: [
+            'QEMU measures physical NAND electron leakage',
+            'You can build, fuzz, and unit-test command logic and OCP/FDP log parsers on your laptop in seconds without tying up scarce Gen6 hardware benches',
+            'It replaces WHQL certification'
+          ],
+          answer: 1,
+          explain: 'QEMU emulates NVMe queues, FDP Reclaim Units, SR-IOV, and OCP logs in software — letting your test code arrive at the hardware lab already debugged.'
+        },
+        {
+          q: 'What kind of bug is TLA+ / PlusCal uniquely great at catching?',
+          options: [
+            'Loose heatsink screws',
+            'Subtle multi-step concurrency and state-machine races (e.g., controller reset colliding with queue deletion and power-fail flush)',
+            'HTML CSS typos'
+          ],
+          answer: 1,
+          explain: 'The TLC model checker explores every reachable concurrent state transition and outputs the shortest step-by-step trace that violates your safety invariant.'
+        }
+      ]);
     });
     
 </script>

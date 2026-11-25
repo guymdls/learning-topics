@@ -3,42 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>01. Industry Standards &amp; Protocol Architecture &mdash; Storage &amp; Validation Engineering Hub</title>
+  <title>01. NVMe &amp; OCP Protocols &mdash; Storage Mastery Hub</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body class="theme-dark">
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand-group">
-        <a class="brand-badge" href="../index.html">NVMe</a>
-        <div class="breadcrumbs"><a href="../../index.html">Learning Topics</a> <span>/</span> <a href="../index.html">Storage &amp; Validation</a> <span>/</span> <span class="current">01. Industry Standards &amp; Protocol Architecture</span></div>
-      </div>
-      <div class="header-controls">
-        <select id="subject-nav" class="nav-select" data-base="../" data-current="p01" aria-label="Jump to subject"></select>
-        <a class="btn" href="../nvme_systems_tutor.html">102-Term Tutor</a>
-        <button id="theme-toggle" class="btn" type="button">Light Mode</button>
-      </div>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside class="course-sidebar" id="course-sidebar" data-base="../" data-current="p01" aria-label="Course navigation"></aside>
+
+    <div class="main-column">
+      <header class="site-header">
+        <div class="header-inner">
+          <div class="flex-wrap-gap">
+            <button id="mobile-menu-btn" class="btn mobile-menu-btn" type="button" aria-label="Open course menu">&#9776; Menu</button>
+            <div class="breadcrumbs"><a href="../../index.html">Portal</a> <span>/</span> <a href="../index.html">Storage Hub</a> <span>/</span> <span class="current">01. NVMe &amp; OCP Protocols</span></div>
+          </div>
+          <div class="header-controls">
+            <div class="depth-switch" title="Switch between plain-English learning view and full specification depth">
+              <button type="button" class="depth-btn active" data-depth="simple">Simple View</button>
+              <button type="button" class="depth-btn" data-depth="deep">Full Spec</button>
+            </div>
+            <a class="btn" href="../nvme_systems_tutor.html">102-Term Lab</a>
+            <button id="theme-toggle" class="btn" type="button">Light</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="container">
+        <section class="hero">
+          <div class="hero-eyebrow">Phase 1 • Foundations (⏱ 7 min read)</div>
+          <h1>01. NVMe &amp; OCP Protocols</h1>
+          <p>Learn the exact binary language spoken between your test server and the SSD — without getting lost in an 800-page specification.</p>
+          <div class="hero-meta"><span class="badge badge-success">Beginner-Friendly Start</span><span class="badge badge-primary">NVMe 2.3 &amp; 2.4</span><span class="badge badge-warning">OCP 2.6 / 2.7 &amp; FDP</span></div>
+        </section>
+
+        
+    
+    <div class="step-banner">
+      <span class="step-num">1</span>
+      <h2>The 30-Second Mental Model</h2>
+      <span class="muted">&mdash; Understand the big picture before any hex codes</span>
     </div>
-  </header>
-
-  <main class="container">
-    <section class="hero">
-      <div class="hero-eyebrow">Pillar 01 • Active Baseline &amp; 2026 Spec Roadmap</div>
-      <h1>01. Industry Standards &amp; Protocol Architecture</h1>
-      <p>Wire-level NVMe 2.3/2.4 SQE/CQE mechanics, Flexible Data Placement (FDP TP4146), OCP Datacenter NVMe SSD 2.6/2.7 requirements, TCG Core 2.01 / Opal 2.30, and NVMe-MI 2.1/2.2 out-of-band management.</p>
-      <div class="hero-meta"><span class="badge badge-primary">NVMe Base 2.3 / 2.4</span><span class="badge badge-success">NVM CS 1.2 &amp; FDP TP4146</span><span class="badge badge-warning">OCP 2.6 / 2.7</span><span class="badge badge-violet">NVMe-MI / MCTP / SMBus / I3C</span></div>
+    
+    
+    <section class="tldr-grid">
+      <div class="tldr-card">
+        <div class="tldr-label">The Core Problem</div>
+        <p>Without a strict binary contract, every SSD vendor would invent custom commands, error codes, and crash behaviors &mdash; making cloud automation impossible.</p>
+      </div>
+      <div class="tldr-card analogy">
+        <div class="tldr-label">Plain-English Analogy</div>
+        <p>Think of <strong>NVMe</strong> as a fast sushi conveyor belt: the host places <strong>64-byte order slips (SQE)</strong> on one ring, and the SSD places <strong>16-byte receipts (CQE)</strong> on another ring. <strong>OCP 2.6</strong> is the health inspector's checklist every restaurant must pass.</p>
+      </div>
+      <div class="tldr-card role">
+        <div class="tldr-label">Why You Care at SanDisk</div>
+        <p>Every automated pass/fail check you write at SanDisk asserts exact bits from <strong>NVMe 2.3</strong>, <strong>OCP 2.6</strong>, and <strong>TCG Opal 2.30</strong> &mdash; while preparing for <strong>NVMe 2.4</strong> &amp; <strong>OCP 2.7</strong>.</p>
+      </div>
     </section>
+    
 
+    <div class="flow-diagram"><div class="flow-node"><strong>1. Host Writes 64B SQE</strong><span>Drops command into Submission Queue in host RAM</span></div><div class="flow-arrow">&rarr;</div><div class="flow-node"><strong>2. Doorbell Write</strong><span>Host pokes 1 SSD register to say &#x27;new work!&#x27;</span></div><div class="flow-arrow">&rarr;</div><div class="flow-node"><strong>3. DMA Data Transfer</strong><span>SSD pulls/pushes data using PRP or SGL pointers</span></div><div class="flow-arrow">&rarr;</div><div class="flow-node"><strong>4. SSD Writes 16B CQE</strong><span>Flips the Phase Tag bit so host sees completion without locks</span></div></div>
+
+    
+    <div class="step-banner">
+      <span class="step-num">2</span>
+      <h2>Interactive Packet Lab: Click Inside a Real NVMe Command</h2>
+      <span class="muted">&mdash; See what every slice of the 64B order &amp; 16B receipt does</span>
+    </div>
     
     <section class="card">
       <div class="card-header">
         <div>
-          <h2>Interactive NVMe Wire-Level Frame Inspector (64B SQE &bull; 16B CQE &bull; FDP CDW12)</h2>
-          <p class="card-subtitle">Click any Dword field to inspect exact little-endian bit semantics, PRP/SGL selection, 0-based NLB rules, and FDP Placement IDs.</p>
+          <h2>64-Byte Command (SQE) &amp; 16-Byte Receipt (CQE) Explorer</h2>
+          <p class="card-subtitle">Click any block below &mdash; pay special attention to the classic beginner traps in <code>CDW0</code>, <code>CDW12</code>, and <code>DW3</code>!</p>
         </div>
         <div class="pill-bar mb-0" data-tab-group="p01-frame">
-          <button type="button" class="pill active" data-tab-target="sqe">64B SQE (CDW0&ndash;15)</button>
-          <button type="button" class="pill" data-tab-target="cqe">16B CQE (DW0&ndash;3)</button>
+          <button type="button" class="pill active" data-tab-target="sqe">64B Command (SQE)</button>
+          <button type="button" class="pill" data-tab-target="cqe">16B Receipt (CQE)</button>
         </div>
       </div>
 
@@ -49,150 +90,147 @@
         <div class="grid-4" id="cqe-grid"></div>
       </div>
 
-      <div class="sub-panel mt-3" id="frame-detail">
-        <strong id="fd-title">Select a Dword above</strong>
-        <p id="fd-body" class="small muted mb-0 mt-2"></p>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="card-header">
-        <div>
-          <h2>Four Enterprise Protocol Shifts (2025&ndash;2026) &amp; Spec Delta Explorer</h2>
-          <p class="card-subtitle">Compare your active validation baseline against late-2026 roadmap specs.</p>
-        </div>
-        <div class="pill-bar mb-0" data-tab-group="p01-deltas">
-          <button type="button" class="pill active" data-tab-target="fdp">FDP (TP4146)</button>
-          <button type="button" class="pill" data-tab-target="nvme23">NVMe 2.3 (Baseline)</button>
-          <button type="button" class="pill" data-tab-target="nvme24">NVMe 2.4 (Aug 2026)</button>
-          <button type="button" class="pill" data-tab-target="ocp">OCP 2.6 / 2.7 &amp; MI</button>
-        </div>
-      </div>
-
-      <div class="tab-pane active" data-tab-pane-group="p01-deltas" data-tab-pane="fdp">
-        <div class="grid-2">
-          <div class="sub-panel">
-            <h3>How FDP Works</h3>
-            <ul class="clean-list small">
-              <li>Organizes flash into <strong>Reclaim Groups (RGs)</strong> and <strong>Reclaim Units (RUs)</strong> addressed via <strong>Reclaim Unit Handles (RUHs)</strong> and <strong>Placement Identifiers (PIDs)</strong>.</li>
-              <li>Hosts stamp PIDs directly in write command <code>CDW12</code> (<code>Directive Type = Data Placement</code>, <code>DTYPE=2h</code>) and <code>CDW13</code> (<code>DSPEC</code>).</li>
-              <li><strong>vs. ZNS:</strong> Retains conventional random-LBA block semantics (no append-only zone reset rewrite of the host stack) while isolating write lifetimes to drive device WAF near <strong>1.0</strong>.</li>
-            </ul>
-          </div>
-          <div class="sub-panel">
-            <h3>Validation Focus</h3>
-            <ul class="clean-list small">
-              <li>Verify RUH Reclaim Unit allocation, Initially Isolated vs Persistently Isolated handles, and FDP Events Log accounting.</li>
-              <li>Test shift-left locally via QEMU NVMe with <code>fdp=on</code> before running hardware RocksDB / CacheLib steady-state WAF comparisons.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-pane" data-tab-pane-group="p01-deltas" data-tab-pane="nvme23">
-        <div class="grid-3">
-          <div class="sub-panel"><strong>Rapid Path Failure Recovery (RPFR)</strong><p class="small muted mb-0">Accelerates I/O failover across multipath NVMe subsystems during link/controller faults.</p></div>
-          <div class="sub-panel"><strong>Power Limit Config (PLC) &amp; SDP</strong><p class="small muted mb-0">Host-driven power capping (publicly presented by SanDisk engineering) paired with Self-reported Drive Power (SDP) telemetry.</p></div>
-          <div class="sub-panel"><strong>SPN &amp; CDP</strong><p class="small muted mb-0">Sanitize Per Namespace (SPN) isolates cryptographic/block erase; Configurable Device Personality (CDP) adapts device operating profiles.</p></div>
-        </div>
-      </div>
-
-      <div class="tab-pane" data-tab-pane-group="p01-deltas" data-tab-pane="nvme24">
-        <div class="callout">Published August 2026 across all 11 NVMe specifications &mdash; anchors your forward 2026&ndash;2027 validation roadmap.</div>
-        <div class="grid-3">
-          <div class="sub-panel"><strong>Post-Quantum Cryptography (PQC)</strong><p class="small muted mb-0">Integrates NIST FIPS 203/204/205 quantum-resistant algorithms into NVMe authentication and signing flows.</p></div>
-          <div class="sub-panel"><strong>Exported NVM Subsystem Migration</strong><p class="small muted mb-0">Virtualizes locally attached PCIe SSDs to support seamless live VM mobility across hosts.</p></div>
-          <div class="sub-panel"><strong>Rate Limiting, Voltage Monitoring &amp; Defaults</strong><p class="small muted mb-0">Controller-enforced bandwidth/IOPS QoS caps, configurable undervoltage/overvoltage alerts &amp; history, and Restore Manufacturing Default Settings.</p></div>
-        </div>
-      </div>
-
-      <div class="tab-pane" data-tab-pane-group="p01-deltas" data-tab-pane="ocp">
-        <div class="grid-2">
-          <div class="sub-panel">
-            <h3>OCP Datacenter NVMe SSD 2.6 &amp; 2.7</h3>
-            <ul class="clean-list small">
-              <li><strong>Error Injection (Set Features C0h):</strong> 21 explicit fault injection modes.</li>
-              <li><strong>Crash &amp; Recovery:</strong> <code>CRASH-5</code> (&lt;2s FW watchdog timer) &amp; <code>EREC-2</code> (autonomous panic recovery preferring NVMe Controller Reset).</li>
-              <li><strong>Telemetry SLA:</strong> &lt;1 ms typical (&lt;5 ms max) I/O latency impact during 32 KiB DA1 retrieval; &gt;16 Virtual FIFOs across DA1/DA2.</li>
-              <li><strong>Security &amp; 2.7 Delta:</strong> Mandatory OCP S.A.F.E. audits (<code>SEC-15</code>), peak/avg power telemetry (<code>PCM-1/2</code>), plus OCP 2.7 offset errata fixes and FIPS 140 status in Log <code>C4h</code>.</li>
-            </ul>
-          </div>
-          <div class="sub-panel">
-            <h3>Out-of-Band Sideband Stack</h3>
-            <ul class="clean-list small">
-              <li><strong>NVMe-MI 2.1 / 2.2</strong> operating over <strong>MCTP</strong> (Management Component Transport Protocol).</li>
-              <li>Physical transports: <strong>SMBus / I2C</strong>, <strong>I3C</strong>, and <strong>PCIe VDM</strong> (Vendor-Defined Messages).</li>
-              <li>Validates out-of-band health polling, SMBus data verification, sideband FW activation, and SPDM device attestation.</li>
-            </ul>
-          </div>
-        </div>
+      <div class="callout mt-3 mb-0" id="frame-detail">
+        <strong id="fd-title">Select a field above</strong>
+        <p id="fd-body" class="mb-0 mt-2"></p>
       </div>
     </section>
 
     
+    <div class="step-banner">
+      <span class="step-num">3</span>
+      <h2>Core Concepts — Explained Simply</h2>
+      <span class="muted">&mdash; Plain English first; expand Spec Depth when needed</span>
+    </div>
+    
+    <section class="card">
+      <h2>The 4 Big Protocol Ideas Dominating 2025&ndash;2026</h2>
+      <p class="card-subtitle">You don&rsquo;t need to memorize 800 pages. Master these four practical pillars:</p>
+
+      <div class="grid-2 mt-3">
+        <div class="sub-panel">
+          <span class="badge badge-success mb-2">Idea 1 &bull; Smarter Flash Writing</span>
+          <h3>Flexible Data Placement (FDP)</h3>
+          <p class="small muted mb-0">Normally, if an app mixes short-lived temporary logs with permanent database files in the same flash block, the SSD wastes huge effort copying the permanent data later (high <strong>Write Amplification</strong>). <strong>FDP</strong> lets the host attach a simple <em>Placement ID</em> tag so the SSD parks short-lived and long-lived data in separate buckets &mdash; dropping wasted copies near zero without rewriting your app like ZNS required.</p>
+        </div>
+
+        <div class="sub-panel">
+          <span class="badge badge-primary mb-2">Idea 2 &bull; Active Team Baseline</span>
+          <h3>NVMe 2.3 (What Ships Today)</h3>
+          <p class="small muted mb-0">Your active spec baseline adds practical data-center controls: <strong>Power Limit Config (PLC)</strong> (championed by SanDisk so AI racks can cap SSD wattage on the fly), <strong>Self-reported Drive Power (SDP)</strong>, faster multipath failover (<strong>RPFR</strong>), per-namespace secure erase (<strong>SPN</strong>), and <strong>Configurable Device Personality (CDP)</strong>.</p>
+        </div>
+
+        <div class="sub-panel">
+          <span class="badge badge-violet mb-2">Idea 3 &bull; Next Horizon (Aug 2026)</span>
+          <h3>NVMe 2.4 (What You&rsquo;ll Validate Next)</h3>
+          <p class="small muted mb-0">Prepares SSDs for 2027 cloud servers: <strong>Post-Quantum Cryptography (PQC)</strong> so quantum computers can&rsquo;t forge drive auth, <strong>Live Subsystem Migration</strong> for moving VMs attached to local PCIe SSDs, hardware <strong>Rate Limiting</strong> (QoS caps), and <strong>Voltage Monitoring</strong> history.</p>
+        </div>
+
+        <div class="sub-panel">
+          <span class="badge badge-warning mb-2">Idea 4 &bull; Hyperscaler Rulebook + Sideband</span>
+          <h3>OCP 2.6 / 2.7 &amp; NVMe-MI</h3>
+          <p class="small muted mb-0">Meta, Microsoft, and Dell require strict SLAs: firmware hangs must trip a watchdog in <strong>&lt;2 seconds</strong>, telemetry reads can&rsquo;t stall normal I/O by more than <strong>5 ms</strong>, and 21 built-in error injectors test resilience. Meanwhile, <strong>NVMe-MI</strong> lets the server motherboard check drive health over a tiny side wire (SMBus/I3C) even if Linux crashes.</p>
+        </div>
+      </div>
+
+      <h3 class="mt-3">Key Acronyms Decoded</h3>
+      <div class="term-grid"><div class="term-box"><strong>SQE / CQE</strong><p>Submission Queue Entry (64B command) &amp; Completion Queue Entry (16B completion receipt). Always little-endian!</p></div><div class="term-box"><strong>PRP vs. SGL</strong><p>Two ways to tell the SSD where host RAM buffers live: PRP uses fixed 4KB page lists; SGL allows flexible byte-sized chunks.</p></div><div class="term-box"><strong>Phase Tag (P)</strong><p>1 bit inside every CQE that flips 0→1→0 each pass around the ring so the CPU knows a completion is new without locks.</p></div><div class="term-box"><strong>NVMe-MI / MCTP</strong><p>Management Interface over SMBus, I3C, or PCIe VDM — the &#x27;backdoor&#x27; health &amp; firmware update channel.</p></div></div>
+
+      <details class="deep-dive">
+        <summary>Exact Spec Versions, Clause IDs &amp; OCP 2.6 / 2.7 Technical Deltas</summary>
+        <div class="deep-dive-body">
+          <ul class="clean-list">
+            <li><strong>Active Baseline:</strong> NVMe Base 2.3 (ratified Jul/Aug 2025), NVM Command Set 1.2, PCIe Transport 1.3, TCG Core 2.01 / Opal 2.30, OCP Datacenter NVMe SSD 2.6.</li>
+            <li><strong>FDP Mechanics (TP4146):</strong> Flash divided into Reclaim Groups (RGs) &amp; Reclaim Units (RUs) addressed via Reclaim Unit Handles (RUHs) and Placement IDs (PIDs) in <code>CDW12</code> (<code>DTYPE=2h</code>) and <code>CDW13</code> (<code>DSPEC</code>).</li>
+            <li><strong>OCP 2.6 Key Assertions:</strong> 21 Error Injection types (<code>Set Features C0h</code>), <code>CRASH-5</code> (&lt;2s FW watchdog), <code>EREC-2</code> (autonomous panic recovery preferring NVMe Controller Reset), 32 KiB DA1 telemetry &lt;1 ms typical / &lt;5 ms max latency impact, &gt;16 Virtual FIFOs across DA1/DA2, mandatory OCP S.A.F.E. firmware audits (<code>SEC-15</code>).</li>
+            <li><strong>OCP 2.7 Delta (Late 2025):</strong> Fixes two byte/offset errata from v2.6 and adds FIPS 140 validation status to Device Capability Log <code>C4h</code>.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    
+    <div class="step-banner">
+      <span class="step-num">4</span>
+      <h2>Test Yourself, Track Labs &amp; Start Reading</h2>
+      <span class="muted">&mdash; Lock in what you just learned</span>
+    </div>
+    
+    
     <section class="card">
       <div class="card-header">
         <div>
-          <h2>Curated Primary Sources &amp; Reference Library</h2>
-          <p class="card-subtitle">Authoritative specifications, textbooks, kernel docs, papers, and open-source repositories.</p>
+          <h2>Quick 3-Question Self-Check</h2>
+          <p class="card-subtitle">Click an answer to test your intuition right away &mdash; every option explains <em>why</em>.</p>
         </div>
-        <span class="badge badge-primary">5 Resources</span>
+        <span class="badge badge-violet">Instant Feedback</span>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Source / Resource</th>
-              <th>Format</th>
-              <th>Link / Identifier</th>
-              <th>How to Use It</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>NVM Express Specification Library (Base 2.3/2.4, NVM CS 1.2/1.3, PCIe 1.3/1.4, TCP 1.2/1.3, NVMe-MI 2.1/2.2)</strong></td><td><span class="badge">Primary Spec</span></td><td><a href="https://nvmexpress.org/specifications/" target="_blank" rel="noopener noreferrer">nvmexpress.org/specifications</a></td><td>Authoritative lookup for SQE/CQE bit fields, feature IDs, log pages, and reset state machines.</td></tr><tr><td><strong>OCP Datacenter NVMe SSD Specification v2.6 (&amp; OCP Storage Project Hub for v2.7)</strong></td><td><span class="badge">Primary Spec</span></td><td><a href="https://www.opencompute.org/documents/datacenter-nvme-ssd-specification-v2-6-2-pdf" target="_blank" rel="noopener noreferrer">OCP SSD v2.6 PDF</a> &bull; <a href="https://www.opencompute.org/projects/storage/" target="_blank" rel="noopener noreferrer">OCP Storage Project</a></td><td>Map every requirement ID (SLOG-*, ERRIE-*, CRASH-5, EREC-2, PCM-1/2, SEC-15) directly to automated test assertions.</td></tr><tr><td><strong>Storage Protocol Specifications Deep Dive (s10rage)</strong></td><td><span class="badge">Technical Reference</span></td><td><a href="https://s10rage.com/docs/interfaces-and-protocols/storage-protocol-specifications-nvme-nvmeof" target="_blank" rel="noopener noreferrer">s10rage NVMe / NVMe-oF</a></td><td>Rapid Dword-by-Dword reference for NVMe SQE/CQE structures and NVMe/TCP PDU headers.</td></tr><tr><td><strong>NVMe Power Limit Configuration (SanDisk Presentation)</strong></td><td><span class="badge">Technical Video</span></td><td><a href="https://www.youtube.com/watch?v=gZsZrrXHHVM" target="_blank" rel="noopener noreferrer">YouTube: NVMe PLC</a></td><td>Review SanDisk&#x27;s framing of NVMe 2.3 Power Limit Config for AI power governance.</td></tr><tr><td><strong>SNIA Solid State Storage PTS v2.0.1 / v2.0.2</strong></td><td><span class="badge">Primary Spec</span></td><td><a href="https://www.snia.org/sites/default/files/technical_work/PTS/SSS_PTS_2.0.1.pdf" target="_blank" rel="noopener noreferrer">SNIA SSS PTS PDF</a></td><td>Standardized methodology for drive purging, preconditioning, and steady-state convergence.</td></tr>
-          </tbody>
-        </table>
+      <div id="p01-quiz"></div>
+    </section>
+    
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Best Places to Start &amp; Reference Library</h2>
+          <p class="card-subtitle">Begin with the 2 recommended starter resources below; expand the full table whenever you need exact spec clauses or repositories.</p>
+        </div>
+        <span class="badge badge-primary">5 Curated Sources</span>
       </div>
+      <div class="grid-2"><div class="sub-panel"><div class="flex-wrap-gap" style="justify-content:space-between;margin-bottom:6px;"><span class="badge badge-success">Start Here First</span><span class="badge">Visual Guide</span></div><strong>Storage Protocol Specifications Deep Dive (s10rage)</strong><p class="small muted" style="margin:6px 0 8px;">Best beginner-friendly Dword-by-Dword visual walkthrough of NVMe SQE/CQE packets before opening the 784-page spec.</p><div class="small"><a href="https://s10rage.com/docs/interfaces-and-protocols/storage-protocol-specifications-nvme-nvmeof" target="_blank" rel="noopener noreferrer">s10rage NVMe / NVMe-oF</a></div></div><div class="sub-panel"><div class="flex-wrap-gap" style="justify-content:space-between;margin-bottom:6px;"><span class="badge badge-success">Start Here First</span><span class="badge">Short Video</span></div><strong>NVMe Power Limit Configuration (SanDisk Presentation)</strong><p class="small muted" style="margin:6px 0 8px;">Clear presentation by SanDisk engineers showing how NVMe 2.3 features solve real AI data-center problems.</p><div class="small"><a href="https://www.youtube.com/watch?v=gZsZrrXHHVM" target="_blank" rel="noopener noreferrer">YouTube: NVMe PLC</a></div></div></div>
+      <details class="deep-dive">
+        <summary>Full Specification, Book &amp; Open-Source Reference Table (5 items)</summary>
+        <div class="deep-dive-body">
+          <div class="table-wrap" style="margin:0;">
+            <table>
+              <thead>
+                <tr><th>Source / Resource</th><th>Format</th><th>Link / Identifier</th><th>How to Use It</th></tr>
+              </thead>
+              <tbody><tr><td><strong>Storage Protocol Specifications Deep Dive (s10rage)</strong></td><td><span class="badge">Visual Guide</span></td><td><a href="https://s10rage.com/docs/interfaces-and-protocols/storage-protocol-specifications-nvme-nvmeof" target="_blank" rel="noopener noreferrer">s10rage NVMe / NVMe-oF</a></td><td>Best beginner-friendly Dword-by-Dword visual walkthrough of NVMe SQE/CQE packets before opening the 784-page spec.</td></tr><tr><td><strong>NVMe Power Limit Configuration (SanDisk Presentation)</strong></td><td><span class="badge">Short Video</span></td><td><a href="https://www.youtube.com/watch?v=gZsZrrXHHVM" target="_blank" rel="noopener noreferrer">YouTube: NVMe PLC</a></td><td>Clear presentation by SanDisk engineers showing how NVMe 2.3 features solve real AI data-center problems.</td></tr><tr><td><strong>NVM Express Specification Library (Base 2.3/2.4, NVM CS 1.2/1.3, PCIe 1.3/1.4, TCP 1.2/1.3, NVMe-MI 2.1/2.2)</strong></td><td><span class="badge">Primary Spec</span></td><td><a href="https://nvmexpress.org/specifications/" target="_blank" rel="noopener noreferrer">nvmexpress.org/specifications</a></td><td>Use as a lookup dictionary (never read cover-to-cover!) for exact bit fields, status codes, and reset rules.</td></tr><tr><td><strong>OCP Datacenter NVMe SSD Specification v2.6 (&amp; OCP Storage Hub for v2.7)</strong></td><td><span class="badge">Primary Spec</span></td><td><a href="https://www.opencompute.org/documents/datacenter-nvme-ssd-specification-v2-6-2-pdf" target="_blank" rel="noopener noreferrer">OCP SSD v2.6 PDF</a> &bull; <a href="https://www.opencompute.org/projects/storage/" target="_blank" rel="noopener noreferrer">OCP Storage Project</a></td><td>Hyperscale checklist from Meta/Microsoft/Google/Dell: maps IDs like CRASH-5 and EREC-2 directly to pass/fail tests.</td></tr><tr><td><strong>SNIA Solid State Storage PTS v2.0.1 / v2.0.2</strong></td><td><span class="badge">Primary Spec</span></td><td><a href="https://www.snia.org/sites/default/files/technical_work/PTS/SSS_PTS_2.0.1.pdf" target="_blank" rel="noopener noreferrer">SNIA SSS PTS PDF</a></td><td>Standard recipe for wiping a drive and preconditioning it to steady state before measuring speed.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </section>
     
     
     <section class="card" data-progress-prefix="p01_" data-progress-total="5">
       <div class="card-header">
         <div>
-          <h2>Mastery Checklist (Saved Locally)</h2>
-          <p class="card-subtitle">Check off skills and labs as you validate them — progress rolls up automatically to the Storage Hub.</p>
+          <h2>Hands-On Lab &amp; Mastery Checklist</h2>
+          <p class="card-subtitle">Tick items as you learn them &mdash; your progress saves in your browser and updates the sidebar automatically.</p>
         </div>
         <span class="badge badge-success progress-text">0 / 5 (0%)</span>
       </div>
       <div class="progress-track mb-2"><div class="progress-fill" style="width: 0%"></div></div>
-      <div class="checklist mt-3">
-        <label class="check-item"><input type="checkbox" data-check-id="p01_01" /><div><div class="check-title"><strong>Decode 64B SQE &amp; 16B CQE bit fields from memory</strong></div><div class="small muted">Little-endian CDW0–CDW15, PSDT (PRP vs SGL), 0-based NLB in CDW12/CDW10, CQE Phase Tag bit for lockless polling.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p01_02" /><div><div class="check-title"><strong>Implement FDP (TP4146) Placement ID command assertions</strong></div><div class="small muted">Configure Reclaim Groups (RGs), Reclaim Units (RUs), RUHs, and CDW12 Directive Type = Data Placement to push WAF near 1.0.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p01_03" /><div><div class="check-title"><strong>Track NVMe 2.3 baseline vs NVMe 2.4 (Aug 2026) spec deltas</strong></div><div class="small muted">Map RPFR, PLC, SDP, SPN, CDP (2.3) and PQC, Exported Subsystem Migration, Rate Limiting, Voltage Monitoring (2.4).</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p01_04" /><div><div class="check-title"><strong>Map OCP 2.6/2.7 requirement IDs to automated test cases</strong></div><div class="small muted">Cover 21 C0h Error Injection modes, CRASH-5 (&lt;2s watchdog), EREC-2, &lt;5 ms max DA1 telemetry latency, Virtual FIFOs, SEC-15, and OCP 2.7 C4h FIPS status.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p01_05" /><div><div class="check-title"><strong>Validate out-of-band management paths (NVMe-MI 2.1/2.2)</strong></div><div class="small muted">Verify MCTP framing over SMBus/I2C, I3C, and PCIe VDM for health polling, sideband FW updates, and SPDM auth.</div></div></label>
-      </div>
+      <div class="checklist mt-3"><label class="check-item"><input type="checkbox" data-check-id="p01_01" /><div><div class="check-title"><strong>Inspect a 64-byte SQE and 16-byte CQE without guessing</strong></div><div class="small muted">Verify little-endian byte order, PRP vs SGL bits, 0-based NLB (0 = 1 block!), and the Phase Tag bit.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p01_02" /><div><div class="check-title"><strong>Explain Flexible Data Placement (FDP) in one sentence</strong></div><div class="small muted">Host tags writes with Placement IDs (CDW12/13) so hot short-lived data and cold data don&#x27;t mix during garbage collection.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p01_03" /><div><div class="check-title"><strong>Know what changed in NVMe 2.3 (active) vs NVMe 2.4 (Aug 2026)</strong></div><div class="small muted">2.3: RPFR failover, Power Limit Config (PLC), SDP, Sanitize Per NS, CDP. 2.4: Post-Quantum Crypto, live VM Migration, Rate Limiting, Voltage Monitoring.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p01_04" /><div><div class="check-title"><strong>Check OCP 2.6 / 2.7 hyperscale rules</strong></div><div class="small muted">21 error-injection modes (C0h), &lt;2s watchdog (CRASH-5), autonomous reset (EREC-2), &lt;5 ms max DA1 telemetry delay, S.A.F.E. audit, C4h FIPS status.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p01_05" /><div><div class="check-title"><strong>Understand Out-of-Band sideband health checks (NVMe-MI)</strong></div><div class="small muted">BMC talks to the SSD over SMBus/I2C, I3C, or PCIe VDM using MCTP even if the main OS has crashed.</div></div></label></div>
     </section>
     
     
 
-    <nav class="subject-pager"><a class="btn" href="../index.html">&larr; Storage &amp; Validation Hub</a><a class="btn" href="../index.html">Storage Hub</a><a class="btn btn-primary" href="../02-pcie-interconnects-and-si/index.html">02. PCIe, Interconnects &amp; SI &rarr;</a></nav>
-  </main>
+        <nav class="subject-pager"><a class="btn" href="../index.html">&larr; Course Hub</a><a class="btn" href="../index.html">Course Hub</a><a class="btn btn-primary" href="../02-pcie-interconnects-and-si/index.html">02. PCIe 6.0 &amp; Signal Integrity &rarr;</a></nav>
+      </main>
+    </div>
+  </div>
 
   <script src="../assets/app.js"></script>
   <script>
 
     const SQE_FIELDS = [
-      { id: 'CDW0', name: 'OPC / FUSE / PSDT / CID', tag: 'Bytes 0..3', desc: 'Opcode (bits 7:0), Fused op (9:8), PSDT (15:14 — 00b selects PRP, 01b/10b selects SGL scatter-gather DMA), and 16-bit Command Identifier (CID) matched in the CQE.' },
-      { id: 'CDW1', name: 'NSID', tag: 'Bytes 4..7', desc: 'Namespace Identifier (little-endian). 0xFFFFFFFF targets broadcast/all namespaces on supported Admin commands.' },
-      { id: 'CDW2-3', name: 'CDW2 / CDW3 (Rsvd)', tag: 'Bytes 8..15', desc: 'Command-set specific / reserved metadata fields (e.g., NVM command set extensions).' },
-      { id: 'CDW4-5', name: 'MPTR (Metadata Ptr)', tag: 'Bytes 16..23', desc: '64-bit pointer to separate metadata buffer (DIX) when Extended LBA (DIF) interleaving is not used.' },
-      { id: 'CDW6-9', name: 'DPTR (PRP1/PRP2 or SGL1)', tag: 'Bytes 24..39', desc: 'Data Pointer (128 bits). In PRP mode: PRP1 + PRP2 (or PRP List pointer, 4 KiB page-aligned). In SGL mode: byte-granular scatter-gather descriptor.' },
-      { id: 'CDW10-11', name: 'SLBA (64-bit Start LBA)', tag: 'Bytes 40..47', desc: 'Starting Logical Block Address for Read/Write commands (little-endian 64-bit integer, unlike big-endian SCSI).' },
-      { id: 'CDW12', name: 'NLB (0-based) & DTYPE', tag: 'Bytes 48..51', desc: 'Bits 15:0 = Number of Logical Blocks (0-based: 0 means 1 block!). Bits 23:20 = Directive Type (DTYPE=2h for FDP Data Placement), plus FUA/LR flags.' },
-      { id: 'CDW13-15', name: 'DSM / DSPEC (FDP PID) / PI', tag: 'Bytes 52..63', desc: 'CDW13 upper 16 bits carry DSPEC = FDP Placement Identifier (PID) mapping writes to a Reclaim Unit Handle (RUH). CDW14–15 hold EILBRT/ELBAT T10 PI/CRC verification tags.' }
+      { id: 'CDW0', name: 'Opcode, PRP/SGL & Command ID', tag: 'Bytes 0..3', desc: 'Beginner Note: Contains what command to run (Opcode), whether memory pointers use PRP or SGL (PSDT bits 15:14), and a 16-bit ticket number (CID) so you can match the receipt later.' },
+      { id: 'CDW1', name: 'Namespace ID (NSID)', tag: 'Bytes 4..7', desc: 'Which logical drive partition (Namespace) you are reading/writing (usually 1). Stored in little-endian byte order, unlike old big-endian SCSI!' },
+      { id: 'CDW2-3', name: 'Extended / Hint Fields', tag: 'Bytes 8..15', desc: 'Reserved or used by newer command-set features.' },
+      { id: 'CDW4-5', name: 'Metadata Pointer (MPTR)', tag: 'Bytes 16..23', desc: 'Optional 64-bit RAM address for separate extra integrity bytes (DIX protection info).' },
+      { id: 'CDW6-9', name: 'Data Pointer (PRP1/PRP2 or SGL)', tag: 'Bytes 24..39', desc: 'The exact host RAM addresses where the SSD should DMA-read or DMA-write your payload — zero CPU copying!' },
+      { id: 'CDW10-11', name: 'Starting LBA (64-bit)', tag: 'Bytes 40..47', desc: 'Which sector number on the SSD to start reading or writing.' },
+      { id: 'CDW12', name: 'Block Count (0-Based!) & FDP', tag: 'Bytes 48..51', desc: 'CLASSIC GOTCHA: Number of Logical Blocks (NLB) is 0-based — writing 0 means 1 block, and 7 means 8 blocks! Also holds Directive Type = 2h when using Flexible Data Placement (FDP).' },
+      { id: 'CDW13-15', name: 'FDP Placement ID & CRC Tags', tag: 'Bytes 52..63', desc: 'CDW13 carries your FDP Placement ID (which Reclaim Unit bucket to write into); CDW14–15 hold end-to-end T10 CRC reference tags.' }
     ];
     const CQE_FIELDS = [
-      { id: 'DW0', name: 'Command-Specific Result', tag: 'Bytes 0..3', desc: 'Command-specific completion value (e.g., Async Event Info, Get Features attribute, or timestamp).' },
-      { id: 'DW1', name: 'Reserved / Command Ext', tag: 'Bytes 4..7', desc: 'Reserved or command-set specific second result Dword.' },
-      { id: 'DW2', name: 'SQHD & SQID', tag: 'Bytes 8..11', desc: 'Bits 15:0 = Submission Queue Head Pointer (tells host which SQ slots are now free to recycle); Bits 31:16 = Submission Queue Identifier.' },
-      { id: 'DW3', name: 'CID, Phase Tag (P) & Status', tag: 'Bytes 12..15', desc: 'Bits 15:0 = CID matching SQE; Bit 16 = Phase Tag (flips every CQ wrap for lockless host polling without MMIO reads); Bits 31:17 = SCT/SC/DNR/M status fields.' }
+      { id: 'DW0-1', name: 'Command Result', tag: 'Bytes 0..7', desc: 'Optional output value returned by Admin/feature commands.' },
+      { id: 'DW2', name: 'SQ Head Pointer & Queue ID', tag: 'Bytes 8..11', desc: 'Tells the host how far the SSD has consumed the Submission Queue ring so free slots can be reused.' },
+      { id: 'DW3 (CID)', name: 'Matching Ticket # (CID)', tag: 'Bytes 12..13', desc: 'Matches CDW0 CID from your SQE — remember SSDs finish commands out-of-order!' },
+      { id: 'DW3 (P+Status)', name: 'Phase Tag Bit + Pass/Fail', tag: 'Bytes 14..15', desc: 'KEY TRICK: Bit 16 is the Phase Tag (flips 0↔1 each loop around the ring). The CPU just watches this 1 bit in RAM to detect finished I/Os with zero locks or PCIe register reads!' }
     ];
 
     function renderFields(containerId, list) {
@@ -217,6 +255,33 @@
     }
     renderFields('sqe-grid', SQE_FIELDS);
     renderFields('cqe-grid', CQE_FIELDS);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      StorageHub.renderQuiz('p01-quiz', [
+        {
+          q: 'You construct a raw NVMe Read SQE and set NLB (Number of Logical Blocks) in CDW12 to 0. How many logical blocks will the SSD read?',
+          options: ['0 blocks (no-op)', '1 block (because NLB is 0-based)', '4,096 blocks'],
+          answer: 1,
+          explain: 'NVMe NLB is 0s-based so a 16-bit field can represent 1 to 65,536 blocks. Setting NLB = 0 requests exactly 1 logical block!'
+        },
+        {
+          q: 'Why do cloud databases love NVMe Flexible Data Placement (FDP) compared to older Zoned Namespaces (ZNS)?',
+          options: [
+            'FDP keeps normal random-overwrite block semantics while separating hot/cold data into different flash Reclaim Units',
+            'FDP disables NAND garbage collection hardware completely',
+            'FDP forces all writes to be strictly sequential append-only'
+          ],
+          answer: 0,
+          explain: 'Unlike ZNS (which required rewriting host apps for sequential append-only zones), FDP keeps standard block LBAs and simply uses a Placement ID hint in CDW12/13 to isolate data lifetimes and push WAF near 1.0.'
+        },
+        {
+          q: 'Under OCP Datacenter NVMe SSD 2.6, if SSD controller firmware panics or hangs, how fast must the hardware watchdog detect it (CRASH-5)?',
+          options: ['Within 60 seconds', 'In less than 2 seconds (<2s)', 'Only on next host reboot'],
+          answer: 1,
+          explain: 'OCP 2.6 CRASH-5 mandates a <2 second firmware watchdog timer, paired with EREC-2 autonomous recovery preferring an NVMe Controller Reset.'
+        }
+      ]);
+    });
     
 </script>
 </body>

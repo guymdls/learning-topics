@@ -3,174 +3,230 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>03. Flash Physics, SSD Architecture &amp; SanDisk Platforms &mdash; Storage &amp; Validation Engineering Hub</title>
+  <title>03. 3D NAND &amp; SanDisk SSDs &mdash; Storage Mastery Hub</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body class="theme-dark">
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand-group">
-        <a class="brand-badge" href="../index.html">NVMe</a>
-        <div class="breadcrumbs"><a href="../../index.html">Learning Topics</a> <span>/</span> <a href="../index.html">Storage &amp; Validation</a> <span>/</span> <span class="current">03. Flash Physics, SSD Architecture &amp; SanDisk Platforms</span></div>
-      </div>
-      <div class="header-controls">
-        <select id="subject-nav" class="nav-select" data-base="../" data-current="p03" aria-label="Jump to subject"></select>
-        <a class="btn" href="../nvme_systems_tutor.html">102-Term Tutor</a>
-        <button id="theme-toggle" class="btn" type="button">Light Mode</button>
-      </div>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside class="course-sidebar" id="course-sidebar" data-base="../" data-current="p03" aria-label="Course navigation"></aside>
+
+    <div class="main-column">
+      <header class="site-header">
+        <div class="header-inner">
+          <div class="flex-wrap-gap">
+            <button id="mobile-menu-btn" class="btn mobile-menu-btn" type="button" aria-label="Open course menu">&#9776; Menu</button>
+            <div class="breadcrumbs"><a href="../../index.html">Portal</a> <span>/</span> <a href="../index.html">Storage Hub</a> <span>/</span> <span class="current">03. 3D NAND &amp; SanDisk SSDs</span></div>
+          </div>
+          <div class="header-controls">
+            <div class="depth-switch" title="Switch between plain-English learning view and full specification depth">
+              <button type="button" class="depth-btn active" data-depth="simple">Simple View</button>
+              <button type="button" class="depth-btn" data-depth="deep">Full Spec</button>
+            </div>
+            <a class="btn" href="../nvme_systems_tutor.html">102-Term Lab</a>
+            <button id="theme-toggle" class="btn" type="button">Light</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="container">
+        <section class="hero">
+          <div class="hero-eyebrow">Phase 1 • Foundations (⏱ 8 min read)</div>
+          <h1>03. 3D NAND &amp; SanDisk SSDs</h1>
+          <p>See why flash memory behaves nothing like RAM — and how SanDisk's BiCS8/9/10 CBA technology powers SN861, 256TB UltraQLC, and SN8100.</p>
+          <div class="hero-meta"><span class="badge badge-success">Interactive Flash Simulator</span><span class="badge badge-primary">BiCS8 • BiCS9 • BiCS10</span><span class="badge badge-warning">SN861 • UltraQLC • SN8100</span></div>
+        </section>
+
+        
+    
+    <div class="step-banner">
+      <span class="step-num">1</span>
+      <h2>The 30-Second Mental Model</h2>
+      <span class="muted">&mdash; Why SSDs suddenly slow down or spike latency</span>
     </div>
-  </header>
-
-  <main class="container">
-    <section class="hero">
-      <div class="hero-eyebrow">Pillar 03 • 3D NAND Reliability, FTL Mechanics &amp; CBA Roadmap</div>
-      <h1>03. Flash Physics, SSD Architecture &amp; SanDisk Platforms</h1>
-      <p>3D NAND error mechanisms (wear, retention, disturb), LDPC hard vs soft read-retry, FTL GC/WAF, DRAM vs HMB, and SanDisk's BiCS8/BiCS9/BiCS10, SN861, UltraQLC 256TB, and SN8100 platforms.</p>
-      <div class="hero-meta"><span class="badge badge-primary">BiCS8 218L &amp; BiCS10 332L CBA</span><span class="badge badge-warning">UltraQLC 256TB • Direct Write QLC</span><span class="badge badge-error">LDPC Soft-Sensing &amp; WAF</span><span class="badge badge-success">SN861 &amp; SN8100</span></div>
+    
+    
+    <section class="tldr-grid">
+      <div class="tldr-card">
+        <div class="tldr-label">The Core Problem</div>
+        <p>RAM lets you overwrite any byte in 80 nanoseconds forever. 3D NAND flash packs 100&times; more capacity per dollar, but comes with weird physical rules that create sudden speed cliffs.</p>
+      </div>
+      <div class="tldr-card analogy">
+        <div class="tldr-label">Plain-English Analogy</div>
+        <p>Imagine writing in pen on a notebook where <strong>you can only erase an entire chapter at once</strong>: when pages fill up, you must copy good paragraphs to a fresh chapter before erasing the old one (<strong>Garbage Collection</strong>).</p>
+      </div>
+      <div class="tldr-card role">
+        <div class="tldr-label">Why You Care at SanDisk</div>
+        <p>Nearly every mysterious <strong>throughput drop</strong> or <strong>10 ms tail-latency spike</strong> you debug on SN861, UltraQLC, or SN8100 comes from either <strong>Garbage Collection</strong> or <strong>LDPC error retries</strong>.</p>
+      </div>
     </section>
+    
 
+    <div class="flow-diagram"><div class="flow-node"><strong>Fresh Cell</strong><span>Fast 1-shot read (~42 µs) • Hard LDPC passes immediately</span></div><div class="flow-arrow">&rarr;</div><div class="flow-node"><strong>Worn / Hot Cell</strong><span>Electrons leak (wear, retention, disturb) • Hard LDPC fails!</span></div><div class="flow-arrow">&rarr;</div><div class="flow-node"><strong>Read-Retry &amp; Soft LDPC</strong><span>Controller re-reads at 5–7 shifted voltages -&gt; multi-ms p99.99 spike</span></div><div class="flow-arrow">&rarr;</div><div class="flow-node"><strong>DR Recycle / Scrub</strong><span>Firmware quietly copies weak blocks in background, competing with host I/O</span></div></div>
+
+    
+    <div class="step-banner">
+      <span class="step-num">2</span>
+      <h2>Interactive Lab: Watch SLC Cache Cliffs, GC &amp; Read-Retries Happen</h2>
+      <span class="muted">&mdash; Click the 3 real-world drive states</span>
+    </div>
     
     <section class="card">
       <div class="card-header">
         <div>
-          <h2>Interactive 3D NAND Error Physics &amp; Tail-Latency Cliff Visualizer</h2>
-          <p class="card-subtitle">Adjust P/E wear, retention temperature/age, and Drive Fill % to observe how RBER triggers LDPC read-retry, DR recycles, and GC WAF cliffs.</p>
+          <h2>Simulate Flash Aging, Drive Fill &amp; Write Cliffs</h2>
+          <p class="card-subtitle">Click a preset below or drag the sliders to see how TLC SLC-cached drives compare against SanDisk&rsquo;s Direct-Write UltraQLC.</p>
         </div>
-        <span class="badge badge-warning">Media-to-Tail-Latency Model</span>
+        <div class="pill-bar mb-0">
+          <button type="button" class="pill" id="p3-s1">1. Brand New Drive (FOB)</button>
+          <button type="button" class="pill active" id="p3-s2">2. Steady-State Enterprise</button>
+          <button type="button" class="pill" id="p3-s3">3. Aged &amp; Hot Flash (Retry Storm)</button>
+        </div>
       </div>
+
       <div class="grid-3 mb-2">
-        <div class="control-group">
-          <div class="control-label"><span>P/E Wear (% Rated Endurance)</span><strong id="p3-wear-v">45%</strong></div>
-          <input type="range" id="p3-wear" min="0" max="100" value="45" />
-        </div>
-        <div class="control-group">
-          <div class="control-label"><span>Retention Stress (Temp &times; Age)</span><strong id="p3-ret-v">35%</strong></div>
-          <input type="range" id="p3-ret" min="0" max="100" value="35" />
-        </div>
-        <div class="control-group">
-          <div class="control-label"><span>Logical Fill / Over-Provisioning Pressure</span><strong id="p3-fill-v">82%</strong></div>
-          <input type="range" id="p3-fill" min="40" max="98" value="82" />
-        </div>
+        <div class="control-group"><div class="control-label"><span>Cell Wear (P/E Cycles)</span><strong id="p3-wear-v">45%</strong></div><input type="range" id="p3-wear" min="0" max="100" value="45" /></div>
+        <div class="control-group"><div class="control-label"><span>Heat / Retention Stress</span><strong id="p3-ret-v">35%</strong></div><input type="range" id="p3-ret" min="0" max="100" value="35" /></div>
+        <div class="control-group"><div class="control-label"><span>Drive Fill %</span><strong id="p3-fill-v">82%</strong></div><input type="range" id="p3-fill" min="40" max="98" value="82" /></div>
       </div>
+
       <div class="grid-4 mb-2">
-        <div class="kpi-tile"><div class="kpi-label">LDPC Decode Path</div><div class="kpi-value" id="p3-ecc" style="font-size:1.05rem;">Hard LDPC</div><div class="kpi-note" id="p3-ecc-note">Normal single-read sensing</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Estimated p99.99 Read</div><div class="kpi-value" id="p3-p9999">180 &mu;s</div><div class="kpi-note">Includes read-retry &amp; GC contention</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Steady-State WAF (Rand 4K)</div><div class="kpi-value" id="p3-waf">2.4x</div><div class="kpi-note">FDP RUH isolation drives near 1.0x</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Background Scrub / DR</div><div class="kpi-value" id="p3-dr" style="font-size:1.05rem;">Low</div><div class="kpi-note">Competes with host flash channels</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Error Recovery Mode</div><div class="kpi-value" id="p3-ecc" style="font-size:1.05rem;">Hard LDPC</div><div class="kpi-note" id="p3-ecc-note">Fast single-pass read</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Tail Read (p99.99)</div><div class="kpi-value" id="p3-p9999">180 &mu;s</div><div class="kpi-note">Worst 1-in-10,000 reads</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Write Amplification (WAF)</div><div class="kpi-value" id="p3-waf">2.4x</div><div class="kpi-note">Flash bytes written per host byte</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Background Scrubbing</div><div class="kpi-value" id="p3-dr" style="font-size:1.05rem;">Low</div><div class="kpi-note">Data Retention (DR) recycles</div></div>
       </div>
+
       <canvas id="p3-nand-canvas" height="195"></canvas>
+      <div class="callout mt-3 mb-0" id="p3-takeaway"></div>
     </section>
 
+    
+    <div class="step-banner">
+      <span class="step-num">3</span>
+      <h2>Know Your SanDisk Hardware Lineup (2025–2026)</h2>
+      <span class="muted">&mdash; Plain-English guide to BiCS8/9/10 &amp; shipping SSDs</span>
+    </div>
+    
     <section class="card">
-      <div class="card-header">
-        <div>
-          <h2>SanDisk 2025&ndash;2026 NAND &amp; SSD Platform Matrix</h2>
-          <p class="card-subtitle">Filter by media generation, enterprise/AI drives, or client Gen5 platforms. Attribution badges distinguish vendor disclosures from independent reviews.</p>
+      <p class="card-subtitle mb-2">SanDisk (in its joint venture with Kioxia) builds 3D NAND using <strong>CBA (CMOS directly Bonded to Array)</strong>: peripheral logic is made on one wafer for max speed, 3D flash layers on another wafer for max density, then bonded face-to-face.</p>
+
+      <div class="grid-3 mt-3">
+        <div class="sub-panel">
+          <span class="badge badge-primary mb-2">NAND Generations</span>
+          <h3>BiCS8 &rarr; BiCS9 &rarr; BiCS10</h3>
+          <ul class="clean-list small">
+            <li><strong>BiCS8 (218 layers):</strong> Today&rsquo;s mass-production workhorse (3.6 Gb/s I/O, ~42 &mu;s read).</li>
+            <li><strong>BiCS9 (2 Tb QLC):</strong> Pairs proven BiCS8 cells with faster 4.8 Gb/s CMOS for higher QLC speed &amp; power efficiency (vendor-reported).</li>
+            <li><strong>BiCS10 (332 layers):</strong> Next-gen 4.8 Gb/s Toggle DDR6.0 + low-voltage PI-LTT to saturate PCIe 6.0 SSDs (sampling 2026).</li>
+          </ul>
         </div>
-        <div class="pill-bar mb-0" id="p3-filters">
-          <button type="button" class="pill active" data-cat="all">All (6)</button>
-          <button type="button" class="pill" data-cat="nand">NAND Nodes (BiCS8/9/10)</button>
-          <button type="button" class="pill" data-cat="enterprise">Enterprise &amp; AI SSDs</button>
-          <button type="button" class="pill" data-cat="client">Client Gen5</button>
+
+        <div class="sub-panel">
+          <span class="badge badge-warning mb-2">Enterprise &amp; AI Lakes</span>
+          <h3>SN861 &amp; 256TB UltraQLC</h3>
+          <ul class="clean-list small">
+            <li><strong>SN861 (Gen5 TLC, up to 16TB):</strong> OCP-inspired low-latency workhorse for AI training &amp; cloud DBs.</li>
+            <li><strong>SN670 (128TB) &amp; UltraQLC (256TB &ldquo;Stargate&rdquo;):</strong> Writes directly to QLC without an SLC buffer (PLP-safe!) for flat steady-state speed + Dynamic Frequency Scaling (DFS). <em>Validation catch: filling 256TB takes huge wall-clock time!</em></li>
+          </ul>
+        </div>
+
+        <div class="sub-panel">
+          <span class="badge badge-success mb-2">Client &amp; Gaming</span>
+          <h3>WD_BLACK SN8100 / Optimus</h3>
+          <ul class="clean-list small">
+            <li>M.2 PCIe 5.0 x4 (218L BiCS8 TLC) hitting <strong>14.9 GB/s read &amp; 2.3M+ IOPS</strong> (independently verified in reviews) at just <strong>6.5&ndash;7.0W active / 5 mW idle</strong>.</li>
+            <li>Uses <strong>nCache 4.0</strong> dynamic SLC caching &mdash; validate burst exhaustion/recovery and DirectStorage gaming latency.</li>
+          </ul>
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>SanDisk Platform</th>
-              <th>Status (Late 2026)</th>
-              <th>Key Architectural Specs &amp; Attribution</th>
-              <th>Validation &amp; Performance Implications</th>
-            </tr>
-          </thead>
-          <tbody id="p3-table-body">
-            <tr data-cat="nand">
-              <td><strong>BiCS8 (TLC &amp; 2 Tb QLC)</strong><br><span class="badge badge-primary mt-2">JV Tech Brief</span></td>
-              <td>Mass production backbone</td>
-              <td>218 layers, CBA wafer bonding; KIOXIA/SanDisk brief reports up to 3.6 Gb/s I/O, &gt;23 Gb/mm&sup2;, up to 42 &mu;s read latency (1 Tb), and 8 TB per 32-die package (2 Tb QLC).</td>
-              <td>Baseline media across SN861, UltraQLC, and SN8100; validate multi-plane parallelism and sustained thermal behavior.</td>
-            </tr>
-            <tr data-cat="nand">
-              <td><strong>BiCS9 (2 Tb QLC)</strong><br><span class="badge badge-warning mt-2">Vendor-Reported</span></td>
-              <td>Unveiled Aug 2026</td>
-              <td>Mature BiCS8 array bonded to BiCS10-like CMOS; 4.8 Gb/s I/O; SanDisk reports +150% write BW, +75% read BW, and +85%/+40% write/read power efficiency vs. BiCS8 2 Tb QLC.</td>
-              <td>Stresses higher NAND channel concurrency and tighter QLC power-efficiency envelopes without added layer-stack risk.</td>
-            </tr>
-            <tr data-cat="nand">
-              <td><strong>BiCS10 (1 Tb TLC &amp; 2 Tb QLC)</strong><br><span class="badge badge-warning mt-2">Vendor-Reported</span></td>
-              <td>1 Tb TLC sampling Jul 2026; 2 Tb QLC disclosed Aug 2026</td>
-              <td>332 layers, CBA, up to 4.8 Gb/s Toggle DDR6.0, SCA protocol, PI-LTT low-voltage I/O; SanDisk reports TLC +59% density &amp; &minus;10%/&minus;34% I/O power, and QLC +60% density &amp; +100% R/W BW vs. BiCS8.</td>
-              <td>Drives PCIe 6.0 controller saturation and stricter active/I/O power validation budgets.</td>
-            </tr>
-            <tr data-cat="enterprise">
-              <td><strong>SN861 (Enterprise Gen5 TLC)</strong><br><span class="badge badge-primary mt-2">OCP Inspired</span></td>
-              <td>Shipping</td>
-              <td>PCIe Gen5 NVMe, capacities up to 16 TB; targets AI training, prompting, HPC, and mixed enterprise workloads.</td>
-              <td>Full OCP compliance, low-latency QoS, and AI data-cycle workload validation.</td>
-            </tr>
-            <tr data-cat="enterprise">
-              <td><strong>SN670 (122.88&ndash;128 TB) &amp; UltraQLC (256 TB) (&ldquo;Stargate&rdquo;)</strong><br><span class="badge badge-warning mt-2">Vendor Projections</span></td>
-              <td>Shipping for revenue Q4 FY26</td>
-              <td>BiCS8 2 Tb QLC CBA, scalable multi-core controller, Direct Write QLC (no SLC buffer; first-pass PLP-safe), Dynamic Frequency Scaling (DFS, projected +10% perf at given power), projected &minus;33% DR recycles vs. SN655.</td>
-              <td>Preconditioning 128&ndash;256 TB drives demands huge wall-clock time; requires optimized steady-state workflows, first-pass QLC PLP verification, and DFS power sweeps.</td>
-            </tr>
-            <tr data-cat="client">
-              <td><strong>WD_BLACK SN8100 / Optimus GX Pro</strong><br><span class="badge badge-success mt-2">Independently Corroborated</span></td>
-              <td>Shipping</td>
-              <td>M.2 2280 PCIe 5.0 x4, SM2508 8-ch controller, 218L BiCS8 TLC, 14.9 GB/s read, 14.0 GB/s write, 2.3M/2.4M IOPS (corroborated in 3rd-party reviews), 6.5&ndash;7.0W active / 5 mW idle, nCache 4.0.</td>
-              <td>Validates dynamic SLC cache exhaustion/recovery curves, DirectStorage GDeflate, low-QD responsiveness, and aggressive low-power transitions.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+
+      <div class="term-grid"><div class="term-box"><strong>TLC vs. QLC</strong><p>TLC stores 3 bits/cell (8 voltage states — faster, higher endurance); QLC stores 4 bits/cell (16 tight voltage states — ultra-dense for AI data lakes).</p></div><div class="term-box"><strong>FTL &amp; DRAM vs. HMB</strong><p>Flash Translation Layer maps logical sectors to physical flash pages. Enterprise SSDs keep this huge map in onboard DRAM; DRAM-less client SSDs borrow a slice of host PC RAM (HMB).</p></div></div>
+
+      <details class="deep-dive">
+        <summary>Full SanDisk Platform Spec Table &amp; Vendor Attribution Details</summary>
+        <div class="deep-dive-body">
+          <p class="small muted"><em>Attribution: BiCS9/BiCS10 relative gains and UltraQLC DFS/DR projections are vendor-reported from SanDisk press releases &amp; Investor Day briefings; SN8100 retail numbers are corroborated by independent reviews.</em></p>
+          <div class="table-wrap" style="margin:0;">
+            <table>
+              <thead><tr><th>Platform</th><th>Status</th><th>Key Figures</th><th>Validation Focus</th></tr></thead>
+              <tbody>
+                <tr><td><strong>BiCS8</strong></td><td>Mass Production</td><td>218L CBA, 3.6 Gb/s, &gt;23 Gb/mm&sup2;, 42 &mu;s read (1Tb), 8TB/pkg (2Tb QLC)</td><td>Multi-plane parallelism &amp; baseline thermals</td></tr>
+                <tr><td><strong>BiCS9 (2Tb QLC)</strong></td><td>Unveiled Aug 2026</td><td>4.8 Gb/s; +150% W BW, +75% R BW, +85%/+40% W/R power eff vs BiCS8 QLC</td><td>High channel concurrency &amp; QLC power budgets</td></tr>
+                <tr><td><strong>BiCS10</strong></td><td>Sampling H2 2026</td><td>332L CBA, 4.8 Gb/s Toggle DDR6.0, SCA, PI-LTT; TLC +59% density, QLC +100% BW</td><td>PCIe 6.0 saturation &amp; low-voltage I/O validation</td></tr>
+                <tr><td><strong>SN861</strong></td><td>Shipping</td><td>PCIe Gen5 TLC up to 16TB, OCP Inspired</td><td>OCP 2.6 QoS &amp; AI training/prompting</td></tr>
+                <tr><td><strong>SN670 / UltraQLC 256TB</strong></td><td>Shipping Q4 FY26</td><td>Direct Write QLC (first-pass PLP-safe), DFS (+10% perf/W), &minus;33% DR recycles</td><td>Fast preconditioning workflows, QLC PLP &amp; DFS sweeps</td></tr>
+                <tr><td><strong>SN8100 / Optimus GX Pro</strong></td><td>Shipping</td><td>SM2508 8-ch, 14.9/14.0 GB/s, 2.3M/2.4M IOPS, 6.5&ndash;7W / 5mW, nCache 4.0</td><td>SLC folding curves, DirectStorage &amp; APST sleep</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </section>
 
+    
+    <div class="step-banner">
+      <span class="step-num">4</span>
+      <h2>Quick Check, Starter Videos &amp; Checklist</h2>
+      
+    </div>
+    
     
     <section class="card">
       <div class="card-header">
         <div>
-          <h2>Curated Primary Sources &amp; Reference Library</h2>
-          <p class="card-subtitle">Authoritative specifications, textbooks, kernel docs, papers, and open-source repositories.</p>
+          <h2>Quick 3-Question Self-Check</h2>
+          <p class="card-subtitle">Click an answer to test your intuition right away &mdash; every option explains <em>why</em>.</p>
         </div>
-        <span class="badge badge-primary">5 Resources</span>
+        <span class="badge badge-violet">Instant Feedback</span>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Source / Resource</th>
-              <th>Format</th>
-              <th>Link / Identifier</th>
-              <th>How to Use It</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>Inside Solid State Drives (SSDs), 2nd Ed. (2018) — Rino Micheloni, Alessia Marelli, Kam Eshghi</strong></td><td><span class="badge">Book</span></td><td><span class="mono small">ISBN 978-981-13-0599-3 (Springer)</span></td><td>Core textbook for 3D NAND architecture, FTL design, BCH/non-binary LDPC ECC, data randomization, and SSD reliability.</td></tr><tr><td><strong>ETH Zürich: Flash Memory, SSDs &amp; Modern Storage Systems — Prof. Onur Mutlu</strong></td><td><span class="badge">Video Course &amp; Slides</span></td><td><a href="https://people.inf.ethz.ch/omutlu/lecture-videos.html" target="_blank" rel="noopener noreferrer">Lecture Videos</a> &bull; <a href="https://www.youtube.com/onurmutlulectures" target="_blank" rel="noopener noreferrer">YouTube Channel</a></td><td>Watch Fall 2025/2026 Flash/SSD lectures and &#x27;Understanding &amp; Designing Modern Storage Systems&#x27; (M5/M7) for flash error modeling and advanced commands.</td></tr><tr><td><strong>SanDisk UltraQLC Release &amp; BiCS8/9/10 Roadmap Briefs</strong></td><td><span class="badge">Industry Disclosures</span></td><td><a href="https://www.sandisk.com/company/newsroom/press-releases/2025/2025-08-05-sandisk-showcases-ultraqlc-technology-platform-with-milestone-enterprise-ssd-capacity-at-fms-2025" target="_blank" rel="noopener noreferrer">SanDisk UltraQLC FMS 2025</a> &bull; <a href="https://convergedigest.com/sandisk-bics9-bics10-hbf-nand-technology-roadmap/" target="_blank" rel="noopener noreferrer">BiCS9 / BiCS10 / HBF Roadmap</a></td><td>Align your validation scripts directly with SanDisk&#x27;s shipping and upcoming media platforms.</td></tr><tr><td><strong>KIOXIA BiCS8 Technical Brief</strong></td><td><span class="badge">White Paper</span></td><td><a href="https://americas.kioxia.com/en-ca/business/resources/tech-brief/bics8-ssd.html" target="_blank" rel="noopener noreferrer">KIOXIA BiCS8 Brief</a></td><td>Quantifies controller, DRAM, PCIe, and BiCS8 NAND contributions to throughput, read latency, and power efficiency.</td></tr><tr><td><strong>USENIX FAST &#x27;19: Intra-SSD Redundancy &amp; Flash Error Models (Kim et al.)</strong></td><td><span class="badge">Peer-Reviewed Paper</span></td><td><a href="https://www.usenix.org/system/files/fast19-kim-bryan.pdf" target="_blank" rel="noopener noreferrer">FAST &#x27;19 Paper PDF</a></td><td>Rigorous treatment of wear, retention, read-disturb RBER models, and how background scrubbing drives tail latency.</td></tr>
-          </tbody>
-        </table>
+      <div id="p03-quiz"></div>
+    </section>
+    
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Best Places to Start &amp; Reference Library</h2>
+          <p class="card-subtitle">Begin with the 2 recommended starter resources below; expand the full table whenever you need exact spec clauses or repositories.</p>
+        </div>
+        <span class="badge badge-primary">4 Curated Sources</span>
       </div>
+      <div class="grid-2"><div class="sub-panel"><div class="flex-wrap-gap" style="justify-content:space-between;margin-bottom:6px;"><span class="badge badge-success">Start Here First</span><span class="badge">Free Video Lectures</span></div><strong>ETH Zürich: Flash Memory &amp; Modern Storage Systems — Prof. Onur Mutlu</strong><p class="small muted" style="margin:6px 0 8px;">Start here! Watch Fall 2025/2026 Flash/SSD lectures — visual, crystal-clear teaching on 3D NAND, FTLs, and LDPC.</p><div class="small"><a href="https://people.inf.ethz.ch/omutlu/lecture-videos.html" target="_blank" rel="noopener noreferrer">Lecture Videos</a> &bull; <a href="https://www.youtube.com/onurmutlulectures" target="_blank" rel="noopener noreferrer">YouTube Channel</a></div></div><div class="sub-panel"><div class="flex-wrap-gap" style="justify-content:space-between;margin-bottom:6px;"><span class="badge badge-success">Start Here First</span><span class="badge">Short Tech Briefs</span></div><strong>KIOXIA BiCS8 Technical Brief &amp; SanDisk UltraQLC / BiCS9–10 Briefs</strong><p class="small muted" style="margin:6px 0 8px;">Quick 10-minute reads mapping directly to the SanDisk drives sitting on your lab bench.</p><div class="small"><a href="https://americas.kioxia.com/en-ca/business/resources/tech-brief/bics8-ssd.html" target="_blank" rel="noopener noreferrer">KIOXIA BiCS8 Brief</a> &bull; <a href="https://www.sandisk.com/company/newsroom/press-releases/2025/2025-08-05-sandisk-showcases-ultraqlc-technology-platform-with-milestone-enterprise-ssd-capacity-at-fms-2025" target="_blank" rel="noopener noreferrer">SanDisk UltraQLC FMS 2025</a> &bull; <a href="https://convergedigest.com/sandisk-bics9-bics10-hbf-nand-technology-roadmap/" target="_blank" rel="noopener noreferrer">BiCS9 / BiCS10 / HBF Roadmap</a></div></div></div>
+      <details class="deep-dive">
+        <summary>Full Specification, Book &amp; Open-Source Reference Table (4 items)</summary>
+        <div class="deep-dive-body">
+          <div class="table-wrap" style="margin:0;">
+            <table>
+              <thead>
+                <tr><th>Source / Resource</th><th>Format</th><th>Link / Identifier</th><th>How to Use It</th></tr>
+              </thead>
+              <tbody><tr><td><strong>ETH Zürich: Flash Memory &amp; Modern Storage Systems — Prof. Onur Mutlu</strong></td><td><span class="badge">Free Video Lectures</span></td><td><a href="https://people.inf.ethz.ch/omutlu/lecture-videos.html" target="_blank" rel="noopener noreferrer">Lecture Videos</a> &bull; <a href="https://www.youtube.com/onurmutlulectures" target="_blank" rel="noopener noreferrer">YouTube Channel</a></td><td>Start here! Watch Fall 2025/2026 Flash/SSD lectures — visual, crystal-clear teaching on 3D NAND, FTLs, and LDPC.</td></tr><tr><td><strong>KIOXIA BiCS8 Technical Brief &amp; SanDisk UltraQLC / BiCS9–10 Briefs</strong></td><td><span class="badge">Short Tech Briefs</span></td><td><a href="https://americas.kioxia.com/en-ca/business/resources/tech-brief/bics8-ssd.html" target="_blank" rel="noopener noreferrer">KIOXIA BiCS8 Brief</a> &bull; <a href="https://www.sandisk.com/company/newsroom/press-releases/2025/2025-08-05-sandisk-showcases-ultraqlc-technology-platform-with-milestone-enterprise-ssd-capacity-at-fms-2025" target="_blank" rel="noopener noreferrer">SanDisk UltraQLC FMS 2025</a> &bull; <a href="https://convergedigest.com/sandisk-bics9-bics10-hbf-nand-technology-roadmap/" target="_blank" rel="noopener noreferrer">BiCS9 / BiCS10 / HBF Roadmap</a></td><td>Quick 10-minute reads mapping directly to the SanDisk drives sitting on your lab bench.</td></tr><tr><td><strong>Inside Solid State Drives (SSDs), 2nd Ed. (2018) — Micheloni, Marelli, Eshghi</strong></td><td><span class="badge">Reference Textbook</span></td><td><span class="mono small">ISBN 978-981-13-0599-3 (Springer)</span></td><td>Deep reference when you need exact LDPC math, voltage-shift sensing, and data randomization details.</td></tr><tr><td><strong>USENIX FAST &#x27;19: Intra-SSD Redundancy &amp; Flash Error Models (Kim et al.)</strong></td><td><span class="badge">Research Paper</span></td><td><a href="https://www.usenix.org/system/files/fast19-kim-bryan.pdf" target="_blank" rel="noopener noreferrer">FAST &#x27;19 Paper PDF</a></td><td>Shows how background scrubbing and read-disturb cause real-world tail-latency spikes.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </section>
     
     
     <section class="card" data-progress-prefix="p03_" data-progress-total="5">
       <div class="card-header">
         <div>
-          <h2>Mastery Checklist (Saved Locally)</h2>
-          <p class="card-subtitle">Check off skills and labs as you validate them — progress rolls up automatically to the Storage Hub.</p>
+          <h2>Hands-On Lab &amp; Mastery Checklist</h2>
+          <p class="card-subtitle">Tick items as you learn them &mdash; your progress saves in your browser and updates the sidebar automatically.</p>
         </div>
         <span class="badge badge-success progress-text">0 / 5 (0%)</span>
       </div>
       <div class="progress-track mb-2"><div class="progress-fill" style="width: 0%"></div></div>
-      <div class="checklist mt-3">
-        <label class="check-item"><input type="checkbox" data-check-id="p03_01" /><div><div class="check-title"><strong>Model 3D NAND error mechanisms &amp; LDPC soft-sensing latency spikes</strong></div><div class="small muted">Explain how P/E wear, temperature-accelerated retention loss, and read/program disturb push RBER past hard LDPC into read-retry &amp; DR recycles.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p03_02" /><div><div class="check-title"><strong>Quantify FTL Garbage Collection, WAF, DRAM vs HMB, and Direct Write QLC</strong></div><div class="small muted">Trace throughput cliffs during SLC cache exhaustion and compute WAF from physical vs host writes.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p03_03" /><div><div class="check-title"><strong>Know SanDisk BiCS8 (218L), BiCS9, and BiCS10 (332L) CBA tradeoffs</strong></div><div class="small muted">Map wafer-bonded CBA advantages, 3.6 vs 4.8 Gb/s Toggle DDR6.0, SCA protocol, and PI-LTT low-voltage I/O.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p03_04" /><div><div class="check-title"><strong>Plan validation workflows for UltraQLC 128–256 TB (&#x27;Stargate&#x27;) drives</strong></div><div class="small muted">Handle massive preconditioning wall-clock times, first-pass QLC PLP verification (no SLC buffer), and DFS power sweeps.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p03_05" /><div><div class="check-title"><strong>Validate client Gen5 SLC folding &amp; low-QD responsiveness (SN8100 / Optimus)</strong></div><div class="small muted">Measure dynamic nCache 4.0 exhaustion/recovery, DirectStorage GDeflate, and 6.5–7.0W active / 5 mW idle transitions.</div></div></label>
-      </div>
+      <div class="checklist mt-3"><label class="check-item"><input type="checkbox" data-check-id="p03_01" /><div><div class="check-title"><strong>Explain why NAND flash cannot overwrite a 4KB sector in place</strong></div><div class="small muted">Writes happen in pages, but erases happen in giant multi-megabyte blocks — requiring an FTL map and Garbage Collection.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p03_02" /><div><div class="check-title"><strong>Trace a multi-millisecond p99.99 read spike to LDPC soft decoding</strong></div><div class="small muted">Worn or hot cells leak electrons -&gt; fast Hard LDPC fails -&gt; firmware shifts voltages multiple times (Read-Retry / Soft LDPC).</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p03_03" /><div><div class="check-title"><strong>Understand CBA wafer bonding across BiCS8 (218L), BiCS9 &amp; BiCS10 (332L)</strong></div><div class="small muted">Logic circuits and 3D memory cells are baked on separate wafers at optimal temperatures, then bonded face-to-face.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p03_04" /><div><div class="check-title"><strong>Know why 256TB UltraQLC (&#x27;Stargate&#x27;) uses Direct Write QLC</strong></div><div class="small muted">Skips temporary SLC caching to give flat predictable steady-state writes (protected by PLP capacitors), plus Dynamic Frequency Scaling (DFS).</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p03_05" /><div><div class="check-title"><strong>Distinguish client SLC-cached drives (SN8100) from enterprise drives (SN861)</strong></div><div class="small muted">Client drives burst at 14.9 GB/s in nCache 4.0 SLC and idle at 5 mW; enterprise drives optimize sustained steady-state QoS.</div></div></label></div>
     </section>
     
     
 
-    <nav class="subject-pager"><a class="btn" href="../02-pcie-interconnects-and-si/index.html">&larr; 02. PCIe, Interconnects &amp; SI</a><a class="btn" href="../index.html">Storage Hub</a><a class="btn btn-primary" href="../04-architecture-os-and-concurrency/index.html">04. Architecture, OS &amp; Concurrency &rarr;</a></nav>
-  </main>
+        <nav class="subject-pager"><a class="btn" href="../02-pcie-interconnects-and-si/index.html">&larr; 02. PCIe 6.0 &amp; Signal Integrity</a><a class="btn" href="../index.html">Course Hub</a><a class="btn btn-primary" href="../04-architecture-os-and-concurrency/index.html">04. OS I/O, SPDK &amp; Concurrency &rarr;</a></nav>
+      </main>
+    </div>
+  </div>
 
   <script src="../assets/app.js"></script>
   <script>
@@ -190,18 +246,23 @@
       const eccEl = document.getElementById('p3-ecc');
       const eccNote = document.getElementById('p3-ecc-note');
       const drEl = document.getElementById('p3-dr');
+      let msg = '';
       if (rberScore < 55) {
         eccEl.textContent = 'Hard LDPC'; eccEl.style.color = 'var(--success)';
-        eccNote.textContent = 'Single-pass threshold read'; drEl.textContent = 'Low';
+        eccNote.textContent = '1-shot voltage read succeeds'; drEl.textContent = 'Low';
+        msg = 'Cells are healthy: reads finish on the first try. Only high drive fill (Garbage Collection) raises WAF.';
       } else if (rberScore < 85) {
-        eccEl.textContent = 'Read-Retry Shifts'; eccEl.style.color = 'var(--warning)';
-        eccNote.textContent = 'Voltage shifts + occasional soft LLR'; drEl.textContent = 'Elevated';
+        eccEl.textContent = 'Read-Retry'; eccEl.style.color = 'var(--warning)';
+        eccNote.textContent = 'Shifting read voltages'; drEl.textContent = 'Moderate';
+        msg = 'Notice p99.99 climbing! Some worn/warm cells fail Hard LDPC, forcing extra voltage-shift retries.';
       } else {
         eccEl.textContent = 'Soft LDPC + DR'; eccEl.style.color = 'var(--error)';
-        eccNote.textContent = 'Multi-read LLR + aggressive DR recycle'; drEl.textContent = 'High Contention';
+        eccNote.textContent = 'Multi-pass sensing + block rescues'; drEl.textContent = 'Heavy!';
+        msg = 'Tail-latency storm! Heavy electron leakage triggers slow multi-read Soft LDPC and background Data Retention (DR) block copies.';
       }
       document.getElementById('p3-p9999').textContent = p9999Us >= 1000 ? (p9999Us / 1000).toFixed(2) + ' ms' : p9999Us + ' µs';
       document.getElementById('p3-waf').textContent = waf.toFixed(2) + 'x';
+      document.getElementById('p3-takeaway').innerHTML = `<strong>What You're Seeing:</strong> ${msg}`;
 
       const { ctx, w, h, th } = StorageHub.prepCanvas(document.getElementById('p3-nand-canvas'), 195);
       const padL = 56, padR = 20, padT = 30, padB = 34;
@@ -209,76 +270,86 @@
 
       ctx.fillStyle = th.fg;
       ctx.font = '700 12.5px system-ui, sans-serif';
-      ctx.fillText(StorageHub.fitText(ctx, 'Sustained Write Throughput vs. Drive Fill (FOB → SLC Exhaustion → Steady-State GC)', w - 24), 14, 18);
+      ctx.fillText(StorageHub.fitText(ctx, 'Write Speed as You Fill the Drive: SLC-Cached TLC (blue) vs. Direct-Write QLC (green)', w - 24), 14, 18);
 
-      // Axes
       ctx.strokeStyle = th.border;
-      ctx.beginPath();
-      ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + ph); ctx.lineTo(padL + pw, padT + ph);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + ph); ctx.lineTo(padL + pw, padT + ph); ctx.stroke();
 
-      // Plot TLC SLC-cached vs Direct Write QLC curves
       function plotCurve(fn, color, dashed) {
-        ctx.save();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2.5;
+        ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = 2.5;
         if (dashed) ctx.setLineDash([6, 4]);
         ctx.beginPath();
         for (let i = 0; i <= 80; i++) {
-          const xNorm = i / 80;
-          const yNorm = fn(xNorm);
-          const x = padL + xNorm * pw;
-          const y = padT + (1 - yNorm) * ph;
+          const xNorm = i / 80, yNorm = fn(xNorm);
+          const x = padL + xNorm * pw, y = padT + (1 - yNorm) * ph;
           if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
-        ctx.stroke();
-        ctx.restore();
+        ctx.stroke(); ctx.restore();
       }
       const gcDrag = Math.min(0.42, (waf - 1) * 0.14);
       plotCurve(x => x < 0.22 ? 0.92 : (x < 0.35 ? 0.92 - (x - 0.22) * 3.8 : Math.max(0.18, 0.43 - gcDrag * (x - 0.35))), th.primary, false);
       plotCurve(x => Math.max(0.32, 0.62 - gcDrag * 0.45 * x), th.success, true);
 
-      // Marker at current fill
       const mx = padL + ((fill - 40) / 58) * pw;
-      ctx.save();
-      ctx.strokeStyle = th.warning;
-      ctx.setLineDash([4, 3]);
-      ctx.beginPath(); ctx.moveTo(mx, padT); ctx.lineTo(mx, padT + ph); ctx.stroke();
-      ctx.restore();
+      ctx.save(); ctx.strokeStyle = th.warning; ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(mx, padT); ctx.lineTo(mx, padT + ph); ctx.stroke(); ctx.restore();
 
-      ctx.fillStyle = th.muted;
-      ctx.font = '600 11px ui-monospace, monospace';
-      ctx.fillText('FOB (0x)', padL, h - 10);
-      ctx.textAlign = 'center';
-      ctx.fillText('1x Cap (SLC Fold)', padL + pw * 0.45, h - 10);
-      ctx.textAlign = 'right';
-      ctx.fillText('2x Cap Steady State', padL + pw, h - 10);
-      ctx.fillText('100%', padL - 8, padT + 10);
-      ctx.fillText('0%', padL - 8, padT + ph);
+      ctx.fillStyle = th.muted; ctx.font = '600 11px ui-monospace, monospace';
+      ctx.fillText('Empty (FOB)', padL, h - 10);
+      ctx.textAlign = 'center'; ctx.fillText('SLC Cache Full!', padL + pw * 0.33, h - 10);
+      ctx.textAlign = 'right'; ctx.fillText('2× Fill Steady State', padL + pw, h - 10);
+      ctx.fillText('Fast', padL - 8, padT + 10); ctx.fillText('0', padL - 8, padT + ph);
       ctx.textAlign = 'left';
-
-      // Legend
-      ctx.fillStyle = th.primary; ctx.fillRect(padL + 10, padT + 6, 12, 3);
-      ctx.fillStyle = th.fg; ctx.font = '600 11px system-ui, sans-serif';
-      ctx.fillText('SLC-Cached TLC (nCache cliff)', padL + 26, padT + 11);
-      ctx.fillStyle = th.success; ctx.fillRect(padL + 10, padT + 22, 12, 3);
-      ctx.fillStyle = th.fg;
-      ctx.fillText('Direct Write QLC (UltraQLC — flat, PLP-safe)', padL + 26, padT + 27);
     }
 
+    function setP3(w, r, f, btnId) {
+      document.getElementById('p3-wear').value = w;
+      document.getElementById('p3-ret').value = r;
+      document.getElementById('p3-fill').value = f;
+      ['p3-s1', 'p3-s2', 'p3-s3'].forEach(id => document.getElementById(id).classList.toggle('active', id === btnId));
+      drawNand();
+    }
+    document.getElementById('p3-s1').addEventListener('click', () => setP3(5, 10, 42, 'p3-s1'));
+    document.getElementById('p3-s2').addEventListener('click', () => setP3(45, 35, 82, 'p3-s2'));
+    document.getElementById('p3-s3').addEventListener('click', () => setP3(90, 88, 92, 'p3-s3'));
     ['p3-wear', 'p3-ret', 'p3-fill'].forEach(id => document.getElementById(id).addEventListener('input', drawNand));
     window.addEventListener('resize', drawNand);
     window.addEventListener('themechange', drawNand);
     drawNand();
 
-    document.querySelectorAll('#p3-filters .pill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#p3-filters .pill').forEach(b => b.classList.toggle('active', b === btn));
-        const cat = btn.dataset.cat;
-        document.querySelectorAll('#p3-table-body tr').forEach(tr => {
-          tr.style.display = (cat === 'all' || tr.dataset.cat === cat) ? '' : 'none';
-        });
-      });
+    document.addEventListener('DOMContentLoaded', () => {
+      StorageHub.renderQuiz('p03-quiz', [
+        {
+          q: 'Why does SanDisk CBA (CMOS directly Bonded to Array) manufacture the CMOS logic and 3D NAND array on two separate wafers?',
+          options: [
+            'High-temperature 3D flash fabrication would degrade fast CMOS transistors — baking them separately lets both run at optimal physics',
+            'To make the M.2 stick physically twice as thick',
+            'So the SSD does not need an FTL'
+          ],
+          answer: 0,
+          explain: 'Bonding a dedicated CMOS logic wafer directly to a high-layer 3D NAND wafer lets peripheral I/O circuits hit 3.6–4.8 Gb/s without suffering thermal damage from 332-layer memory processing.'
+        },
+        {
+          q: 'What causes a sudden multi-millisecond p99.99 read latency spike on an aged SSD even when average read latency is 50 µs?',
+          options: [
+            'PCIe cables changing length',
+            'Hard-decision LDPC fails on a noisy page, forcing multi-pass voltage-shift Read-Retries and Soft-decision LDPC sensing',
+            'The host CPU running out of disk space'
+          ],
+          answer: 1,
+          explain: 'Soft LDPC requires reading the same flash page multiple times at shifted reference voltages to compute bit probabilities (LLRs), turning a 45 µs read into milliseconds.'
+        },
+        {
+          q: 'Why does SanDisk’s 256TB UltraQLC ("Stargate") use Direct Write QLC instead of a large SLC cache?',
+          options: [
+            'Enterprise data lakes need predictable, flat steady-state write throughput (backed by PLP capacitors) rather than a brief burst followed by an SLC folding cliff',
+            'QLC cells are faster than SLC cells',
+            'It has no controller'
+          ],
+          answer: 0,
+          explain: 'Direct Write QLC (made crash-safe on the first pass via PLP) avoids dramatic SLC cache exhaustion cliffs under continuous hyperscale ingest.'
+        }
+      ]);
     });
     
 </script>

@@ -3,43 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>05. Performance Engineering, Telemetry &amp; Observability &mdash; Storage &amp; Validation Engineering Hub</title>
+  <title>05. Benchmarking &amp; Telemetry &mdash; Storage Mastery Hub</title>
   <link rel="stylesheet" href="../assets/style.css" />
 </head>
 <body class="theme-dark">
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand-group">
-        <a class="brand-badge" href="../index.html">NVMe</a>
-        <div class="breadcrumbs"><a href="../../index.html">Learning Topics</a> <span>/</span> <a href="../index.html">Storage &amp; Validation</a> <span>/</span> <span class="current">05. Performance Engineering, Telemetry &amp; Observability</span></div>
-      </div>
-      <div class="header-controls">
-        <select id="subject-nav" class="nav-select" data-base="../" data-current="p05" aria-label="Jump to subject"></select>
-        <a class="btn" href="../nvme_systems_tutor.html">102-Term Tutor</a>
-        <button id="theme-toggle" class="btn" type="button">Light Mode</button>
-      </div>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside class="course-sidebar" id="course-sidebar" data-base="../" data-current="p05" aria-label="Course navigation"></aside>
+
+    <div class="main-column">
+      <header class="site-header">
+        <div class="header-inner">
+          <div class="flex-wrap-gap">
+            <button id="mobile-menu-btn" class="btn mobile-menu-btn" type="button" aria-label="Open course menu">&#9776; Menu</button>
+            <div class="breadcrumbs"><a href="../../index.html">Portal</a> <span>/</span> <a href="../index.html">Storage Hub</a> <span>/</span> <span class="current">05. Benchmarking &amp; Telemetry</span></div>
+          </div>
+          <div class="header-controls">
+            <div class="depth-switch" title="Switch between plain-English learning view and full specification depth">
+              <button type="button" class="depth-btn active" data-depth="simple">Simple View</button>
+              <button type="button" class="depth-btn" data-depth="deep">Full Spec</button>
+            </div>
+            <a class="btn" href="../nvme_systems_tutor.html">102-Term Lab</a>
+            <button id="theme-toggle" class="btn" type="button">Light</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="container">
+        <section class="hero">
+          <div class="hero-eyebrow">Phase 2 • Honest Measurement (⏱ 7 min read)</div>
+          <h1>05. Benchmarking &amp; Telemetry</h1>
+          <p>Measure SSDs the way hyperscalers do: prove steady state, avoid latency traps, profile with Flame Graphs, and decode OCP C0h–C9h logs.</p>
+          <div class="hero-meta"><span class="badge badge-success">Interactive Steady-State Lab</span><span class="badge badge-primary">Flame Graphs &amp; Otava CI</span><span class="badge badge-warning">OCP C0h–C9h &amp; nvme sndk</span></div>
+        </section>
+
+        
+    
+    <div class="step-banner">
+      <span class="step-num">1</span>
+      <h2>The 30-Second Mental Model</h2>
+      <span class="muted">&mdash; How bad benchmarks fool even smart engineers</span>
     </div>
-  </header>
-
-  <main class="container">
-    <section class="hero">
-      <div class="hero-eyebrow">Pillar 05 • Profiling, SNIA PTS Math, Otava CI &amp; Binary Telemetry</div>
-      <h1>05. Performance Engineering, Telemetry &amp; Observability</h1>
-      <p>Structured host/device profiling (USE, TSA, TMAM, perf/eBPF Flame Graphs), SNIA SSS PTS steady-state convergence, Coordinated Omission prevention, Apache Otava change-point CI, and NVMe/OCP C0h–C9h/SanDisk telemetry decoding.</p>
-      <div class="hero-meta"><span class="badge badge-primary">USE • TSA • TMAM • eBPF</span><span class="badge badge-success">SNIA SSS PTS v2.0.2</span><span class="badge badge-violet">Apache Otava Change-Point CI</span><span class="badge badge-warning">OCP C0h–C9h &amp; nvme sndk</span></div>
+    
+    
+    <section class="tldr-grid">
+      <div class="tldr-card">
+        <div class="tldr-label">The Core Problem</div>
+        <p>It is shockingly easy to measure fake SSD numbers: testing an empty drive inflates speed by 3&times;, closed-loop tools hide multi-second stalls, and fixed 5% CI alerts spam everyone with false alarms.</p>
+      </div>
+      <div class="tldr-card analogy">
+        <div class="tldr-label">Plain-English Analogy</div>
+        <p>Benchmarking a brand-new SSD is like <strong>timing a sprinter for 10 meters and claiming that's their marathon pace</strong>. You must warm the drive into <strong>Steady State</strong> first!</p>
+      </div>
+      <div class="tldr-card role">
+        <div class="tldr-label">Why You Care at SanDisk</div>
+        <p>Hyperscale customers judge SanDisk drives on <strong>steady-state p99.99 tail latency</strong> and clean <strong>OCP C0h&ndash;C9h telemetry logs</strong> &mdash; not peak empty-drive numbers.</p>
+      </div>
     </section>
+    
 
+    <div class="flow-diagram"><div class="flow-node"><strong>1. Purge Drive</strong><span>nvme format • Start from a known clean slate</span></div><div class="flow-arrow">&rarr;</div><div class="flow-node"><strong>2. Precondition (2× Fill)</strong><span>Write 2× capacity so GC &amp; FTL reach real life</span></div><div class="flow-arrow">&rarr;</div><div class="flow-node"><strong>3. Prove Steady State</strong><span>5 rounds must stay within &lt;20% range &amp; &lt;10% slope</span></div><div class="flow-arrow">&rarr;</div><div class="flow-node"><strong>4. Gate CI via Otava</strong><span>Statistical change-point math catches real regressions</span></div></div>
+
+    
+    <div class="step-banner">
+      <span class="step-num">2</span>
+      <h2>Interactive Lab: Is Your SSD Actually in Steady State?</h2>
+      <span class="muted">&mdash; Click the 3 presets to see SNIA PTS math in action</span>
+    </div>
     
     <section class="card">
       <div class="card-header">
         <div>
-          <h2>Interactive SNIA SSS PTS v2.0.2 Steady-State Convergence Checker</h2>
-          <p class="card-subtitle">Test 5 consecutive measurement rounds against SNIA steady-state criteria: <code>Range(y) &lt; 0.2 &times; Ave(y)</code> and linear-fit excursion <code>Slope(y) &lt; 0.1 &times; Ave(y)</code>.</p>
+          <h2>SNIA SSS PTS Steady-State Checker</h2>
+          <p class="card-subtitle">SNIA rules say 5 back-to-back test rounds pass only if <strong>Range &lt; 20% of average</strong> AND <strong>trend slope &lt; 10%</strong>.</p>
         </div>
         <div class="pill-bar mb-0">
-          <button type="button" class="pill" id="pts-fob">Preset: FOB Collapse (FAIL)</button>
-          <button type="button" class="pill active" id="pts-ss">Preset: Converged Steady State (PASS)</button>
-          <button type="button" class="pill" id="pts-gc">Preset: Noisy GC Oscillation (FAIL)</button>
+          <button type="button" class="pill" id="pts-fob">1. Empty Drive Crashing (FAIL)</button>
+          <button type="button" class="pill active" id="pts-ss">2. True Steady State (PASS)</button>
+          <button type="button" class="pill" id="pts-gc">3. Wild GC Swings (FAIL)</button>
         </div>
       </div>
 
@@ -52,89 +93,124 @@
       </div>
 
       <div class="grid-4 mb-2">
-        <div class="kpi-tile"><div class="kpi-label">Window Mean Ave(y)</div><div class="kpi-value" id="pts-mean">407.2</div><div class="kpi-note">kIOPS across 5 rounds</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Data Range / Mean</div><div class="kpi-value" id="pts-range">2.2%</div><div class="kpi-note">Must be &lt; 20.0%</div></div>
-        <div class="kpi-tile"><div class="kpi-label">Linear Fit Excursion / Mean</div><div class="kpi-value" id="pts-slope">1.2%</div><div class="kpi-note">Must be &lt; 10.0%</div></div>
-        <div class="kpi-tile"><div class="kpi-label">SNIA PTS Verdict</div><div class="kpi-value" id="pts-verdict" style="color:var(--success);">STEADY STATE</div><div class="kpi-note" id="pts-note">Safe to report benchmark</div></div>
+        <div class="kpi-tile"><div class="kpi-label">5-Round Average</div><div class="kpi-value" id="pts-mean">407.2</div><div class="kpi-note">kIOPS</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Spread (Max&minus;Min)</div><div class="kpi-value" id="pts-range">2.2%</div><div class="kpi-note">Limit: &lt; 20.0%</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Trend Slope</div><div class="kpi-value" id="pts-slope">1.2%</div><div class="kpi-note">Limit: &lt; 10.0%</div></div>
+        <div class="kpi-tile"><div class="kpi-label">Verdict</div><div class="kpi-value" id="pts-verdict" style="color:var(--success);">PASS</div><div class="kpi-note" id="pts-note">Valid steady state!</div></div>
       </div>
 
-      <canvas id="p5-pts-canvas" height="190"></canvas>
+      <canvas id="p5-pts-canvas" height="185"></canvas>
     </section>
 
+    
+    <div class="step-banner">
+      <span class="step-num">3</span>
+      <h2>Three Observability Superpowers</h2>
+      <span class="muted">&mdash; Plain-English profiling, honest latency &amp; log decoding</span>
+    </div>
+    
     <section class="card">
-      <div class="card-header">
-        <div>
-          <h2>NVMe, OCP 2.6 / 2.7 &amp; SanDisk Vendor Telemetry Log Decoder Reference</h2>
-          <p class="card-subtitle">Filter by standard or search for specific log IDs, UUIDs, GUIDs, and <code>nvme sndk/wdc</code> commands.</p>
+      <div class="grid-3">
+        <div class="sub-panel">
+          <span class="badge badge-primary mb-2">1. Host Profiling</span>
+          <h3>Flame Graphs &amp; eBPF</h3>
+          <p class="small muted mb-0">Check <strong>Utilization, Saturation, Errors (USE)</strong> first. Capture a <strong>CPU / Off-CPU Flame Graph</strong> with <code>perf</code> and a live NVMe latency histogram with <code>bpftrace</code> &mdash; zero guesswork about whether Linux or the SSD was slow.</p>
         </div>
-        <input type="text" id="p5-log-search" placeholder="Filter logs (e.g. C0h, UUID, DA1, sndk, C9h)..." style="min-width:240px;" />
+        <div class="sub-panel">
+          <span class="badge badge-warning mb-2">2. Latency Math</span>
+          <h3>Coordinated Omission &amp; Otava</h3>
+          <p class="small muted mb-0">Think of a coffee shop line: if the cashier freezes for 5 minutes, 50 arriving customers suffer, not just the 1 person at the counter! Pace I/Os on a timer, never average percentiles, and use <strong>Apache Otava</strong> change-point detection in nightly CI.</p>
+        </div>
+        <div class="sub-panel">
+          <span class="badge badge-success mb-2">3. SSD Black-Box Logs</span>
+          <h3>NVMe, OCP &amp; <code>nvme sndk</code></h3>
+          <p class="small muted mb-0">Standard <code>02h</code> gives basic SMART; <code>07h/08h</code> dump firmware telemetry; <strong>OCP <code>C0h</code></strong> tracks physical flash writes, ECC retries &amp; PLP capacitor health; <strong>OCP <code>C9h</code></strong> translates binary telemetry strings without secret vendor tools!</p>
+        </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Log Page / Feature</th><th>Standard</th><th>Key Validation Signals &amp; Engineering Gotchas</th></tr></thead>
-          <tbody id="p5-log-body">
-            <tr><td><strong><code>02h</code> SMART / Health &amp; <code>0Dh</code> Persistent Event Log (PEL)</strong></td><td>NVMe Base 2.3</td><td>Composite/sensor temps, media errors, percentage used; PEL persists non-command subsystem events across power cycles and resets.</td></tr>
-            <tr><td><strong><code>07h</code> Host-Initiated &amp; <code>08h</code> Controller-Initiated Telemetry</strong></td><td>NVMe 2.3 + OCP 2.6</td><td>Data Areas 1&ndash;4; <code>08h</code> must persist across resets. Under OCP 2.6, DA1 defaults to 32 KiB with <strong>&lt;1 ms typical (&lt;5 ms max)</strong> I/O latency impact and Virtual FIFOs (&gt;16 FIFOs across DA1/DA2).</td></tr>
-            <tr><td><strong><code>C0h</code> OCP Extended SMART</strong></td><td>OCP 2.6 / 2.7</td><td>512B little-endian; gate reads on OCP UUID <code>C194D55B-E094-4794-A21D-29998F56BE6F</code> in Identify <code>CNS 17h</code>, verify GUID <code>AFD514C97C6F4F9CA4F2BFEA2810AFC5h</code> and Version (<code>0005h</code> = 2.6, <code>0006h</code> = 2.7). Tracks physical writes/reads, XOR/soft ECC, capacitor health (<code>FFFFh</code> = no PLP), PCIe retraining, dies offline, lifetime/peak power.</td></tr>
-            <tr><td><strong><code>C1h</code> Error Recovery, <code>C2h</code> FW Activation &amp; Latency Monitor</strong></td><td>OCP 2.6</td><td><code>C1h</code> exposes panic count and recommended reset sequence (<code>EREC-2</code>); Latency Monitor (<code>nvme ocp latency-monitor-log</code>; Set Feature <code>C5h</code>) logs hardware latency-bucket counts &amp; threshold-breach timestamps.</td></tr>
-            <tr><td><strong><code>C4h</code> Device Capabilities, <code>C6h</code> HW Component, <code>C9h</code> Telemetry String Log</strong></td><td>OCP 2.6 / 2.7</td><td><code>C9h</code> enables vendor-neutral decoding of <code>07h/08h</code> via <code>nvme ocp internal-log</code> without proprietary parsers; <code>C4h</code> v2 adds FIPS 140 status in OCP 2.7; watch OCP 2.6 <code>C6h</code> byte-vs-Dword size fixes.</td></tr>
-            <tr><td><strong>SanDisk Vendor Plugins (<code>nvme sndk</code> &amp; legacy <code>nvme wdc</code>)</strong></td><td>SanDisk / WDC</td><td><code>vs-smart-add-log</code>, <code>vs-device-waf</code>, <code>get-latency-monitor-log</code>, <code>vs-temperature-stats</code>, <code>get-crash-dump</code>, <code>get-pfail-dump</code>, <code>vs-internal-log</code>, and <code>pci-eye</code> (via <code>nvmeadm</code>). <code>nvme-cli</code> v3.x merges <code>libnvme</code> with sandboxed decoders &amp; <code>nvme-discoverd</code>.</td></tr>
-          </tbody>
-        </table>
-      </div>
+
+      <details class="deep-dive">
+        <summary>Full Telemetry Log Page Hex Map (02h, 07h/08h, 0Dh, OCP C0h&ndash;C9h &amp; SanDisk sndk)</summary>
+        <div class="deep-dive-body">
+          <div class="table-wrap" style="margin:0;">
+            <table>
+              <thead><tr><th>Log ID</th><th>Scope</th><th>Key Validation Checks &amp; Gotchas</th></tr></thead>
+              <tbody>
+                <tr><td><code>02h</code> &amp; <code>0Dh</code> (PEL)</td><td>NVMe 2.3</td><td>SMART temps, media errors, % used; Persistent Event Log (<code>0Dh</code>) survives power cycles &amp; resets.</td></tr>
+                <tr><td><code>07h</code> &amp; <code>08h</code> Telemetry</td><td>NVMe 2.3 + OCP 2.6</td><td>Data Areas 1&ndash;4; <code>08h</code> persists across resets. OCP 2.6: 32 KiB DA1 must cause <strong>&lt;1 ms typical / &lt;5 ms max</strong> I/O latency impact; &gt;16 Virtual FIFOs.</td></tr>
+                <tr><td><code>C0h</code> Extended SMART</td><td>OCP 2.6 / 2.7</td><td>512B little-endian. First check OCP UUID <code>C194D55B-E094-4794-A21D-29998F56BE6F</code> in Identify <code>CNS 17h</code>, then verify GUID <code>AFD514C97C6F4F9CA4F2BFEA2810AFC5h</code> &amp; version (<code>0005h</code>=2.6, <code>0006h</code>=2.7). Capacitor health <code>FFFFh</code> = no PLP.</td></tr>
+                <tr><td><code>C1h</code>, <code>C2h</code> &amp; Latency Monitor</td><td>OCP 2.6</td><td><code>C1h</code> panic count &amp; reset action (<code>EREC-2</code>); <code>C2h</code> FW history; Latency Monitor (<code>Set Feature C5h</code>) hardware latency buckets.</td></tr>
+                <tr><td><code>C4h</code>, <code>C6h</code>, <code>C9h</code></td><td>OCP 2.6 / 2.7</td><td><code>C9h</code> String Log decodes <code>07h/08h</code> via <code>nvme ocp internal-log</code>; <code>C4h</code> v2 adds FIPS 140 status in OCP 2.7; watch OCP 2.6 <code>C6h</code> byte-vs-Dword fix.</td></tr>
+                <tr><td><code>nvme sndk</code> / <code>wdc</code></td><td>SanDisk Plugins</td><td><code>vs-smart-add-log</code>, <code>vs-device-waf</code>, <code>get-latency-monitor-log</code>, <code>vs-temperature-stats</code>, <code>get-crash-dump</code>, <code>get-pfail-dump</code>, <code>vs-internal-log</code>, <code>nvmeadm pci-eye</code>. (<code>nvme-cli</code> v3.x merges <code>libnvme</code>.)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </section>
 
-    <section class="grid-3">
-      <div class="card"><h3 style="margin-top:0;">USE, TSA &amp; TMAM Profiling</h3><p class="small muted mb-0">Combine Gregg&rsquo;s <strong>USE</strong> (Utilization, Saturation, Errors) and <strong>TSA</strong> (Thread State Analysis) with Intel <strong>TMAM</strong> (Front-End, Back-End, Bad Speculation, Retiring) using <code>perf</code> (PEBS/LBR), CPU/Off-CPU Flame Graphs, and <code>bpftrace</code>.</p></div>
-      <div class="card"><h3 style="margin-top:0;">Coordinated Omission Hygiene</h3><p class="small muted mb-0">Closed-loop generators pause new submissions when a drive stalls, hiding multi-second GC/read-retry hiccups from <code>p99.99</code>. Use open-loop paced traffic, never average percentiles across runs, and never drop <code>max</code> latency.</p></div>
-      <div class="card"><h3 style="margin-top:0;">Apache Otava (Hunter) CI</h3><p class="small muted mb-0">Eliminates brittle static % regression thresholds on noisy test racks via a modified E-divisive means algorithm (Student&rsquo;s t-test + overlapping fixed windows) to flag statistically significant firmware/harness regressions.</p></div>
-    </section>
-
+    
+    <div class="step-banner">
+      <span class="step-num">4</span>
+      <h2>Quick Check, Starter Reads &amp; Checklist</h2>
+      
+    </div>
+    
     
     <section class="card">
       <div class="card-header">
         <div>
-          <h2>Curated Primary Sources &amp; Reference Library</h2>
-          <p class="card-subtitle">Authoritative specifications, textbooks, kernel docs, papers, and open-source repositories.</p>
+          <h2>Quick 3-Question Self-Check</h2>
+          <p class="card-subtitle">Click an answer to test your intuition right away &mdash; every option explains <em>why</em>.</p>
         </div>
-        <span class="badge badge-primary">6 Resources</span>
+        <span class="badge badge-violet">Instant Feedback</span>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Source / Resource</th>
-              <th>Format</th>
-              <th>Link / Identifier</th>
-              <th>How to Use It</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>Systems Performance: Enterprise and the Cloud, 2nd Ed. &amp; BPF Performance Tools — Brendan Gregg</strong></td><td><span class="badge">Books</span></td><td><a href="https://www.brendangregg.com/systems-performance-2nd-edition-book.html" target="_blank" rel="noopener noreferrer">Systems Performance 2e</a> &bull; <a href="https://www.brendangregg.com/bpf-performance-tools-book.html" target="_blank" rel="noopener noreferrer">BPF Performance Tools</a> &bull; <a href="https://github.com/bpftrace/bpftrace" target="_blank" rel="noopener noreferrer">bpftrace</a> &bull; <a href="https://github.com/brendangregg/flamegraph" target="_blank" rel="noopener noreferrer">FlameGraph</a></td><td>Read Ch. 1–4, 6–9, and 12–15 for USE/TSA/Disks/Benchmarking; capture CPU &amp; Off-CPU Flame Graphs with perf and bpftrace.</td></tr><tr><td><strong>Performance Analysis and Tuning on Modern CPUs, 2nd Ed. — Denis Bakhvalov</strong></td><td><span class="badge">Free Book &amp; Course</span></td><td><a href="https://easyperf.net/" target="_blank" rel="noopener noreferrer">easyperf.net</a></td><td>Best practical reference on TMAM, PMU counters, PEBS, LBR, Data Address Profiling for false sharing, and C++ tuning.</td></tr><tr><td><strong>MIT 6.172 Performance Engineering of Software Systems — Leiserson &amp; Shun</strong></td><td><span class="badge">Free OCW Course</span></td><td><a href="https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/" target="_blank" rel="noopener noreferrer">MIT OCW 6.172</a></td><td>Watch lectures on Bentley optimization rules, bit hacks, cache blocking, accurate timing, and memory allocators.</td></tr><tr><td><strong>The Art of Computer Systems Performance Analysis — Raj Jain</strong></td><td><span class="badge">Book</span></td><td><span class="mono small">Wiley Classic (1991)</span></td><td>Foundational reference for experimental design, confidence intervals, and avoiding statistical fallacies.</td></tr><tr><td><strong>Everything You Know About Latency Is Wrong (Gil Tene Summary) &amp; Apache Otava (Hunter)</strong></td><td><span class="badge">Article &amp; OSS Tool</span></td><td><a href="https://bravenewgeek.com/everything-you-know-about-latency-is-wrong/" target="_blank" rel="noopener noreferrer">Latency Is Wrong</a> &bull; <a href="https://otava.apache.org/docs/download/" target="_blank" rel="noopener noreferrer">Apache Otava</a></td><td>Essential reading before implementing latency histograms or automated CI performance gates.</td></tr><tr><td><strong>nvme-cli Repo &amp; OCP/SanDisk Plugin Source</strong></td><td><span class="badge">Open-Source Code</span></td><td><a href="https://github.com/linux-nvme/nvme-cli" target="_blank" rel="noopener noreferrer">nvme-cli</a> &bull; <a href="https://github.com/linux-nvme/nvme-cli/blob/master/plugins/ocp/ocp-nvme.c" target="_blank" rel="noopener noreferrer">ocp-nvme.c</a> &bull; <a href="https://github.com/linux-nvme/nvme-cli/blob/master/plugins/wdc/wdc-nvme.c" target="_blank" rel="noopener noreferrer">wdc-nvme.c</a></td><td>Inspect exact struct definitions and mock test coverage (see issue #4312 for sndk plugin commands).</td></tr>
-          </tbody>
-        </table>
+      <div id="p05-quiz"></div>
+    </section>
+    
+    
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2>Best Places to Start &amp; Reference Library</h2>
+          <p class="card-subtitle">Begin with the 2 recommended starter resources below; expand the full table whenever you need exact spec clauses or repositories.</p>
+        </div>
+        <span class="badge badge-primary">4 Curated Sources</span>
       </div>
+      <div class="grid-2"><div class="sub-panel"><div class="flex-wrap-gap" style="justify-content:space-between;margin-bottom:6px;"><span class="badge badge-success">Start Here First</span><span class="badge">10-Min Must-Read + Tool</span></div><strong>Everything You Know About Latency Is Wrong (Gil Tene Summary) &amp; Apache Otava</strong><p class="small muted" style="margin:6px 0 8px;">Start here! Eye-opening, easy read on Coordinated Omission and why averaging percentiles lies — paired with Otava for CI.</p><div class="small"><a href="https://bravenewgeek.com/everything-you-know-about-latency-is-wrong/" target="_blank" rel="noopener noreferrer">Latency Is Wrong</a> &bull; <a href="https://otava.apache.org/docs/download/" target="_blank" rel="noopener noreferrer">Apache Otava</a></div></div><div class="sub-panel"><div class="flex-wrap-gap" style="justify-content:space-between;margin-bottom:6px;"><span class="badge badge-success">Start Here First</span><span class="badge">Free Book + Reference</span></div><strong>Performance Analysis and Tuning on Modern CPUs (Denis Bakhvalov) &amp; Brendan Gregg</strong><p class="small muted" style="margin:6px 0 8px;">Practical guides to Flame Graphs, eBPF histograms, and CPU Top-Down (TMAM) profiling.</p><div class="small"><a href="https://easyperf.net/" target="_blank" rel="noopener noreferrer">easyperf.net (Free Book)</a> &bull; <a href="https://www.brendangregg.com/systems-performance-2nd-edition-book.html" target="_blank" rel="noopener noreferrer">Systems Performance 2e</a> &bull; <a href="https://www.brendangregg.com/bpf-performance-tools-book.html" target="_blank" rel="noopener noreferrer">BPF Performance Tools</a> &bull; <a href="https://github.com/brendangregg/flamegraph" target="_blank" rel="noopener noreferrer">FlameGraph</a></div></div></div>
+      <details class="deep-dive">
+        <summary>Full Specification, Book &amp; Open-Source Reference Table (4 items)</summary>
+        <div class="deep-dive-body">
+          <div class="table-wrap" style="margin:0;">
+            <table>
+              <thead>
+                <tr><th>Source / Resource</th><th>Format</th><th>Link / Identifier</th><th>How to Use It</th></tr>
+              </thead>
+              <tbody><tr><td><strong>Everything You Know About Latency Is Wrong (Gil Tene Summary) &amp; Apache Otava</strong></td><td><span class="badge">10-Min Must-Read + Tool</span></td><td><a href="https://bravenewgeek.com/everything-you-know-about-latency-is-wrong/" target="_blank" rel="noopener noreferrer">Latency Is Wrong</a> &bull; <a href="https://otava.apache.org/docs/download/" target="_blank" rel="noopener noreferrer">Apache Otava</a></td><td>Start here! Eye-opening, easy read on Coordinated Omission and why averaging percentiles lies — paired with Otava for CI.</td></tr><tr><td><strong>Performance Analysis and Tuning on Modern CPUs (Denis Bakhvalov) &amp; Brendan Gregg</strong></td><td><span class="badge">Free Book + Reference</span></td><td><a href="https://easyperf.net/" target="_blank" rel="noopener noreferrer">easyperf.net (Free Book)</a> &bull; <a href="https://www.brendangregg.com/systems-performance-2nd-edition-book.html" target="_blank" rel="noopener noreferrer">Systems Performance 2e</a> &bull; <a href="https://www.brendangregg.com/bpf-performance-tools-book.html" target="_blank" rel="noopener noreferrer">BPF Performance Tools</a> &bull; <a href="https://github.com/brendangregg/flamegraph" target="_blank" rel="noopener noreferrer">FlameGraph</a></td><td>Practical guides to Flame Graphs, eBPF histograms, and CPU Top-Down (TMAM) profiling.</td></tr><tr><td><strong>nvme-cli Repo &amp; OCP / SanDisk Plugin Source Code</strong></td><td><span class="badge">Open-Source Code</span></td><td><a href="https://github.com/linux-nvme/nvme-cli" target="_blank" rel="noopener noreferrer">nvme-cli</a> &bull; <a href="https://github.com/linux-nvme/nvme-cli/blob/master/plugins/ocp/ocp-nvme.c" target="_blank" rel="noopener noreferrer">ocp-nvme.c</a> &bull; <a href="https://github.com/linux-nvme/nvme-cli/blob/master/plugins/wdc/wdc-nvme.c" target="_blank" rel="noopener noreferrer">wdc-nvme.c</a></td><td>Exact C struct definitions for OCP C0h–C9h and SanDisk (sndk/wdc) vendor log decoders.</td></tr><tr><td><strong>MIT 6.172 Performance Engineering &amp; Raj Jain&#x27;s Art of Performance Analysis</strong></td><td><span class="badge">Course &amp; Classic Book</span></td><td><a href="https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/" target="_blank" rel="noopener noreferrer">MIT OCW 6.172</a> &bull; <span class="mono small">Raj Jain (Wiley, 1991)</span></td><td>Deep fundamentals on code speedups and rigorous experimental statistics.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </section>
     
     
     <section class="card" data-progress-prefix="p05_" data-progress-total="5">
       <div class="card-header">
         <div>
-          <h2>Mastery Checklist (Saved Locally)</h2>
-          <p class="card-subtitle">Check off skills and labs as you validate them — progress rolls up automatically to the Storage Hub.</p>
+          <h2>Hands-On Lab &amp; Mastery Checklist</h2>
+          <p class="card-subtitle">Tick items as you learn them &mdash; your progress saves in your browser and updates the sidebar automatically.</p>
         </div>
         <span class="badge badge-success progress-text">0 / 5 (0%)</span>
       </div>
       <div class="progress-track mb-2"><div class="progress-fill" style="width: 0%"></div></div>
-      <div class="checklist mt-3">
-        <label class="check-item"><input type="checkbox" data-check-id="p05_01" /><div><div class="check-title"><strong>Profile high-IOPS hosts with USE, TSA, TMAM, Flame Graphs &amp; eBPF</strong></div><div class="small muted">Separate host execution time from device service time using perf (PEBS/LBR), Off-CPU Flame Graphs, and bpftrace latency histograms.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_02" /><div><div class="check-title"><strong>Enforce SNIA SSS PTS v2.0.2 preconditioning &amp; steady-state math</strong></div><div class="small muted">Purge (nvme format), run 2x sequential 128 KiB WIPC, and verify 5-round Range(y) &lt; 0.2*Ave(y) and Slope(y) &lt; 0.1.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_03" /><div><div class="check-title"><strong>Eliminate Coordinated Omission &amp; percentile aggregation fallacies</strong></div><div class="small muted">Use open-loop rate-controlled generators, preserve full HDR/bucket histograms (p99/p99.99/max), and never average percentiles.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_04" /><div><div class="check-title"><strong>Deploy statistical change-point CI via Apache Otava (Hunter)</strong></div><div class="small muted">Replace noisy static % thresholds with modified E-divisive means + Student&#x27;s t-test windows to catch true regressions.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_05" /><div><div class="check-title"><strong>Validate &amp; decode NVMe (02h/07h/08h/0Dh), OCP (C0h–C9h) &amp; nvme sndk logs</strong></div><div class="small muted">Gate C0h reads on Identify CNS 17h OCP UUID, check GUID + version (0005h/0006h), verify &lt;5 ms max DA1 latency impact, and decode via C9h.</div></div></label>
-      </div>
+      <div class="checklist mt-3"><label class="check-item"><input type="checkbox" data-check-id="p05_01" /><div><div class="check-title"><strong>Never report Fresh-Out-of-Box (FOB) numbers as enterprise SSD speed</strong></div><div class="small muted">Always format/purge, precondition with 2× capacity writes, and verify 5-round SNIA PTS steady state.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_02" /><div><div class="check-title"><strong>Avoid Coordinated Omission in latency benchmarks</strong></div><div class="small muted">Use rate-paced open-loop traffic, never average p99 percentiles across runs, and never throw away max latency.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_03" /><div><div class="check-title"><strong>Use Flame Graphs &amp; eBPF to separate host lag from SSD lag</strong></div><div class="small muted">CPU/Off-CPU Flame Graphs + bpftrace histograms show instantly if Linux or the SSD caused a stall.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_04" /><div><div class="check-title"><strong>Catch real CI regressions with Apache Otava instead of noisy % rules</strong></div><div class="small muted">Statistical change-point detection spots genuine 3% regressions without constant false alarms.</div></div></label><label class="check-item"><input type="checkbox" data-check-id="p05_05" /><div><div class="check-title"><strong>Decode NVMe (02h/07h/08h/0Dh), OCP (C0h–C9h) &amp; SanDisk (nvme sndk) logs</strong></div><div class="small muted">Check Identify CNS 17h OCP UUID first, verify C0h GUID + version, confirm &lt;5 ms DA1 impact, and decode strings via C9h.</div></div></label></div>
     </section>
     
     
 
-    <nav class="subject-pager"><a class="btn" href="../04-architecture-os-and-concurrency/index.html">&larr; 04. Architecture, OS &amp; Concurrency</a><a class="btn" href="../index.html">Storage Hub</a><a class="btn btn-primary" href="../06-validation-fault-injection-and-formal-methods/index.html">06. Validation, Fault Injection &amp; Formal Methods &rarr;</a></nav>
-  </main>
+        <nav class="subject-pager"><a class="btn" href="../04-architecture-os-and-concurrency/index.html">&larr; 04. OS I/O, SPDK &amp; Concurrency</a><a class="btn" href="../index.html">Course Hub</a><a class="btn btn-primary" href="../06-validation-fault-injection-and-formal-methods/index.html">06. Fault Injection, PLP &amp; TLA+ &rarr;</a></nav>
+      </main>
+    </div>
+  </div>
 
   <script src="../assets/app.js"></script>
   <script>
@@ -145,76 +221,49 @@
       const mean = vals.reduce((a, b) => a + b, 0) / n;
       const minV = Math.min(...vals), maxV = Math.max(...vals);
       const rangePct = ((maxV - minV) / mean) * 100;
-
-      // Linear regression over x = 0..4
       const mx = 2;
       let num = 0, den = 0;
       vals.forEach((y, x) => { num += (x - mx) * (y - mean); den += (x - mx) * (x - mx); });
       const slope = num / den;
-      const fitExcursion = Math.abs(slope * (n - 1));
-      const slopePct = (fitExcursion / mean) * 100;
+      const slopePct = (Math.abs(slope * (n - 1)) / mean) * 100;
       const pass = rangePct < 20 && slopePct < 10;
 
       document.getElementById('pts-mean').textContent = mean.toFixed(1);
       document.getElementById('pts-range').textContent = rangePct.toFixed(1) + '%';
       document.getElementById('pts-slope').textContent = slopePct.toFixed(1) + '%';
       const vEl = document.getElementById('pts-verdict');
-      vEl.textContent = pass ? 'STEADY STATE' : 'NOT CONVERGED';
+      vEl.textContent = pass ? 'PASS' : 'FAIL';
       vEl.style.color = pass ? 'var(--success)' : 'var(--error)';
-      document.getElementById('pts-note').textContent = pass ? 'Meets Range < 20% & Slope < 10%' : 'Continue preconditioning rounds';
+      document.getElementById('pts-note').textContent = pass ? 'True steady state!' : 'Keep preconditioning';
 
-      const { ctx, w, h, th } = StorageHub.prepCanvas(document.getElementById('p5-pts-canvas'), 190);
-      const padL = 58, padR = 24, padT = 26, padB = 30;
+      const { ctx, w, h, th } = StorageHub.prepCanvas(document.getElementById('p5-pts-canvas'), 185);
+      const padL = 54, padR = 22, padT = 26, padB = 28;
       const pw = w - padL - padR, ph = h - padT - padB;
       const yLo = Math.max(0, Math.min(minV, mean * 0.78) * 0.92);
       const yHi = Math.max(maxV, mean * 1.22) * 1.06;
       const toX = i => padL + (i / 4) * pw;
       const toY = v => padT + (1 - (v - yLo) / Math.max(1, yHi - yLo)) * ph;
 
-      // +/- 10% band around mean
-      ctx.save();
-      ctx.globalAlpha = 0.14;
-      ctx.fillStyle = th.success;
-      const yBandTop = toY(mean * 1.1), yBandBot = toY(mean * 0.9);
-      ctx.fillRect(padL, yBandTop, pw, yBandBot - yBandTop);
+      ctx.save(); ctx.globalAlpha = 0.14; ctx.fillStyle = th.success;
+      ctx.fillRect(padL, toY(mean * 1.1), pw, toY(mean * 0.9) - toY(mean * 1.1));
       ctx.restore();
 
-      // Mean line
-      ctx.save();
-      ctx.strokeStyle = th.muted;
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath(); ctx.moveTo(padL, toY(mean)); ctx.lineTo(padL + pw, toY(mean)); ctx.stroke();
-      ctx.restore();
+      ctx.strokeStyle = pass ? th.success : th.error; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(toX(0), toY(mean - 2 * slope)); ctx.lineTo(toX(4), toY(mean + 2 * slope)); ctx.stroke();
 
-      // Regression fit line
-      const y0 = mean + slope * (0 - mx), y4 = mean + slope * (4 - mx);
-      ctx.strokeStyle = pass ? th.success : th.error;
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(toX(0), toY(y0)); ctx.lineTo(toX(4), toY(y4)); ctx.stroke();
-
-      // Measured polyline + points
-      ctx.strokeStyle = th.primary;
-      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = th.primary; ctx.lineWidth = 2.5;
       ctx.beginPath();
       vals.forEach((v, i) => { if (i === 0) ctx.moveTo(toX(i), toY(v)); else ctx.lineTo(toX(i), toY(v)); });
       ctx.stroke();
       vals.forEach((v, i) => {
-        ctx.fillStyle = th.primary;
-        ctx.beginPath(); ctx.arc(toX(i), toY(v), 5, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = th.fg;
-        ctx.font = '700 11px ui-monospace, monospace';
-        ctx.textAlign = 'center';
+        ctx.fillStyle = th.primary; ctx.beginPath(); ctx.arc(toX(i), toY(v), 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = th.fg; ctx.font = '700 11px ui-monospace, monospace'; ctx.textAlign = 'center';
         ctx.fillText(v.toFixed(0), toX(i), toY(v) - 10);
-        ctx.fillStyle = th.muted;
-        ctx.fillText('R' + (i + 1), toX(i), h - 10);
+        ctx.fillStyle = th.muted; ctx.fillText('R' + (i + 1), toX(i), h - 8);
       });
-      ctx.textAlign = 'right';
-      ctx.fillText(yHi.toFixed(0), padL - 8, padT + 10);
-      ctx.fillText(yLo.toFixed(0), padL - 8, padT + ph);
       ctx.textAlign = 'left';
-      ctx.fillStyle = th.fg;
-      ctx.font = '700 11.5px system-ui, sans-serif';
-      ctx.fillText('Shaded band = ±10% around Ave(y) | Solid trend = linear fit', padL, 16);
+      ctx.fillStyle = th.fg; ctx.font = '700 11.5px system-ui, sans-serif';
+      ctx.fillText('Green band = ±10% safe zone around mean', padL, 16);
     }
 
     function setPreset(arr, activeId) {
@@ -230,11 +279,39 @@
     window.addEventListener('themechange', evalPTS);
     evalPTS();
 
-    document.getElementById('p5-log-search').addEventListener('input', e => {
-      const q = e.target.value.toLowerCase().trim();
-      document.querySelectorAll('#p5-log-body tr').forEach(tr => {
-        tr.style.display = (!q || tr.textContent.toLowerCase().includes(q)) ? '' : 'none';
-      });
+    document.addEventListener('DOMContentLoaded', () => {
+      StorageHub.renderQuiz('p05-quiz', [
+        {
+          q: 'Before reading OCP Extended SMART Log Page C0h in an automated Python script, what should your code verify first?',
+          options: [
+            'Check Identify CNS 17h for the OCP UUID, then validate the C0h 16-byte GUID and Log Page Version (0005h = 2.6, 0006h = 2.7)',
+            'Assume every NVMe drive on Earth returns OCP C0h',
+            'Reformat the drive'
+          ],
+          answer: 0,
+          explain: 'Vendor log IDs (C0h–FFh) can mean completely different things on non-OCP drives — gating on the OCP UUID and checking the C0h GUID + version prevents silent misparsing.'
+        },
+        {
+          q: 'What does OCP Log Page C9h (Telemetry String Log) solve for validation engineers?',
+          options: [
+            'It cools down the SSD',
+            'It lets standard nvme ocp internal-log decode binary 07h/08h firmware telemetry into human-readable strings without secret vendor-only parsers',
+            'It replaces SMART temperature sensors'
+          ],
+          answer: 1,
+          explain: 'C9h maps numeric event/debug IDs inside 07h/08h binary telemetry blobs directly to ASCII strings so hyperscalers and engineers can triage dumps cleanly.'
+        },
+        {
+          q: 'Why is Apache Otava (Hunter) better than failing CI whenever IOPS drops by >5%?',
+          options: [
+            'It ignores all regressions',
+            'It uses statistical change-point detection across history windows to catch small, persistent shifts (like 2–3%) while ignoring one-off lab noise',
+            'It overclocks the CPU'
+          ],
+          answer: 1,
+          explain: 'Modified E-divisive means + Student’s t-test separates real step-changes in firmware/tool performance from random run-to-run variance.'
+        }
+      ]);
     });
     
 </script>
